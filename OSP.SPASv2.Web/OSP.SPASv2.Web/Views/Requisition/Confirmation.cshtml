@@ -1,0 +1,124 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.RequisitionViewModel
+
+
+@{
+    ViewData["Title"] = "Confirmation";
+
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Payment Confirmation</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/BatchRequisition/List">Requisition</a></li>
+                <li class="breadcrumb-item active">Confirmation</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="card overflow-auto">
+            <div class="card-body">
+
+                <div class="card-title mb-2">
+                    <a class="card-title">
+                        List of Requisition 
+                    </a>
+                    @*<a href="#"><i class="bi bi-info-circle"></i></a>*@
+                    <div class="float-end" style="margin-right:10px; width:max-content;">
+                        <div class=" btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary" id="btnSelectAttachment"><i class="ri-attachment-2"></i> Select Folder</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="UploadBatch()"><i class="bi bi-check2-circle"></i> Confirm Payments</button>
+                            <input hidden type="file" id="btnSelectFile" name="btnSelectFile" onchange="selectFolder(event);" multiple="multiple"
+                                   webkitdirectory mozdirectory msdirectory odirectory directory>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tbodyBatchSummary">
+                    <table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+                        <thead>
+                            <tr>
+                                <th>
+                                   Request No:
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Vendor Name
+                                </th>
+                               
+                                <th>Confirmation Files</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+                @*<button type="button" class="btn btn-outline-primary float-end" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>*@
+            </div>
+        </div>
+
+    </section>
+</main>
+
+
+<script src="~/template/js/datatableRefresh.js"></script>
+<script>
+
+    $('#btnSelectAttachment').click(function () {
+        $('#btnSelectFile').click();
+    });
+    
+    var RequestFiles;
+
+    function selectFolder(e) {
+
+        var fileData = new FormData();
+        RequestFiles = e.target.files;
+        for (var i = 0; i < RequestFiles.length; i++) {
+            fileData.append("files", RequestFiles[i]);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/ReadConfirmationAttachments",
+            processData: false,
+            contentType: false,
+            data: fileData,
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#tbodyBatchSummary").html(result);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    function UploadBatch() {
+        ShowAlert({
+            title: 'Confirmation',
+            text: "Are you sure to confirm payment requisition?",
+            icon: 'question',
+            showCancelButton: true,
+            successmethod: "ConfirmPayment()"
+        })
+    }
+
+    function ReloadConfirmation()
+    {
+        location.reload();
+    }
+</script>

@@ -1,0 +1,68 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+
+@{
+    Layout = null;
+}
+
+<table class="table table-borderless table-striped" id="dtVendorBal" style="min-height:100px;">
+    <thead>
+        <tr>
+            <th>
+                Vendor Name
+            </th>
+            <th>
+                Original
+            </th>
+            <th>
+                Approved
+            </th>
+            <th>
+                Balance
+            </th>
+            <th>
+                Pending
+            </th>
+
+            <th>
+                Temporary Balance
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.VendorRunningBalanceList.OrderBy(t => t.VendorName).ToList())
+        {
+            <tr>
+                @*<td scope="row"><a href="Requisition/Details/@item.RequestID">@Convert.ToString(item.RequestID)</a></td>*@
+                <td>@item.VendorName</td>
+                <td style="font-weight: bold;">
+                    <center>@item.OrigQty</center>
+                </td>
+                <td>
+                    <center>@item.ApprovedQty</center>
+                </td>
+                <td style="color:red; font-weight: bold;">
+                    <center>@item.BalanceQty</center>
+                </td>
+                <td>
+                    <center>@item.PendingQty</center>
+                </td>
+
+                <td style="color:red; font-weight: bolder;">
+                    <center>@item.TempBalanceQty</center>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="~/template/js/datatableRefresh.js"></script>
+<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7860391.js"></script>
+
+<script>
+    new DataTable('#dtVendorBal', {
+        responsive: true
+    });
+
+
+</script>     

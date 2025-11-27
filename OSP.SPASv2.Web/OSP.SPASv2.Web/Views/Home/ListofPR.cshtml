@@ -1,0 +1,282 @@
+﻿@model IEnumerable<SPASv2.Models.PaymentRequestModel>
+
+@{
+    ViewData["Title"] = "List of Payment Requisition";
+}
+
+@*<h1>View</h1>*@
+
+@*<p>
+    <a asp-action="Create">Create New</a>
+</p>*@
+<main id="" class="main">
+    <!-- Recent Sales -->
+    <div class="col-12">
+        <div class="card recent-sales overflow-auto">
+            <div class="card-body">
+                <h2 class="card-title center">List of Payment Requisition </h2>
+                <table class="table table-borderless datatable">
+                    <thead>
+                        <tr>
+                            @*<th scope="col">Payment Request No</th>
+                            <th scope="col">Payment Class</th>
+                            <th scope="col">Supplier</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Status</th>*@
+                            <th center>
+                                @Html.DisplayName("Payment Request No")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Payment Class")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Supplier")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Amount")
+                            </th>
+
+                            <th>
+                                @Html.DisplayName("Status")
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { forapproval=true})">SPLPI-HO-221100001</a></td>
+                            <td>Payment to Suppliers</td>
+                            <td>NEED INK SALES AND SERVICES</td>
+                            <td class="money">
+                                <div class="currencySymbol">&#8369 20,000.00</div>
+
+                            </td>
+
+                            <td><span class="badge bg-success">For Approval of Branch Manager</span></td>
+                        </tr>
+                        @* <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600002</a></td>
+                        <td>CONTRACTED SERVICES (JANITORIAL)</td>
+                        <td>APD EXPERTS MANPOWER AND CONSULTANCY SERVICES, INC.</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 42,577.00</div>
+                        </td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600003</a></td>
+                        <td>CONTRACTED SERVICES (SECURITY)</td>
+                        <td>1SIGMAFORCE SECURITY AGENCY CORP</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 69,718.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600004</a></td>
+                        <td>REPAIR AND MAINTENANCE - BUILDING</td>
+                        <td>SENTINEL PEST CONTROL SERVICES</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 5,800.00</div>
+
+                        </td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600005</a></td>
+                        <td>WREATH EXPENSE</td>
+                        <td>LUIJIE'S CASA DE FLEUR</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 20,700.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600006</a></td>
+                        <td>ELECTRICITY EXPENSE</td>
+                        <td>MERALCO</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 45,587.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600007</a></td>
+                        <td>MEMORIAL SUPPLIES</td>
+                        <td>JBV WATER STATION</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 6,800.00</div>
+
+                        </td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600008</a></td>
+                        <td>WATER EXPENSE</td>
+                        <td>MAYNILAD WATER SERVICES INC.</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 22,383.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>*@
+                        @* <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600009</a></td>
+                        <td>Angus Grady</td>
+                        <td>Ut voluptatem id earum et</td>
+                        <td align="right">Php 67.00</td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600010</a></td>
+                        <td>Raheem Lehner</td>
+                        <td>Sunt similique distinctio</td>
+                        <td align="right">Php 165.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600011</a></td>
+                        <td>Brandon Jacob</td>
+                        <td>At praesentium minu</td>
+                        <td align="right">Php 64.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600012</a></td>
+                        <td>Bridie Kessler</td>
+                        <td>Blanditiis dolor omnis similique</td>
+                        <td align="right">Php 47.00</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600013</a></td>
+                        <td>Ashleigh Langosh</td>
+                        <td>At recusandae consectetur</td>
+                        <td align="right">Php 147.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600014</a></td>
+                        <td>Angus Grady</td>
+                        <td>Ut voluptatem id earum et</td>
+                        <td align="right">Php 67.00</td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600015</a></td>
+                        <td>Raheem Lehner</td>
+                        <td>Sunt similique distinctio</td>
+                        <td align="right">Php 165.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>*@
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div><!-- End Recent Sales -->
+    @*
+
+
+    <div class="card">
+    <div class="card-body">
+    <table class="table ">
+    <div class="dataTable-search right"><input class="dataTable-input" placeholder="Search..." type="text"></div>
+    <thead>
+    <tr class="table-primary">
+
+    <th>
+    @Html.DisplayName("Request No")
+    </th>
+    <th>
+    @Html.DisplayName("Payment Type")
+    </th>
+    <th>
+    @Html.DisplayName("Supplier")
+    </th>
+    <th>
+    @Html.DisplayName("Amount")
+    </th>
+    <th>
+    @Html.DisplayName("Status")
+    </th>
+
+
+    <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>
+    @Html.Display("QA00001")
+    </td>
+
+    <td>
+    @Html.Display("Payment to Suppliers")
+    </td>
+
+    <td>
+    @Html.Display("NEED INK SALES AND SERVICES")
+    </td>
+    <td>
+    @Html.Display("20,000.00")
+    </td>
+    <td>
+    <span class="badge bg-success">Approved</span>
+    </td>
+
+    </tr>
+    <tr>
+    <td>
+    @Html.Display("QA00001")
+    </td>
+
+    <td>
+    @Html.Display("Payment to Suppliers")
+    </td>
+
+    <td>
+    @Html.Display("NEED INK SALES AND SERVICES")
+    </td>
+    <td>
+    @Html.Display("20,000.00")
+    </td>
+    <td>
+    <span class="badge bg-danger">Rejected</span>
+    </td>
+
+    </tr>
+    <tr>
+    <td>
+    @Html.Display("QA00001")
+    </td>
+
+    <td>
+    @Html.Display("Payment to Suppliers")
+    </td>
+
+    <td>
+    @Html.Display("NEED INK SALES AND SERVICES")
+    </td>
+    <td>
+    @Html.Display("20,000.00")
+    </td>
+    <td>
+    <span class="badge bg-warning">Pending</span>
+    </td>
+
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    </div>*@
+
+    <script src="~/js/PaymentRequest-11112022.js"></script>
+    <script src="~/template/vendor/simple-datatables/simple-datatables.js"></script>
+    @*<script src="~/template/js/main.js"></script>*@
+</main>
+

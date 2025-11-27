@@ -1,0 +1,214 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+@{
+    switch (Model.SelectedDiv.ToUpper())
+    {
+        case "CREATE":
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row gy-2">
+
+                        <div class="col-8">
+                            <label for="inputName5" class="form-label">Address Type</label>
+                            @Html.DropDownListFor(model => model.AddressTypeList,Model.AddressTypeList.Select(m => new SelectListItem { Value = m.AddressTypeCode, Text = m.AddressDesc }), "-- SELECT ADDRESS TYPE --", htmlAttributes: new { @class = "form-select",@id = "Add_CmbAddressType" })
+                        </div>
+                        <br />
+                        <div class="col-10" hidden>
+                            <label for="inputAddress5" class="form-label">Region</label>
+                            <input type="text" class="form-control" id="Add_txtRegion" list="dtRegionList" name="region"> 
+                        </div>
+                        <div class="col-10">
+                            <label for="inputAddress5" class="form-label">Province</label>
+                            <input type="text" class="form-control" id="Add_txtProvince" list="dtProvinceList" name="province">
+                            <datalist id="dtProvinceList">
+                                @foreach (var item in Model.RefProvince)
+                                {
+                                    <option data-id="@item.ProvinceCode" value="@item.ProvinceName"> </option>
+                                }
+                            </datalist>
+                        </div>
+                        <div class="col-10">
+                            <label for="inputAddress5" class="form-label">City</label>
+                            <input type="text" class="form-control" id="Add_txtCity" list="dtCityList" name="city" >
+                            <datalist id="dtCityList"></datalist>
+                        </div>
+                        <div class="col-4">
+                            <label for="inputAddress5" class="form-label">Address No.</label>
+                            <input type="text" class="form-control" id="Add_txtAddressNo" >
+                        </div>
+                        <div class="col-8">
+                            <label for="inputAddress5" class="form-label">Street</label>
+                            <input type="text" class="form-control" id="Add_txtStreet" >
+                        </div>
+                        <div class="col-4">
+                            <label for="inputAddress5" class="form-label">Brgy</label>
+                            <input type="text" class="form-control" id="Add_txtBrgy" list="dtBrgyList" name="Brgy" >
+                            <datalist id="dtBrgyList"></datalist>
+                        </div>
+                        <div class="col-4">
+                            <label for="inputAddress5" class="form-label">District</label>
+                            <input type="text" class="form-control" id="Add_txtDistrict" >
+                        </div>
+                        <div class="col-4">
+                            <label for="inputAddress5" class="form-label">Zip Code</label>
+                            <input type="text" class="form-control" id="Add_txtZipCode" disabled>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="Add_chkDefault">
+                                <label class="form-check-label" for="gridCheck">
+                                    Default
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary add-VendorATC">Add</button>
+                </div>
+            </div>
+
+            break;
+
+
+        case "EDIT":
+
+
+
+            break;
+
+    }
+}
+
+<script type="text/javascript">
+
+    $("input[name=city]").on('change', function () {
+
+        ClearText("Add_txtAddressNo"); ClearText("Add_txtStreet");
+        ClearText("Add_txtBrgy"); ClearText("Add_txtDistrict");
+        ClearText("Add_txtZipCode");
+
+        var dataId = $("#dtCityList option[value='" + $(this).val() + "']").data("id");
+
+        //alert(dataId);
+
+        $.ajax({
+            //url: '/PaymentRequest/GetCompanylist/',
+            type: "GET",
+            url: '/VendorMaintenance/GetBrgyListByCityCode/',
+            data: {
+                CityCode: dataId,
+            },
+            dataType: "json",
+            success: function (data) {
+                //response($.map(data, function (item) {
+                //    return item;
+
+                //}))
+                //alert("s");
+                if (data.length > 0) {
+                    document.getElementById("Add_txtAddressNo").removeAttribute("disabled");
+                    document.getElementById("Add_txtStreet").removeAttribute("disabled");
+                    document.getElementById("Add_txtBrgy").removeAttribute("disabled");
+                    document.getElementById("Add_txtDistrict").removeAttribute("disabled");
+                }
+                var s = '';
+                for (var i = 0; i < data.length; i++) {
+                    //console.log(data[i])
+                    s += '<option value="' + data[i].BrgyName + '" data-id="' + data[i].CityCode + '"></option>';
+                }
+                $("#dtBrgyList").html(s);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            },
+            failure: function (response) {
+                alert("failure " + response.responseText);
+            }
+        });
+    });
+
+    $("input[name=province]").on('change', function () {
+        ClearText("Add_txtAddressNo");
+        ClearText("Add_txtCity");
+        ClearText("Add_txtStreet");
+        ClearText("Add_txtStreet");
+        ClearText("Add_txtBrgy");
+        ClearText("Add_txtDistrict");
+        ClearText("Add_txtZipCode");
+
+        //DisableTxt("Add_txtAddressNo");
+        //DisableTxt("Add_txtCity");
+        //DisableTxt("Add_txtStreet");
+        //DisableTxt("Add_txtStreet");
+        //DisableTxt("Add_txtBrgy");
+        //DisableTxt("Add_txtDistrict");
+        //DisableTxt("Add_txtZipCode");
+
+        //var optionElement = $("#dtProvinceList option[value='" + $(this).val() + "']");
+        var dataId = $("#dtProvinceList option[value='" + $(this).val() + "']").data("id");
+
+        //alert(dataId);
+        $.ajax({
+            //url: '/PaymentRequest/GetCompanylist/',
+            type: "GET",
+            url: '/VendorMaintenance/GetCityListByProvinceCode/',
+            data: {
+                ProvinceCode: dataId,
+            },
+            dataType: "json",
+            success: function (data) {
+                //response($.map(data, function (item) {
+                //    return item;
+
+                //}))
+                //alert("s");
+                if (data.length > 0) {
+                    document.getElementById("Add_txtCity").removeAttribute("disabled");
+                }
+                var s = '';
+                for (var i = 0; i < data.length; i++) {
+                    //console.log(data[i])
+                    s += '<option value="' + data[i].CityName + '" data-id="' + data[i].CityCode + '"></option>';
+                }
+                $("#dtCityList").html(s);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            },
+            failure: function (response) {
+                alert("failure " + response.responseText);
+            }
+
+        });
+        // alert("ok");
+        //document.getElementById("Add_txtProvince").removeAttribute("disabled");
+        //clear fields
+
+    });
+
+    function DisableTxt(txtID) {
+        document.getElementById(txtID).disabled = true;
+    }
+    function ClearText(txtID) {
+        document.getElementById(txtID).value = "";
+    }
+                //$(function () {
+                //     $("#Btn_partial").click(function () {
+                //                //var customerId = $(this).closest("tr").find("td").eq(0).html();
+                //                //var Test = document.getElementById("adrs_type").value;
+                //                //alert(Test);
+                //                //$("#Testing_return").val(Test);
+                //                // document.getElementById("Testing_return").innerHTML = Test;
+                //                //$("#CreateAddressPartialModal").modal('hide');
+                //            });
+                //});
+</script>
+

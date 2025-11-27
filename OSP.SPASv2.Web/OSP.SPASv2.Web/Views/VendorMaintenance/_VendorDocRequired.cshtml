@@ -1,0 +1,140 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+@{
+
+    switch (Model.SelectedDiv.ToUpper())
+    {
+
+        case "CREATE":
+
+            <div class="modal-header">
+                <h5 class="modal-title">Add Required Documents</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <label for="inputName5" class="form-label">Document Type</label>
+                    <div class="col-sm-10">
+                        @Html.DropDownListFor(model => model.RefVendorDocsList, new SelectList(Model.RefVendorDocsList,"DocCode","DocDesc"), "-- SELECT DOCUMENT TYPE --", htmlAttributes: new { @class = "form-select", @id="CmbRequiredVendorDocs_Add"})
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputNumber" class="form-label">File Upload</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="file" id="txtUploadedFile_Add" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputNumber" class="form-label">Validity</label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" id="dtpValidity_Add">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary add-VendorRequiredDocs">Add</button>
+            </div>
+
+            break;
+
+        case "EDIT":
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Required Documents</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <label for="inputName5" class="form-label">Document Type</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" name="SelectedVendorDoc" value="" id="CmbRequiredVendorDocs_Edit">
+                            @foreach (var item in Model.RefVendorDocsList)
+                            {
+                                if (item.DocCode == Model.TblVendorDocRequired.DocCode)
+                                {
+                                    <option value=@item.DocCode selected>@item.DocDesc</option>
+                                }
+                                else
+                                {
+                                    <option value=@item.DocCode>@item.DocDesc</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputNumber" class="form-label">File Upload</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="file" id="txtUploadedFile_Edit" value=@Model.TblVendorDocRequired.FIleName>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputNumber" class="form-label">Validity</label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" id="dtpValidity_Edit" value=@Model.TblVendorDocRequired.Validity>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary edit-VendorRequiredDocs">Add</button>
+            </div>
+
+            break;
+
+        default:
+
+
+            break;
+
+    }
+
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".add-VendorRequiredDocs").click(function () {
+
+            const DocCode = document.getElementById("CmbRequiredVendorDocs_Add").value;
+            const DocType = document.getElementById("CmbRequiredVendorDocs_Add").options[document.getElementById("CmbRequiredVendorDocs_Add").selectedIndex].text;
+            const FileType = document.getElementById("txtUploadedFile_Add").files[0].name.split('.').pop();
+            const ValidityDate = document.getElementById("dtpValidity_Add").value;
+            const FilePath = document.getElementById("txtUploadedFile_Add").value;
+
+            //console.log(document.getElementById("txtUploadedFile_Add").value);
+
+            //var table = document.getElementById("Tbl_AttachedDoc");
+            var table_len = document.getElementById("Tbl_VendorRequiredDocs").rows.length;
+            const Module = "Required Attached Documents";
+            const tableName = "Tbl_VendorRequiredDocs";
+
+            //var markup = "<tr><td><input type='checkbox' name='record'></td><td id='BankAcctType_row" + table_len + "'>"
+            var markup = "<tr id='ReqAttachedDocs_TR_" + table_len + "'><td hidden>" //"<tr><td id='row_no" + table_len + "'>"
+                + DocCode +
+                "</td><td hidden>"
+                + FilePath +
+                "</td><td>"
+                + "<a href='#'>" + DocType + "</a>" +
+                "</td><td>"
+                + FileType +
+                "</td><td>"
+                + ValidityDate +
+                "</td><td>"
+                + "<a onclick='edit_row(ReqAttachedDocs_TR_" + table_len + ",\"Vendor Required Documents\")'> <i class='bi bi-pencil-square fa-lg'></i> </a>  <a onclick='delete_row(ReqAttachedDocs_TR_" + table_len + "," + document.getElementById("Tbl_VendorRequiredDocs").getAttribute("id") + ",\"" + Module + "\")'> <i class='bi bi-x-square fa-lg' style='color: red'></i> </a>" +
+                "</td>"
+            //+ ZipCode +
+            "</tr>";
+            //alert(tableName);
+            $("#Tbl_VendorRequiredDocs").append(markup);
+            $('#Generic_Modal').modal('toggle');
+        });
+    });
+
+</script>

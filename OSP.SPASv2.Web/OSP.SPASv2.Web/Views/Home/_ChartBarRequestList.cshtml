@@ -1,0 +1,67 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.DashBoardViewModel
+
+@{
+    Layout = null;
+}
+
+<table class="table table-borderless  table-striped " id="dtDisplay" style="min-height:100px;">
+    <thead>
+        <tr>
+            <th>
+                <center>#</center>
+            </th>
+            <th>
+                <span class="spanFilter">Vendor</span>
+            </th>
+            <th> Requested
+            </th>
+            <th>
+                Credited
+            </th>
+            @* <th >
+            Credit Amount
+            </th>*@
+
+        </tr>
+    </thead>
+    <tbody id="listbody">
+        @for (int i = 0; i < Model.BarCharRequestList.Count; i++)
+        {
+            <tr>
+                <td>
+                    <b style="color:darkslateblue;">Top @(i + 1)</b>
+                </td>
+
+                <td>
+                    @Model.BarCharRequestList[i]
+                </td>
+
+                <td>
+                    <div class="moneyData">
+                    <div class="currencySymbol" style="text-align:right; ">
+                            @string.Format("₱{0:#,0.00##}", Model.BarChartRequestData[i]) <br>
+                    </div>
+                    </div>
+
+                </td>
+                <td>
+                    <div class="moneyData">
+                        <div class="currencySymbol" style="text-align:right; ">
+                            @string.Format("₱{0:#,0.00##}", Model.BarChartCreditedData[i])<br>
+                        </div>
+                    </div>
+
+                </td>
+
+                @* <td class="money">
+            <div class="currencySymbol" style="text-align:right; margin-right:50px;">
+            &#8369 @string.Format("{0:#,0.00##}", Model.ChartCreditedAmount[i])
+            </div>
+
+            </td>*@
+
+            </tr>
+        }
+    </tbody>
+</table>

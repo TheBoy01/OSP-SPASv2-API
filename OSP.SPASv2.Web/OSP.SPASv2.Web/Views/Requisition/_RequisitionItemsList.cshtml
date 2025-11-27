@@ -1,0 +1,345 @@
+﻿@using OSP.SPASv2.Web.Models;
+@model SPASv2.Models.RequisitionViewModel
+@{
+    Layout = null;
+}
+
+<style>
+    .SumHead {
+        color: #012970 !important;
+    }
+
+    .SumVal {
+        text-align: right !important;
+        color: #012970 !important;
+    }
+</style>
+
+<table class="table table-bordered" id="@Model.ItemListName" style="width:100%">
+    <thead>
+
+        <tr>
+            @if (Model.showAddItemButton)
+            {
+                <th>
+                </th>
+            }
+            <th>
+                Company Type
+            </th>
+            <th>
+                Department
+            </th>
+            <th>
+                @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().ItemDesc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().UOM)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Qty)
+            </th>
+            @if (Model.showItemBalance)
+            {
+                <th>
+                    Approved
+                </th>
+                <th>
+                    Pending
+                </th>
+
+                <th>
+                    Balance
+                </th>
+            }
+
+            <th>
+                @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Discount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().TotalAmt)
+            </th>
+            @if (!Model.showItemBalance)
+            {
+                <th>
+                    Freight
+                </th>
+            }
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model.RequisitionItemList.Where(t => t.ReqNo == Model.PRNo).ToList())
+        {
+            decimal freightPerUnit = Model.Freight > 0 ? Model.Freight / Model.RequisitionItemList.Sum(t => t.Quantity) : 0;
+            string FreightPerUnit = string.Format("{0:N2}", freightPerUnit);
+
+            <tr>
+                @if (Model.showAddItemButton)
+                {
+                    <td>
+                        <a class="btn text-danger linkbutton" onclick="removeItem('@item.ItemCode')" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Remove" style="padding:0px;">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                }
+                <td>@item.CompanyType</td>
+                <td>@item.DeptDesc</td>
+                <td>
+                    @item.Item
+                </td>
+
+                <td>
+                    @item.Unit
+                </td>
+
+
+                <td class="money">
+
+                    &#8369 @string.Format("{0:#,0.00##}", item.Price)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(m=>item.Quantity)
+                </td>
+
+                @if (Model.showItemBalance)
+                { 
+                    int MainQty = Model.RequisitionItemList.Where(t => t.ReqNo == Model.RequisitionInfo.MainReqNo && t.Item == item.Item && t.DeptCode == item.DeptCode).Sum(t => t.Quantity);
+                    int ItemQty = Model.RequisitionItemList.Where(t => t.ReqNo != Model.RequisitionInfo.MainReqNo && t.Item == item.Item && t.DeptCode == item.DeptCode  && t.isDeduct).Sum(t => t.Quantity);
+                    int PendingQty = Model.RequisitionItemList.Where(t => t.ReqNo != Model.RequisitionInfo.MainReqNo && t.Item == item.Item && t.DeptCode == item.DeptCode && t.isDeduct == false).Sum(t => t.Quantity);
+                    int Bal = MainQty - ItemQty;
+
+                    string strItemQty = ItemQty > 0 ? ItemQty.ToString() : "-";
+                    string strPendingQty = PendingQty > 0 ? PendingQty.ToString() : "-";
+                    string strBal = Bal > 0 ? Bal.ToString() : "-";
+
+                    <td>
+                        <center>
+                        <a class="text-danger">@strItemQty</a>
+                        </center>
+                    </td>
+
+                    <td>
+                        <center>
+                        <a class="text-danger">@strPendingQty</a>
+                        </center>
+                    </td>
+
+                    <td>
+                        <center>
+                        <a class="text-danger">@strBal</a>
+                        </center>
+                    </td>
+                }
+                @if (item.Discount == 0)
+                {
+                    <td class="money">-</td>
+                }
+                else
+                {
+                    <td class="money">
+                        &#8369 @string.Format("{0:N2}", item.Discount)
+                    </td>
+                }
+
+
+
+                <td class="money">
+
+                    &#8369 @string.Format("{0:N2}", item.TotalAmount)
+                </td>
+
+                @if (!Model.showItemBalance)
+                {
+                    <td class="money">
+
+                        &#8369  @string.Format("{0:N2}", item.Freight)
+                    </td>
+                }
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+    <center>
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span asp-validation-for="RequisitionItemList" class="text-danger"></span>
+    </center>
+</div>
+
+@{
+    List<RequisitionItemChapelSummary> _itemSummary = new List<RequisitionItemChapelSummary>();
+
+    @foreach (var item in Model.RequisitionItemList.Where(t => t.ReqNo == Model.PRNo).OrderBy(t=>t.DeptDesc).ToList())
+    {
+        RequisitionItemChapelSummary DeptSummary = _itemSummary.Where(t => t.Department == item.DeptDesc).FirstOrDefault();
+
+        if (DeptSummary == null)
+        {
+            _itemSummary.Add(new RequisitionItemChapelSummary() { Department = item.DeptDesc, Qty = item.Quantity, Amount = item.TotalAmount, Freight = item.Freight });
+        }
+
+        else
+        {
+            DeptSummary.Qty = DeptSummary.Qty + item.Quantity;
+            DeptSummary.Amount = DeptSummary.Amount + item.TotalAmount;
+            DeptSummary.Freight = DeptSummary.Freight + item.Freight;
+        }
+    }
+}
+<p style="margin-top: 30px;margin-bottom: 10px;">
+    <b style="font-size: large;">Department Summary</b>
+    </p>
+<table class="table" id="@Html.Raw(Model.ItemListName)S" style="width:100%">
+    <thead>
+        <tr>
+            <th style="background-color:#2f66aa94; color:white !important;">Department</th>
+            <th style="background-color:#2f66aa94; color:white !important;"><center>Total Quantity</center></th>
+            <th style="text-align:right !important; background-color:#2f66aa94; color:white !important;">Total Amount</th>
+            @if (!Model.showItemBalance)
+                {
+            <th style="text-align:right !important; background-color:#2f66aa94; color:white !important;">Total Freight</th>
+                }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in _itemSummary)
+            {
+                <tr>
+                    <td>@item.Department</td>
+                    <td><center>@item.Qty</center></td>
+                    <td class="money">&#8369 @string.Format("{0:N2}", item.Amount)</td>
+                    @if (!Model.showItemBalance)
+                    {
+                        <td class="money">&#8369 @string.Format("{0:N2}", item.Freight)</td>
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+
+<div class="row">
+    <div class="col"></div>
+    <div class="col">
+
+        <table class="table table-sm table-responsive text-nowrap" style="min-width:250px;">
+            @{
+                decimal TotGross = Model.RequisitionItemList.Where(a => a.ReqNo == Model.PRNo).Sum(t => t.TotalAmount);
+                decimal TotDiscount = Model.RequisitionItemList.Where(a => a.ReqNo == Model.PRNo).Sum(t => t.Discount);
+                decimal TotTax = Model.RequisitionItemList.Where(a => a.ReqNo == Model.PRNo).Sum(t => t.Vat);
+                decimal TotNetOfVat = Model.RequisitionItemList.Where(a => a.ReqNo == Model.PRNo).Sum(t => t.NetOfVat);
+                decimal TotNetOfDiscount = TotGross - TotDiscount;
+                decimal TotNetOfDeduction = TotNetOfDiscount - Model.RequisitionInfo.Deduction + Model.Freight;
+                int TotQty = Model.RequisitionItemList.Where(a => a.ReqNo == Model.PRNo).Sum(t => t.Quantity);
+
+                string Gross = string.Format("{0:N2}", TotGross);
+                string Discount = string.Format("{0:N2}", TotDiscount);
+                string Tax = string.Format("{0:N2}", TotTax);
+                string Deduction = string.Format("{0:N2}", Model.RequisitionInfo.Deduction);
+                string NetOfVat = string.Format("{0:N2}", TotNetOfVat);
+                string NetOfDiscount = string.Format("{0:N2}", TotNetOfDiscount);
+                string NetOfDeduction = string.Format("{0:N2}", TotNetOfDeduction);
+                string Freight = string.Format("{0:N2}", Model.Freight);
+
+                Deduction = Model.RequisitionInfo.Deduction <= 0 ? "-" : ("-" + Deduction);
+                Freight = Model.Freight <= 0 ? "-" : Freight;
+                Discount = TotDiscount <= 0 ? "-" : Discount;
+            }
+            <tbody>
+                <tr><td colspan="2" style="background-color:#2f66aa94; color:white;">Summary</td></tr>
+                <tr>
+                    <td class="SumHead"><b>Quantity:</b></td>
+                    <td class="SumVal"> @TotQty </td>
+                </tr>
+                <tr>
+                    <td class="SumHead"><b>Gross:</b></td>
+                    <td class="SumVal"> @Gross </td>
+                </tr>
+                <tr>
+                    <td class="SumHead"><b>Tax:</b></td>
+                    <td class="SumVal">@Tax </td>
+                </tr>
+                <tr>
+                    <td class="SumHead"><b>Net of Vat:</b></td>
+                    <td class="SumVal">@NetOfVat</td>
+                </tr>
+                <tr>
+                    <td class="SumHead"><b>Discount:</b></td>
+                    <td class="SumVal"> @Discount </td>
+                </tr>
+                <tr>
+                    <td class="SumHead"><b>Net of Discount</b></td>
+                    <td class="SumVal"><b style="border-bottom-style:double;">@NetOfDiscount</b> </td>
+                </tr>
+                @if (!Model.showItemBalance) /*(Model.RequisitionInfo.ReqNo != Model.RequisitionInfo.MainReqNo || Model.isCreatePayment)*/
+                {
+                    <tr>
+                        <td class="SumHead"><b>Freight</b></td>
+                        <td class="SumVal">@Freight </td>
+                    </tr>
+                    <tr>
+                        <td class="SumHead"><b>Deduction</b></td>
+                        <td class="SumVal">@Deduction </td>
+                    </tr>
+                    <tr>
+                        <td class="SumHead"><b>Net of Charges:</b></td>
+                        <td class="SumVal"> <b style="border-bottom-style:solid">@NetOfDeduction</b></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col"></div>
+</div>
+
+<script>    
+    new DataTable('#@Html.Raw(Model.ItemListName)', {
+        responsive: true
+    });
+
+    new DataTable('#@Html.Raw(Model.ItemListName)S', {
+        responsive: true
+    });
+
+    var itemToDelete;
+
+    function ConfirmRemoveItem() {
+        var id = itemToDelete
+
+        for (var i = 0; i < reqItems.length; i++) {
+            if (reqItems[i].ItemCode === id) {
+                reqItems.splice(i, 1);
+                break;
+            }
+        }
+
+        RefreshItemList();
+    }
+
+    function removeItem(id) {
+        itemToDelete = id;
+        ShowAlert(
+            {
+                title: "Requisition?",
+                text: "Are you sure you want to remove item/service?",
+                icon: "question",
+                showCancelButton: "true",
+                confirmButtonText: "Yes!",
+                successmethod: "ConfirmRemoveItem()"
+            });
+
+
+    }
+
+
+</script>

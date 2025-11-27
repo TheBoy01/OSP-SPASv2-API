@@ -1,0 +1,587 @@
+﻿@using Newtonsoft.Json;
+@*@model IEnumerable<SPASv2.Models.PaymentRequestModel>*@
+@model SPASv2.Models.BatchRequisitionViewModel
+@{
+    ViewData["Title"] = "List of Payment Requisition";
+}
+
+@*<h1>View</h1>*@
+
+@*<p>
+    <a asp-action="Create">Create New</a>
+</p>*@
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Batch Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item">Batch</li>
+                <li class="breadcrumb-item active">List</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Recent Sales -->
+
+    <div class="col-12">
+        <div class="card recent-sales overflow-auto mt-1">
+            <div class="card-body">
+                @await Html.PartialAsync("/Views/Requisition/_FilterOption.cshtml", Model.RequisitionViewModel)
+
+                @* <div class="card-title mb-2">
+                <a class="card-title">List of Requisition</a>
+                </div>*@
+                <div class=" btn-group" role="group" aria-label="Basic outlined example" style="margin-right:10px;">
+
+                    <button type="button" id="allcb" class=" btn btn-outline-primary"><i class="bi bi-list-check"></i><span id="btnLabel">Select all</span></button>
+
+                    <button id="BatchRequisition" type="button" onclick="location.href='@Url.Action("Create", "BatchRequisition")'" class="btn btn-outline-primary"><i class="bi bi-plus-circle"></i> Create Requisition </button>
+                    <button id="PRBatch" type="button" onclick="GoToBatchPaymentUploading()" class="btn btn-outline-primary"><i class="bi bi-cloud-upload-fill"></i> Upload Payment</button>
+                    <button id="DlTemplate" type="button" onclick="CreateTemplate()" class="btn btn-outline-primary"><i class="bi bi-cloud-download"></i> Download Template</button>
+
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Upload Attachment
+                        </button>
+                        <ul class="dropdown-menu" style="">
+                            <li> <button id="UploadAttachment" type="button" class="btn btn-outline-primary"><i class="ri-attachment-2"></i>Upload Attachments</button> </li>
+                            <li> <button id="DlFolderTemplate" type="button" onclick="DownloadFolderTemplate()" class="btn btn-outline-primary"><i class="bi bi-cloud-download"></i>Download Folder Template</button> </li>
+                        </ul>
+                    </div>
+
+
+                    <input hidden type="file" id="btnSelectFile" name="btnSelectFile" onchange="UploadAttachments(event);" multiple="multiple"
+                           webkitdirectory mozdirectory msdirectory odirectory directory>
+
+
+                    <form id="frmDlTemplate" asp-action="ExportDataTabletoExcel" asp-controller="BatchRequisition" method="post">
+                        <input type="hidden" name="htmlTable" />
+                        <input type="submit" id="btnSubmit" value="Export To Excel " class="btn btn-primary" hidden />
+                    </form>
+
+                </div>
+                <div class="count-checkboxes-wrapper">
+                    <span id="count-checked-checkboxes">0</span> checked
+                </div>
+                @*<a class="btn btn-primary float-end" style="margin-right:10px;" id="BtnCreateBatch" onclick="CreateBatchClick(this)"> Create Batch Requisition </a>*@
+                <br /><br />
+                @*<input hidden type="file" id="btnOpenFile" name="btnOpenFile" accept="application/vnd.ms-excel" onchange="ReadTemplate(this)">
+                <input hidden type="file" id="btnSelectFile" name="btnSelectFile" onchange="selectFolder(event);" multiple="multiple"
+                webkitdirectory mozdirectory msdirectory odirectory directory>*@
+                @*<table class="table table-borderless table-striped nowrap" id="dtActiveBatchPR" style="min-height:200px; width:100%;">*@
+
+                <div id="divRequisitionList">
+                    @{
+                        //Model.RequisitionViewModel = new RequisitionViewModel();
+                        //Model.RequisitionViewModel.dashboardViewModel = new DashBoardViewModel();
+                        //Model.RequisitionViewModel.dashboardViewModel.RequestList = new List<qryRequestPaymentRequestbyStatus>();
+                        Model.RequisitionViewModel.ListCheck = true;
+                        Model.RequisitionViewModel.ListCheckID = "SelectedPO";
+                        //        qryRequestPaymentRequestbyStatus _data = new qryRequestPaymentRequestbyStatus()
+                        //        {
+                        //            RequestID = "PR0001",
+                        //            Amount = 100000,
+                        //            Status = "For Payment Request",
+                        //            Vendor = "ABELLA METALCRAFT",
+                        //                        RequestDate = DateTime.Now,
+                        //            PayClass = "LOCAL OURSOURCE CASKET",
+                        //            BatchPRNo = "BN0001",
+                        //            CompanyType = "CHAPELS",
+                        //            DeptDesc = "ABRA",
+                        //            PayMethodType = "GCASH",
+                        //PONo = "PO-SPLPIABRA2310-000003",
+
+                        //        };
+
+                        //        qryRequestPaymentRequestbyStatus _data2 = new qryRequestPaymentRequestbyStatus()
+                        //        {
+                        //            RequestID = "PR0002",
+                        //            Amount = 100000,
+                        //            Status = "For Payment Request",
+                        //            Vendor = "ABELLA METALCRAFT",
+                        //                        RequestDate = DateTime.Now,
+                        //            PayClass = "LOCAL OURSOURCE CASKET",
+                        //            BatchPRNo = "BN0001",
+                        //            CompanyType = "CHAPELS",
+                        //            DeptDesc = "ALABAT",
+                        //            PayMethodType = "GCASH",
+                        //            PONo = "PO-SPLPIALABAT2310-000003"
+
+                        //        };
+
+                        //        qryRequestPaymentRequestbyStatus _data3 = new qryRequestPaymentRequestbyStatus()
+                        //        {
+                        //            RequestID = "PR0003",
+                        //            Amount = 100000,
+                        //            Status = "For Payment Request",
+                        //            Vendor = "ABELLA METALCRAFT",
+                        //            RequestDate = DateTime.Now,
+                        //            PayClass = "LOCAL OURSOURCE CASKET",
+                        //            BatchPRNo = "BN0001",
+                        //            CompanyType = "CHAPELS",
+                        //            DeptDesc = "CUBAO",
+                        //            PayMethodType = "GCASH",
+                        //            PONo = "PO-SPLPICUBAO2310-000007"
+                        //        };
+
+                        //Model.RequisitionViewModel.dashboardViewModel.RequestList.Add(_data);
+                        //Model.RequisitionViewModel.dashboardViewModel.RequestList.Add(_data2);
+                        //Model.RequisitionViewModel.dashboardViewModel.RequestList.Add(_data3);
+
+                        //Model.RequisitionViewModel.ListHidenColumns.Add("RequestNo");
+                        await Html.RenderPartialAsync("/Views/Requisition/_RequisitionList.cshtml", Model.RequisitionViewModel);
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div><!-- End Recent Sales -->
+</main>
+
+
+<script>
+
+    $('#UploadAttachment').click(function () {
+        $('#btnSelectFile').click();
+    });
+
+    var Filters = [];
+    function RefreshRequisitionList() {
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/GetRequisitionList",
+            data: { Filters: JSON.stringify(Filters) },
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (response) {
+                $("#divRequisitionList").html(response);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    $(function () {
+        $("#btnSubmit").click(function () {
+
+            let POList = [];
+
+            //var table = document.getElementById("dtReqList");
+            //for (var i = 1, row; row = table.rows[i]; i++) {
+
+            //    var PO = row.cells[4].innerHTML;
+
+            //    var v2 = row.cells[0];
+            //    var checkbox = v2.getElementsByTagName("input")[0];
+            //    var checked = checkbox.checked;
+            //    if (checked) {
+            //        POList.push(row.cells[4].innerHTML);
+            //    }
+            //}
+
+            //$("input[name='htmlTable']").val(POList);
+
+            var checkedBoxes = document.querySelectorAll('input[id="SelectedRecord"]:checked');
+            checkedBoxes.forEach(chk => {
+                chk.closest("tr").querySelectorAll('td:not(:first-child)').forEach((td, index) => {
+                    // alert(index + ' ' + td.innerHTML);
+                    if (index == 3) {
+                        POList.push(td.innerHTML);
+                    }
+                });
+            })
+
+            $("input[name='htmlTable']").val(POList);
+
+        })
+    })
+
+
+    //$('#frmDlTemplate').on('submit', function (e) {
+
+
+    //    let POList = [];
+
+    //    var table = document.getElementById("dtReqList");
+    //    for (var i = 1, row; row = table.rows[i]; i++) {
+
+    //        var PO = row.cells[4].innerHTML;
+
+    //        var v2 = row.cells[0];
+    //        var checkbox = v2.getElementsByTagName("input")[0];
+    //        var checked = checkbox.checked;
+    //        if (checked) {
+    //            if (row.cells[4].innerHTML != "") {
+
+    //                POList.push(row.cells[4].innerHTML);
+    //            }
+    //        }
+    //    }
+
+    //    $("input[name='htmlTable']").val(POList);
+
+    //    alert($("input[name='htmlTable']").val());
+
+    //    if (POList.length <= 0) {
+    //        ShowAlert(
+    //            {
+    //                title: "Error",
+    //                text: "Please select requisition with PO",
+    //                icon: "error",
+    //                //successmethod: "RedirectToBatchPaymentEntry()",
+    //            });
+    //        e.preventDefault();
+    //        return;
+    //    }
+
+    //    ShowAlert(
+    //        {
+    //            title: "Success",
+    //            text: "Template successfully downloaded!",
+    //            icon: "success",
+    //            //successmethod: "RedirectToBatchPaymentEntry()",
+    //        });
+
+    //});
+
+    //$(function () {
+    //    $("#btnSubmit").click(function () {
+
+    //
+    //    })
+    //})
+</script>
+
+<script>
+    new DataTable('#dtActiveBatchPR', {
+        responsive: true
+    });
+
+    var RequestFiles;
+    function UploadAttachments(e) {
+        var ReqNoList = [];
+
+        var checkedBoxes = document.querySelectorAll('input[id="SelectedRecord"]:checked');
+        checkedBoxes.forEach(chk => {
+            chk.closest("tr").querySelectorAll('td:not(:first-child)').forEach((td, index) => {
+                if (index == 1) {
+                    ReqNoList.push(td.innerHTML);
+                }
+            });
+        })
+
+        //var prnolist = JSON.stringify(ReqNoList);
+        //console.log(prnolist);
+
+        var fileData = new FormData();
+        RequestFiles = e.target.files;
+
+        for (var i = 0; i < RequestFiles.length; i++) {
+
+            fileData.append("files", RequestFiles[i]);
+        }
+
+
+        fileData.append("prnolist", JSON.stringify(ReqNoList));
+        //fileData.append("vm", JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model))));
+
+        if (ReqNoList.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/UploadFileList",
+                processData: false,
+                contentType: false,
+                dataType: 'html',
+                data: fileData,
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                success: function (result) {
+                    alert("Attachment Uploaded!");
+                },
+                error: function (xhr, status, error) {
+                    //ShowAlert(
+                    //    {
+                    //        title: 'Error',
+                    //        text: error,
+                    //        icon: 'error'
+                    //    });
+                    alert(error);
+                },
+                complete: function (data) {
+                    $("#loader").modal("hide");
+                }
+            });
+        } 
+    }
+
+    function DownloadFolderTemplate() {
+
+        var ReqNoList = [];
+
+        var checkedBoxes = document.querySelectorAll('input[id="SelectedRecord"]:checked');
+        checkedBoxes.forEach(chk => {
+            chk.closest("tr").querySelectorAll('td:not(:first-child)').forEach((td, index) => {
+                if (index == 1) {
+                    ReqNoList.push(td.innerHTML);
+                }
+            });
+        })
+
+        var ReqList = JSON.stringify(ReqNoList);
+         
+        if (ReqNoList.length > 0) {
+
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/CreateFolderTemplate",
+                data: { ReqNoList: ReqList },
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                success: function (result) {
+                    if (result != '') {
+                        alert("Download Folder Template Success! " + result);
+                        //var devtype = document.getElementById("devt").innerHTML;
+                        //alert(devtype);
+                        //if (devtype == "Development") {
+                        //window.location.href = "file:" + "//192.168.23.185/SPASv2/wwwroot/Files/WINRAR/" + result;
+                        //window.open("file://asd", '_blank');
+                        //}
+                        //else {
+                        window.location.href = '/Files/WINRAR/' + result;
+                        //}
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //ShowAlert(
+                    //    {
+                    //        title: 'Error',
+                    //        text: error,
+                    //        icon: 'error'
+                    //    });
+                    alert(error);
+                },
+                complete: function (data) {
+                    $("#loader").modal("hide");
+                }
+            });
+        }
+        //alert(ReqList); 
+       
+    }
+
+    function GoToBatchPaymentUploading() {
+        var POList = [];
+
+        var checkedBoxes = document.querySelectorAll('input[id="SelectedRecord"]:checked');
+        checkedBoxes.forEach(chk => {
+            chk.closest("tr").querySelectorAll('td:not(:first-child)').forEach((td, index) => {
+                // alert(index + ' ' + td.innerHTML);
+                if (index == 3) {
+                    POList.push(td.innerHTML);
+                }
+            });
+        })
+        // alert("My favourite sports are: " + favorite.join(", "));
+        //alert(JSON.stringify(POList));
+
+        var PO = JSON.stringify(POList);
+
+        if (PO != undefined || PO != "") {
+            $.ajax({
+                type: "POST",
+                url: '/BatchRequisition/BatchRequisitionPayment',
+                data: { POList: PO },
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                //datatype: 'json',
+                success: function (response) {
+                    // Redirect to the URL received from the server
+                    //alert(response.redirectUrl);
+                    window.location.href = response.redirectUrl;
+                },
+                error: function (xhr, status, error) {
+                    // Handle errors if any
+                    console.error(xhr.responseText);
+                }
+            });
+            return;
+        }
+        else {
+            window.location.href = 'Url.Action("ForPayment", "BatchRequisition")';
+        }
+
+
+
+        //window.location.href = '/BatchRequisition/BatchRequisitionPayment?POList=' + PO + '&Model=' + VM;
+
+        //$.ajax({
+        //    type: 'POST',
+        //    url: '/BatchRequisition/BatchRequisition',
+        //    data: { POList: PO, Model: VM },
+        //    datatype: 'json',
+        //    success: function (data) {
+
+        //        //var a = document.createElement('a');
+
+        //        //var url = window.URL.createObjectURL(data);
+        //        //alert('test');
+        //        //a.href = url;
+        //        ////a.download = 'myfile.xls';
+
+        //        //document.body.append(a);
+        //        //a.click();
+        //        //a.remove();
+        //        //window.URL.revokeObjectURL(url);
+        //    },
+        //    error: function (result) {
+        //    }
+        //});
+
+
+        //ShowAlert({
+        //    title: 'Creating Template',
+        //    text: "Do you want to create template for the selected purchase orders?",
+        //    icon: 'question',
+        //    showCancelButton: true,
+        //    successmethod: "CreateTemplate()",
+        //    cancelmethod: "RedirectToBatchPaymentEntry()",
+        //    cancelButtonText: "No, proceed to uploading",
+        //    confirmButtonText: "Yes, create template"
+        //})
+        //window.location.href = 'Url.Action("ForPayment", "BatchRequisition")';
+    }
+
+    function CreateTemplate() {
+        //alert('OH nONO');
+        $('#btnSubmit').click();
+
+    }
+
+    //function RedirectToBatchPaymentEntry() {
+    //    window.location.href = 'Url.Action("ForPayment", "BatchRequisition")'
+    //}
+
+
+
+    //function CheckFunction(e) {
+    //    //var checkBox = document.getElementById("SelectedPO");
+
+    //    // If the checkbox is checked, display the output text
+    //    //if (checkBox.checked == true) {
+    //    //    document.getElementById("BtnCreateBatch").innerHTML = "Create Batch Requisition Template from PO";
+    //    //} else {
+    //    //    document.getElementById("BtnCreateBatch").innerHTML = "Create Batch Requisition";
+    //    //}
+    //    //switch (selectObject.value) {
+
+    //    //    case "Requisition":
+    //    //        document.getElementById("BtnCreateBatch").innerHTML = "Create Batch Requisition";
+    //    //        break;
+
+    //    //    case "PO":
+    //    //        document.getElementById("BtnCreateBatch").innerHTML = "Create Batch Requisition Template from PO";
+    //    //        break;
+
+    //    //    default:
+
+    //    //        break;
+    //    //}
+    //    var checkboxes = $('input:checkbox:checked').length;
+    //    if (checkboxes > 0) {
+    //        document.getElementById("PRBatch").innerHTML = "Create Requisition from PO";
+    //    }
+    //    else {
+    //        document.getElementById("BtnCreateBatch").innerHTML = "Create Requisition";
+    //    }
+    //    //alert(checkboxes);
+    //}
+
+    //function CreateBatchClick(e) {
+    //    switch (e.innerHTML.trimStart().trimEnd()) {
+    //        case "Create Batch Requisition Template from PO":
+    //            window.location = "/BatchRequisition/BatchRFP";
+    //            break;
+
+    //        case "Create Batch Requisition":
+    //            window.location = "/BatchRequisition/BatchRequisition";
+    //            break;
+    //    }
+    //}
+    //
+
+    $('#allcb').click(function () {
+        let btn = document.getElementById("btnLabel").innerText
+
+        if (btn == "Select all") {
+
+            $('tbody tr td input[type="checkbox"]').each(function () {
+                $(this).prop('checked', true);
+            });
+            //alert($('tbody tr td input[type="checkbox"]').filter(':checked').length);
+            document.getElementById("btnLabel").innerHTML = "Unselect all";
+            //document.getElementById("PRBatch").removeAttribute('hidden');
+
+            //document.getElementById("disapproved").disabled = false;
+            //document.getElementById("approved").disabled = false;
+
+
+            // var countCheckedCheckboxes = $checkboxes.filter(':checked').length;
+            $('#count-checked-checkboxes').text($('tbody tr td input[type="checkbox"]').filter(':checked').length);
+
+        }
+        else {
+            $('tbody tr td input[type="checkbox"]').each(function () {
+                $(this).prop('checked', false);
+            });
+            document.getElementById("btnLabel").innerHTML = "Select all";
+            $('#count-checked-checkboxes').text($('tbody tr td input[type="checkbox"]').filter(':checked').length);
+            //$('#count-checked-checkboxes').text("0");
+            //document.getElementById("PRBatch").setAttribute('hidden', true);
+            //document.getElementById("disapproved").disabled = true;
+            //document.getElementById("approved").disabled = true;
+        }
+    });
+
+    var $checkboxes = $('#dtReqList td input[type="checkbox"]');
+    $checkboxes.change(function () {
+        //var countCheckedCheckboxes = $checkboxes.filter(':checked').length;
+        //$('#count-checked-checkboxes').text(countCheckedCheckboxes);
+        // alert($('tbody tr td input[type="checkbox"]').filter(':checked').length);
+        $('#count-checked-checkboxes').text($('tbody tr td input[type="checkbox"]').filter(':checked').length);
+    });
+
+
+
+
+                        //TblDataList
+                        //var myTable = document.getElementById('dtReqList');
+
+                        //// Add a change event listener to the table
+                        //myTable.addEventListener('change', function (event) {
+                        //    // Check if the event target is a checkbox
+                        //    if (event.target.type === 'checkbox') {
+                        //        // This code will be executed when a checkbox in the table is checked or unchecked
+                        //        //alert("hooray!");
+                        //        // var checkboxes = $('input:checkbox:checked').length;
+                        //        var checkboxes = $('input:checkbox:checked').length;
+                        //        if (checkboxes > 0) {
+                        //            document.getElementById("PRBatch").removeAttribute('hidden');
+                        //        }
+                        //        else {
+                        //            document.getElementById("PRBatch").setAttribute('hidden', true);
+                        //        }
+                        //    }
+                        //});
+
+
+
+</script>

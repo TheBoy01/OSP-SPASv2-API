@@ -1,0 +1,157 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+@{
+    Layout = null;
+}
+
+<style>
+
+</style>
+
+<div class="col-12">
+    <div class="card recent-sales overflow-auto" id="cardList">
+        <div class="filter">
+            <button type="button" class="btn btn-outline-primary btn-sm" style="margin-right:20px;padding: 0px; height: 20px;" onclick="RefreshList()"><i class="bx bx-refresh bx-2x"></i> </button>
+            @*<button type="button" class="btn btn-primary btn-sm" style="margin-right:20px;" onclick="RefreshList()"><i class="bx bx-refresh"></i> refresh</button>*@
+           @* <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>*@
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">@Model.RequestListTitle</h5>
+
+            @*<table class="table table-borderless table-striped nowrap" id="dtDisplay" style="min-height:100px; width:100%">*@
+            <table class="table table-borderless table-striped" id="dtDisplay" style="min-height:100px;">
+                <thead>
+                    <tr>
+                        <th>
+                            Request No:
+                        </th>
+                        <th>
+                            @Html.DisplayName("Amount")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Status")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Vendor")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Date")
+                        </th>
+
+                        <th>
+                            @Html.DisplayName("Class")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Reference No")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.RequestList.OrderBy(t=>t.RequestDate).ToList())
+                    {
+                        <tr>
+                            <td scope="row"><a href="Requisition/Details/@item.RequestID">@Convert.ToString(item.RequestID)</a></td>
+                            <td class="money">
+                                <div class="currencySymbol">
+                                    &#8369 @string.Format("{0:#,0.00##}", item.Amount)
+                                </div>
+
+                            </td>
+                            <td>
+                                
+                                @switch (item.Status.ToUpper())
+                                {
+                                    case "APV PREPARATION":
+                                    case "FOR POSTING":
+                                    case "FOR CREDITATION":
+                                    case "APPROVED":
+                                    case "VERIFIED":
+                                    case "FOR PAYMENT":
+                                    default:{
+                                            <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px;
+                                                      white-space: balance !important;
+                                                        min-width: 130px !important;
+                                                      ">
+                                                @item.Status
+                                            </span>
+                                            break;
+                                        }
+
+                                }
+
+                                
+                            </td>
+                            <td>@item.Vendor</td>
+
+                            <td>
+
+                                @item.RequestDate.ToString("MM/dd/yyyy h:mm tt")
+                                </td>
+                            <td>@item.PayClass</td>
+                            <td>@item.RefNo</td>
+                        </tr>
+                    }
+
+                    @*@for (int i = 0; i < 7; i++)
+                    {
+                        <tr>
+                            <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { forapproval=true})">@Convert.ToString("SPLPI-MAYON-23040000")@i</a></td>
+                            <td class="money">
+                                <div class="currencySymbol">&#8369 82,000.00</div>
+
+                            </td>
+                            <td>
+                                <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px;">
+                                    For Verification of Logistics Staff
+                                </span>
+                            </td>
+                            <td>BLACKHOUNDS SECURITY AND INVESTIGATION AGENCY INC.</td>
+
+                            <td>4/19/2023</td>
+                            <td>REPAIRS & MAINTENANCE (OTHERS)</td>
+                        </tr>
+                    }*@
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+<script src="~/template/js/datatableRefresh.js"></script>
+<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7860391.js"></script>
+
+
+<script type="text/javascript">
+
+    new DataTable('#dtDisplay', {
+        responsive: true
+    });
+
+    $(document).ready(function () {
+        
+        
+    });
+
+    function RefreshList() {
+        setRequestStat(reqStat,true);
+
+        
+
+        //Swal.fire({
+        //    position: 'center',
+        //    icon: 'success',
+        //    title: 'Successfully Refreshed!',
+        //    //text: 'List reloaded!',
+        //    showConfirmButton: false,
+        //    timer: 1500
+        //});
+    }
+    
+
+</script>

@@ -1,0 +1,363 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.RequisitionViewModel
+@{
+    Layout = null;
+}
+<script src="~/template/js/datatableRefresh.js"></script>
+<style>
+    /* Adjust the height of the table to show the horizontal scrollbar */
+    .dataTables_scrollBody {
+        height: calc(100vh - 200px); /* Adjust as needed */
+        overflow-x: auto !important;
+    }
+</style>
+<table class="table table-borderless table-striped  " id="dtReqList" style=" width:100%;">
+    <thead class="text-nowrap">
+        <tr>
+            @*<th scope="col">Payment Request No</th>
+            <th scope="col">Payment Class</th>
+            <th scope="col">Supplier</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>*@
+
+            @if (@Model.ListCheck)
+            {
+                <th>
+                </th>
+            }
+
+            @if (!@Model.ListHidenColumns.Contains("BatchNo"))
+            {
+                <th>
+                    Batch No:
+                    @*@Html.DisplayName("Request No:")*@
+                </th>
+            }
+           
+
+            @if (!@Model.ListHidenColumns.Contains("RequestNo"))
+            {
+                <th>
+                    Request No:
+                    @*@Html.DisplayName("Request No:")*@
+                </th>
+            }
+
+             @if (!@Model.ListHidenColumns.Contains("Actions"))
+            {
+                <th>
+                    Actions
+                    @*@Html.DisplayName("Request No:")*@
+                </th>
+            }
+             @if (!@Model.ListHidenColumns.Contains("PONo"))
+            {
+                <th>
+                    P.O. No:
+                @*@Html.DisplayName("Request No:")*@
+            </th>
+            }
+            <th>
+                @Html.DisplayName("Amount")
+            </th>
+            @if (!@Model.ListHidenColumns.Contains("Status"))
+            {
+                <th>
+                    @Html.DisplayName("Status")
+            </th>
+            }
+
+            @if (!@Model.ListHidenColumns.Contains("Vendor"))
+            {
+                <th>
+                    @Html.DisplayName("Vendor")
+                </th>
+            }
+
+            @if (!@Model.ListHidenColumns.Contains("Company"))
+            {
+                <th>
+                    Company
+                </th>
+            }
+
+            @if (!@Model.ListHidenColumns.Contains("DepartmentList") && Model.dashboardViewModel.RequestDepartmentList != null)
+            {
+                <th>
+                    Department
+                </th>
+            }
+
+             
+             @if (!@Model.ListHidenColumns.Contains("RequestDate"))
+            {
+                <th>
+                    @Html.DisplayName("Date")
+            </th>
+            }
+            @if (!@Model.ListHidenColumns.Contains("PayClass"))
+            {
+                <th>
+                    @Html.DisplayName("Class")
+            </th>
+            }
+            @if (!@Model.ListHidenColumns.Contains("Deduction"))
+            {
+                <th>
+                    @Html.DisplayName("Deduction")
+            </th>
+            }
+            @if (!@Model.ListHidenColumns.Contains("Confirmation"))
+            {
+                <th>
+                    @Html.DisplayName("Confirmation Files")
+                </th>
+            }
+
+            @if (!@Model.ListHidenColumns.Contains("RefNo"))
+            {
+                <th>
+                    @Html.DisplayName("RefNo")
+                </th>
+            }
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.dashboardViewModel.RequestList.OrderByDescending(t=>t.RequestDate).ToList())
+        {
+            <tr>
+
+                @if (@Model.ListCheck)
+                {
+                    <td @Model.ListCheck>
+                        <input type="checkbox" id="SelectedRecord" class="myCheckbox" value=@(item.RequestID)>
+                    </td>
+                }
+
+                @if (!@Model.ListHidenColumns.Contains("BatchNo"))
+                {
+                    <td class="" cope="row"> @item.BatchPRNo @*<a href="@Url.Action("Details", "BatchRequisition",new { prno=item.BatchPRNo})">@Convert.ToString(item.BatchPRNo) </a>*@ </td>
+                }
+                 
+                @if (!@Model.ListHidenColumns.Contains("RequestNo"))
+                {
+                    @*<td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { prno=item.RequestID})">@Convert.ToString(item.RequestID)</a></td>*@
+                    <td class=""> @item.RequestID</td>
+                }
+
+                @if (!@Model.ListHidenColumns.Contains("Actions"))
+                {
+                    <td>
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/Requisition/Details/@item.RequestID">View Requisition</a></li>
+                                @if (item.RequestID!= item.MainReqNo)
+                                {
+                                    <li><a class="dropdown-item" href="/Requisition/Details/@item.MainReqNo">View Main Requisition</a></li>
+                                }
+                                @if (!string.IsNullOrEmpty(item.BatchPRNo))
+                                {
+                                    <li><a class="dropdown-item" href="/BatchRequisition/Details/@item.BatchPRNo">Batch Details</a></li>
+                                }
+                                @*  <li><a class="dropdown-item" href="#">Cancel</a></li>*@
+                                @if (!string.IsNullOrEmpty(item.PONo))
+                                {
+                                    <li><a class="dropdown-item" href="/Requisition/CreatePayment/@item.RequestID">Create Payment</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </td>
+                }
+                @if (!@Model.ListHidenColumns.Contains("PONo"))
+                {
+                    <td class="PONo" scope="row">@item.PONo</td>
+                }
+                <td class="money text-nowrap">
+                    <div class="currencySymbol">
+                        &#8369 @string.Format("{0:#,0.00##}", item.Amount)
+                    </div>
+
+                </td>
+                @if (!@Model.ListHidenColumns.Contains("Status"))
+                {
+                    <td>
+
+                        @switch (item.Status.ToUpper())
+                        {
+                            case "APV PREPARATION":
+                            case "FOR POSTING":
+                            case "FOR CREDITATION":
+                            case "APPROVED":
+                            case "VERIFIED":
+                            case "FOR PAYMENT":
+                            default:
+                                {
+                                    <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px;
+                                                      white-space: balance !important;
+                                                        min-width: 130px !important;
+                                                      ">
+                                    @item.Status
+                                </span>
+                                break;
+                            }
+
+                    }
+
+
+                </td>
+                }
+
+                @if (!@Model.ListHidenColumns.Contains("Vendor"))
+                {
+                    <td>
+                        @item.Vendor
+                    @* @item.Vendor*@
+                </td>
+                }
+                @if (!@Model.ListHidenColumns.Contains("Company"))
+                {
+                    <td>
+                        @item.ItemCompany
+                        @* @item.Vendor*@
+                    </td>
+                }
+
+                @if (!@Model.ListHidenColumns.Contains("DepartmentList") && Model.dashboardViewModel.RequestDepartmentList != null)
+                {
+                    <td>
+                        <ul>
+                        @foreach (var deptitem in Model.dashboardViewModel.RequestDepartmentList.Where(t=> t.ReqNo == item.RequestID).ToList())
+                        {
+                            <li>
+                                    @deptitem.DeptDesc
+                            </li>
+                        }
+                        </ul>
+                    </td>
+                }
+
+                @if (!@Model.ListHidenColumns.Contains("RequestDate"))
+                {
+                    <td>
+
+                    @item.RequestDate.ToString("MM/dd/yyyy h:mm tt")
+                </td>
+                }
+                @if (!@Model.ListHidenColumns.Contains("PayClass"))
+                {
+                    <td>
+                        @item.PayClass
+                    </td>
+                }
+                @if (!@Model.ListHidenColumns.Contains("Deduction"))
+                {
+                    <td>
+                        <div class="currencySymbol">
+                            &#8369 @string.Format("{0:#,0.00##}",  @item.Deduction)
+                        </div>
+                       
+                    </td>
+                }
+                @if (!@Model.ListHidenColumns.Contains("Confirmation"))
+                {
+                    <td>
+                        @foreach (var attItem in Model.RequestAttachments.Where(t => t.RequestNo == item.RequestID).ToList())
+                        {
+                                <a><i class="bi bi-paperclip" style="color:darkblue;"></i>@attItem.FileName</a>
+                                <br />
+                            }
+                    </td>
+                }
+
+                @if (!@Model.ListHidenColumns.Contains("RefNo"))
+                {
+                    <td>
+                        @item.RefNo
+                    </td>
+                }
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+
+    new DataTable('#dtReqList', {
+        responsive: true
+    });
+
+    $(document).ready(function () {
+        //new DataTable('#dtReqList', {
+        //    //responsive: true,
+        //    //scrollX: true, // Enable horizontal scrolling
+        //    initComplete: function () {
+        //        var columnsToExclude = [0, 3]; // Columns to exclude from filtering
+        //        this.api().columns().every(function () {
+        //            var column = this;
+        //            if (columnsToExclude.includes(column.index())) {
+        //                return; // Skip this column
+        //            }
+        //            var headerText = $(column.header()).text();
+        //            var columnWidth = $(column.header()).width(); // Get column width
+        //            var headerContainer = $('<div style="display:flex; flex-direction:column;"></div>').appendTo($(column.header()).empty());
+        //            var input = $('<input type="text" placeholder="Search..."/>')
+        //                .css('width', columnWidth) // Set width of input same as column width
+        //                .appendTo(headerContainer)
+        //                .on('keyup change clear', function () {
+        //                    if (column.search() !== this.value) {
+        //                        column
+        //                            .search(this.value)
+        //                            .draw();
+        //                    }
+        //                });
+        //            var span = $('<span>' + headerText + '</span>').appendTo(headerContainer);
+        //        });
+        //    }
+        //});
+    });
+
+    
+
+    function ConfirmPayment() {
+        var RequisitionViewModel = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+        var fileData = new FormData();
+        for (var i = 0; i < RequestFiles.length; i++) {
+            fileData.append("files", RequestFiles[i]);
+        }
+        var model = @Html.Raw(JsonConvert.SerializeObject(Model));
+        fileData.append("vm", JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model))));
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/ConfirmPaymentRequest",
+            processData: false,
+            contentType: false,
+            data: fileData,
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                ShowAlert(
+                    {
+                        title: 'Payment Confirmation',
+                        text: "Requisitions successfully confirmed!",
+                        icon: 'success',
+                        successmethod: "ReloadConfirmation()"
+                    });
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+</script>

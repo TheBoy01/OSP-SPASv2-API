@@ -1,0 +1,47 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.RequisitionViewModel
+
+
+@{
+    ViewData["Title"] = ViewData["pagetitle"];
+}   
+
+
+
+<main id="main" class="main">
+    
+    <div class="pagetitle">
+        <h1>Create Single Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item">Single</li>
+                @if (Model.isCreateRequisition)
+                {
+                    <li class="breadcrumb-item active">Create</li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item active">Create Payment</li>
+                }
+            </ol>
+        </nav>
+    </div>
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @await Html.PartialAsync("RequisitionDetails", Model)
+
+        <section class="section dashboard">
+            <div class="card mb-10 overflow-auto">
+                <div class="card-body">
+        <div id="PaymentRequisitionEntry">
+        @await Html.PartialAsync("_CreatePaymentForm", Model)
+        </div>  
+        
+        </div>
+        </div>
+        </section>
+
+</main>
+

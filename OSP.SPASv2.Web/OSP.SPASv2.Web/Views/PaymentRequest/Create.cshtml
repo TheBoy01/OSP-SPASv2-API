@@ -1,0 +1,925 @@
+﻿@model SPASv2.Models.PaymentRequestModel
+
+
+
+@{
+    ViewData["Title"] = "Payment Requisition";
+    Layout = "/Views/Shared/_Layout.cshtml";
+
+}
+
+@*<script src="~/js/PaymentRequest.js"></script>*@
+@*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>*@
+@*<script src="~/js/PaymentRequest-11112022.js"></script>*@
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>*@
+
+@*<link rel="stylesheet" href="/resources/demos/style.css">*@
+@*<script src="https://code.jquery.com/jquery-3.7.0.js"></script>*@
+@*<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>*@
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+        integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
+        crossorigin="anonymous"></script>
+
+@*
+<link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Noto+Serif:400,700">
+<link href="css/jquery-ui.min.css" rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/bootstrap.min.js"></script>*@
+
+
+
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+
+<main id="main" class="main">
+    <section class="section">
+        <div class="card mb-10">
+            <div class="card-body">
+
+
+                <h2 class="card-title center">Payment Requisition</h2>
+                <hr />
+
+
+                <form asp-action="Create" class="row g-3 needs-validation" id="formcreate" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                    @Html.HiddenFor(m=>m.PRNo)
+                    @Html.HiddenFor(m=>m.AuditUser)
+                    @Html.HiddenFor(m=>m.Companyid)
+                    @Html.HiddenFor(m => m.Companycode)
+                    @Html.HiddenFor(m => m.BranchCode)
+                    @Html.HiddenFor(m=>m.BankCode)
+
+                    @Html.HiddenFor(m=>m.Vendorcode)
+                    @Html.HiddenFor(m=>m.ItemCode)
+                    @*  <div class="form-group col-md-4 ">
+                    <label asp-for="PONo" class="form-label center"></label>
+                    <input asp-for="PONo" class="form-control" />
+                    <span asp-validation-for="PONo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                    <label asp-for="RequestDatetime" class="form-label center"></label>
+                    <input asp-for="RequestDatetime" placeholder = "MM/DD/YYYY" Value = "01/01/1900" class="form-control" />
+                    <span asp-validation-for="RequestDatetime" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                    <label asp-for="SalesInvoiceDatetime" class="form-label center"></label>
+                    <input asp-for="SalesInvoiceDatetime" placeholder = "MM/DD/YYYY" Value = "01/01/1900"  class="form-control" />
+                    <span asp-validation-for="SalesInvoiceDatetime" class="text-danger"></span>
+                    </div>*@
+
+                    @* <div class="row mb-3">
+                    <label asp-for="Company" class="form-label col-sm-2"></label>
+                    <div class="col-sm-10">
+                    <input asp-for="Company" class="form-control" />
+                    </div>
+                    </div>*@
+
+
+
+                    @*<div class="row g-3">*@
+                    <div class="row my-2">
+                        @*<div class="form-group col-md-4">
+                        <label asp-for="Company" class="form-label center"></label>
+                        <select asp-for="Company" class="form-control" asp-items="@(new SelectList(@Model.CompanyList,"CompanytypeCode","Companytype"))" />
+                        <span asp-validation-for="Company" class="text-danger"></span>
+                        </div>*@
+
+
+
+
+                        <div class="form-group col-md-6">
+                            @*@Html.LabelFor(model => model.Company, htmlAttributes: new { @class = "control-label col-md-2 required", @style = "text-align: left;font-weight: normal;" })*@
+                            <label asp-for="Company" class="form-label required"></label>
+                            @Html.DropDownListFor(model => model.Company, new SelectList(Model.CompanyList, "CompanyType", "CompanyType"),  htmlAttributes: new { @class = "form-select" })
+                            @*Html.DropDownListFor(model => model.Company, new SelectList(Model.CompanyList, "CompanytypeCode", "Companytype"), "-- SELECT COMPANY --", htmlAttributes: new { @class = "form-select", id = "Companytype" })*@
+                            @*@Html.EditorFor(model => model.Company, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter the chapel location", @Value = "", @style = "text-transform:uppercase;" } })*@
+                            @*<input type="hidden" id="HdCompany" name="HdCompany"/>*@
+                            @*<input asp-for="Company" class="form-control" />*@
+
+                            @*@Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })*@
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Requestdate" class="form-label "></label>
+
+                            <input asp-for="Requestdate" class="form-control " readonly />
+
+                        </div>
+
+
+
+
+                    </div>
+
+                    @*   <div class="form-group col-md-3">
+
+                    </div>*@
+                    <div class="row my-2">
+
+                        <div class="form-group col-md-6  ">
+                            <label asp-for="Code" class="form-label required"></label>
+                            @*<input asp-for="Code" class="form-control" />*@
+
+                            @Html.DropDownListFor(model => model.Code, new SelectList(Model.DeptList, "DeptCode", "DeptDesc"),  htmlAttributes: new { @class = "form-select" })
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Address" class="form-label "></label>
+                            <input asp-for="Address" class="form-control" readonly/>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="PaymentClass" class="form-label required"></label>
+                            @*<input asp-for="PaymentType" class="form-control" />*@
+                            @*<select asp-for="PaymentType" class="form-control" asp-items="@(new SelectList(@Model.Paymenttypelist,"PayTypeCode","PayDesc"))" />*@
+                            @*<select asp-for="PaymentType" asp-items="@Model.Paymenttypelist"></select>*@
+                            @*<select asp-for="PaymentType" asp-items="ViewBag.Paymenttypelist"></select>*@
+                            @Html.DropDownListFor(model => model.PaymentClass, new SelectList(Model.Paymenttypelist, "PayClassCode", "PayDesc"), "-- SELECT PAYMENT REQUEST TYPE --", htmlAttributes: new { @class = "form-select" })
+                            <span asp-validation-for="PaymentClass" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+                            <input asp-for="Truefalse" type="checkbox" />
+                            <label asp-for="PONo" class="form-label "></label>
+
+                            <span asp-validation-for="PONo" class="text-danger"></span>
+                        </div>
+
+
+
+
+                    </div>
+
+
+                    <div class="row my-2">
+                        <div class="form-group col-md-6">
+                            <label asp-for="Supplier" class="form-label required"></label>
+                            <input asp-for="Supplier" class="form-control" list="dtVendorList" />
+
+                            <datalist id="dtVendorList">
+                                @*@foreach (var item in Model.VendorList)
+                                {
+                                <option value="@item.VendorCode">@item.VendorName </option>
+                                }*@
+                            </datalist>
+                            <span asp-validation-for="Supplier" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="PCVName" class="form-label required"></label>
+                            <input asp-for="PCVName" class="form-control" jsname="YPqjbf" readonly />
+                            <span asp-validation-for="PCVName" class="text-danger"></span>
+                        </div>
+
+                        @*<div class="form-group col-md-6">
+                        <label asp-for="TIN" class="form-label "></label>
+                        <input asp-for="TIN" class="form-control" disabled />
+                        <span asp-validation-for="TIN" class="text-danger"></span>
+                        </div>*@
+                    </div>
+
+                    <div class="row my-2">
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="PaymentMethod" class="form-label "></label>
+                            <input asp-for="PaymentMethod" class="form-control" readonly />
+                            @*@Html.DropDownListFor(model => model.PaymentMethod, new SelectList(Model.PaymodeList, "PaymodeCode", "Paymode"), "-- SELECT PAYMENT METHOD --", htmlAttributes: new { @class = "form-select" })*@
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Destination" class="form-label "></label>
+                            <input asp-for="Destination" class="form-control" readonly />
+                            @*@Html.DropDownListFor(model => model.Destination, new SelectList(Model.BankAccountList, "BankCode", "AcctNo"), "-- SELECT ACCOUNT NUMBER --", htmlAttributes: new { @class = "form-select" })*@
+                            <span asp-validation-for="Destination" class="text-danger"></span>
+                        </div>
+
+
+
+
+
+
+                    </div>
+
+                    <div class="row my-2">
+                        @* <div class="form-group col-md-6">
+                        <label asp-for="Bank" class="form-label "></label>
+                        <input asp-for="Bank" class="form-control" />
+                        <span asp-validation-for="Bank" class="text-danger"></span>
+                        </div>*@
+
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="PaymentNetwork" class="form-label "></label>
+                            <input asp-for="PaymentNetwork" class="form-control" readonly />
+                            <span asp-validation-for="PaymentNetwork" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row  my-2">
+                        <div class="form-group col-md-6">
+                            <label asp-for="RefNo" class="form-label "></label>
+                             <input asp-for="RefNo" class="form-control"  required/>
+                            <span asp-validation-for="RefNo" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Remarks" class="form-label "></label>
+                            <textarea asp-for="Remarks" class="form-control" style="resize:none" required></textarea>
+                            <span asp-validation-for="Remarks" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group my-2">
+                        <span>Upload supporting documents.</span>
+                        <div class="col-md-10">
+
+                            <input id="fileupload" type="file" name="files" multiple />
+                        </div>
+                        <div id="fileNames"></div>
+
+                    </div>
+
+
+
+
+
+                    @*  <div class="row mb-3">
+                    <div class="form-group col-md-8">
+                    <label asp-for="Remarks" class="form-label "></label>
+                    <input asp-for="Remarks" class="form-control" />
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                    </div>
+                    </div>*@
+                    @*
+                    <div class="form-group col-md-3">
+                    <label asp-for="Discount" class="form-label center"></label>
+                    <div class="input-group mb-3">
+                    <span class="input-group-text">Php</span>
+                    <input asp-for="Discount" class="form-control" >
+
+                    </div>
+                    <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>*@
+
+
+                    @* <div class="form-group col-md-3">
+                    <label asp-for="Discount" class="form-label"></label>
+                    <input asp-for="Discount" class="form-control" />
+                    <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>*@
+
+
+                    @*      <div class="form-group col-md-3">
+                    <label asp-for="VAT" class="form-label center"></label>
+                    <div class="input-group mb-3">
+                    <span class="input-group-text">Php</span>
+                    <input asp-for="VAT" class="form-control" >
+
+                    </div>
+                    <span asp-validation-for="VAT" class="text-danger"></span>
+                    </div>*@
+
+
+                    @*    <div class="form-group col-md-3">
+                    <label asp-for="Net" class="form-label center"></label>
+                    <div class="input-group mb-3">
+                    <span class="input-group-text">Php</span>
+                    <input asp-for="Net" class="form-control" >
+
+                    </div>
+                    <span asp-validation-for="Net" class="text-danger"></span>
+                    </div>*@
+
+
+
+
+                    @*<div class="form-group">
+                    <label asp-for="SalesInvoiceLink" class="form-label center"></label>
+                    <input asp-for="SalesInvoiceLink" class="form-control"  />
+                    <span asp-validation-for="SalesInvoiceLink" class="text-danger"></span>
+                    </div>*@
+
+                    @* <div class="form-group">
+                    <label asp-for="SalesInvoiceLink" class="form-label center"></label>
+                    <input asp-for="SalesInvoiceLink" class="form-control"  />
+                    <span asp-validation-for="SalesInvoiceLink" class="text-danger"></span>
+                    </div>*@
+
+
+                @*</form>*@
+
+
+                <div class="card-body">
+
+                    <div class="row my-2">
+
+                        <div class="form-group col-md-5">
+
+                            <label asp-for="ItemDesc" class="form-label "></label>
+                            <input asp-for="ItemDesc" class="form-control" list="dtItemList" />
+                            <datalist id="dtItemList"></datalist>
+                            <span asp-validation-for="ItemDesc" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label asp-for="UOM" class="form-label "></label>
+                            <input asp-for="UOM" class="form-control" />
+                            <span asp-validation-for="UOM" class="text-danger"></span>
+                        </div>
+
+
+
+
+                    </div>
+                    <div class="row my-2">
+                        <div class="form-group col-md-2">
+                            <label asp-for="Quantity" class="form-label "></label>
+                            <input asp-for="Quantity" type="number" class="form-control" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label asp-for="ItemPrice" class="form-label "></label>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Php</span>
+                                <input asp-for="ItemPrice" asp-format="{0:#,###.00}" class="form-control">
+                                @*<span class="input-group-text">.00</span>*@
+                                @* <div class="icon">*@
+                                @*<i href="" class="ri-add-fill"></i>*@
+                                @*</div>*@
+                                @*<i class="bi bi-arrow-up-short"></i>*@
+
+
+                            </div>
+                            <span asp-validation-for="ItemPrice" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="Discount" class="form-label "></label>
+
+                            <div class="input-group mb-3 ">
+                                @Html.DropDownListFor(model => model.Discount, new SelectList(Model.Discountlist, "DiscountCode", "DiscountDesc"), "-- SELECT DISCOUNT TYPE --", htmlAttributes: new { @class = "form-select width=50px" })
+                                <input asp-for="Discountprice" type="number" class="form-control" />
+                                <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center" id="addbtn"><i class="ri-add-fill"></i></a>
+                            </div>
+                            <span asp-validation-for="Discountprice" class="text-danger"></span>
+
+                        </div>
+
+
+
+                    </div>
+
+
+                    <div class="row my-2">
+                        @*<div class="form-outline col-md-6">
+                        <label asp-for="ItemCategory" class="form-label "></label>
+                        <input asp-for="ItemCategory" class="form-control" />
+                        <span asp-validation-for="ItemCategory" class="text-danger"></span>
+                        </div>*@
+                        <div id="_tmpPRInventory">
+                            @await Html.PartialAsync("_tmpPaymentRequestInventory",Model,ViewData)
+                        </div>
+
+                    </div>
+
+
+                    @*<div class="card">*@
+                    @*<div class="card-body">*@
+
+                    @*</div>*@
+
+                    <div class="row my-2 Totamt">
+                        <div class="form-group">
+                            <label asp-for="TAmount" class="form-label "></label>
+                            <input asp-for="TAmount" class="form-control " readonly />
+                            <span asp-validation-for="TAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row my-2">
+                    <div class="form-group">
+                        <input type="submit" value="Submit" class="btn btn-primary" id="submit" />
+                    </div>
+                </div>
+
+                </form>
+                @*<button class="btn" id="addbtn">Submit</button>*@
+            </div>
+        </div>
+
+        @*<div>
+        <a asp-action="Index">Back to List</a>
+        </div>*@
+
+
+
+
+    </section>
+
+</main>
+
+<script>
+
+    $(document).ready(function () {
+
+
+        $("#Company").on('change', function (e) {
+            //$("Company").on("selectmenuselect", function (event, ui) {
+            //alert("s");
+            var inputCompany = $("#Company").val();
+            var companytype = $("#Company").val();
+            var personid = "SPLPI0003";
+            $("#Code").empty();
+
+            $.ajax({
+                type: "GET",
+                url: '/PaymentRequest/GetDeptByPersonID/',
+                data: {
+                    personid: personid,
+                    companytype: companytype
+                },
+
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        $("#Code").append($('<option>', {
+                            value: item.DeptCode,
+                            text: item.DeptDesc
+                        }));
+                    });
+
+                },
+                failure: function (response) {
+                    alert(response);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+
+            //if (companytype == "LIFEPLAN") {
+            //    // alert(companytype);
+
+            //    url = "/PaymentRequest/GetBranchesbyPersonID/";
+            //    $.ajax({
+            //        type: "GET",
+            //        url: url,
+            //        data: {
+            //            personid: personid
+            //            //company: inputCompany
+            //        },
+            //        success: function (data) {
+            //            $.each(data, function (index, item) {
+            //                $("#Code").append($('<option>', {
+            //                    value: item.BranchCode,
+            //                    text: item.BranchDesc
+            //                }));
+            //            });
+
+
+            //            $('#Code').trigger('ajaxSelect', data);
+
+            //        },
+            //        error: function (response) {
+            //            alert(response.responseText);
+            //        },
+            //        failure: function (response) {
+            //            alert("failure " + response.responseText);
+            //        }
+
+
+
+            //    });
+            //}
+            //else if (companytype == "CHAPELS") {
+            //    alert(companytype);
+            //    url = '/PaymentRequest/GetChapelsbyPersonID/';
+            //    $.ajax({
+            //        type: "GET",
+            //        url: url,
+            //        data: {
+            //            personid: personid
+            //        },
+            //        success: function (data) {
+            //            $.each(data, function (index, item) {
+            //                $("#Code").append($('<option>', {
+            //                    value: item.ChapelCode,
+            //                    text: item.ChapelDesc
+            //                }));
+            //            });
+
+            //            $('#Code').trigger('ajaxSelect', data);
+            //        },
+            //        error: function (xhr, textStatus, error) {
+            //            alert(xhr.statusText);
+            //        },
+            //        failure: function (response) {
+            //            alert("failure " + response.responseText);
+            //        }
+
+            //    });
+            //}
+            //else { }
+
+        });
+
+
+        $('#Code').on('ajaxSelect', function (event, response) {
+            var selectedOption = $(this).val();
+            //alert(selectedOption);
+
+            // Your code or function call after the selection and AJAX request
+            console.log('Custom event triggered with response:', response);
+
+            var inputCompany = $("#Company").val();
+            var inputbranch = selectedOption;
+            //alert(selectedOption + ' ' + inputCompany + ' ' + inputbranch);
+
+            $.ajax({
+                type: "GET",
+                url: '/PaymentRequest/GetBranchdetails/',
+                data: {
+                    company: inputCompany,
+                    branchcode: inputbranch
+                },
+
+
+                success: function (data) {
+                    //alert(data.Address);
+                    $('#Address').val(data.Address);
+                    $('#Companyid').val(data.CompanyCode);
+
+                },
+                failure: function (response) {
+                    alert(response);
+                }
+            });
+
+
+
+
+        });
+
+
+        $("#Code").on('change', function (e) {
+
+            var inputCompany = $("#Company").val();
+            var inputbranch = $("#Code").val();
+            //alert(i.item.value + i.item.text+' '+inputCompany+' '+inputbranch);
+            $.ajax({
+                type: "GET",
+                url: '/PaymentRequest/GetBranchdetails/',
+                data: {
+                    company: inputCompany,
+                    branchcode: inputbranch
+                },
+
+                //contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    //alert(data.Address);
+                    $('#Address').val(data.Address);
+                    $('#Companyid').val(data.CompanyCode);
+                    //for(var key in data)
+                    //{
+                    //    //alert(data[key]);
+                    //        console.log(data[key]);
+                    //}
+                },
+                failure: function (response) {
+                    alert(response);
+                }
+            });
+        });
+
+
+
+        $('#PaymentClass').on('change', trig);
+        function trig() {
+
+            var inputSupplier = $('#Supplier').val();
+            var inputpayclass = $("#PaymentClass").val();
+            $.ajax({
+                //url: '/PaymentRequest/GetCompanylist/',
+                type: "GET",
+                url: '/PaymentRequest/GetVendorLists1/',
+                data: {
+                    vendordesc: inputSupplier,
+                    paymentclass: inputpayclass
+                },
+                dataType: "json",
+                success: function (data) {
+                    //response($.map(data, function (item) {
+                    //    return item;
+
+
+                    //}))
+                    //alert("s");
+                    var s = '';
+                    for (var i = 0; i < data.length; i++) {
+                        console.log(data[i])
+                        s += '<option value="' + data[i].VendorName + '" data-id="' + data[i].VendorCode + '">' + data[i].VendorCode + '</option>';
+                    }
+                    $("#dtVendorList").html(s);
+
+                },
+
+
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert("failure " + response.responseText);
+                }
+
+            });
+
+
+        }
+
+
+
+        $("#Supplier").on('input', function () {
+            var selectedOption = $(this).val();
+
+            // Find the corresponding <option> element in the datalist
+            var optionElement = $("#dtVendorList option[value='" + selectedOption + "']");
+
+            // Get the data-id attribute value from the selected option
+            var dataId = optionElement.data("id");
+
+            // Display the data-id value (you can modify this part as needed)
+            //console.log("data-id:", dataId);
+            //alert(dataId);
+
+            if ($('#dtVendorList option').filter(function () {
+                return this.value.toUpperCase() === selectedOption.toUpperCase();
+            }).length) {
+                //send ajax request
+                //alert(dataId);
+                $('#Vendorcode').val(dataId);
+                var inputVendorcode = $("#Vendorcode").val();
+                var inputpayclass = $("#PaymentClass").val();
+                //alert(inputVendorcode + ' ' + inputpayclass);
+                $.ajax({
+                    type: "GET",
+                    url: "/Requisition/GetVendorDetails/",
+                    data: {
+                        vendorcode: inputVendorcode,
+                        payclass: inputpayclass
+                    },
+                    success: function (data) {
+                        //alert(data.BankCode + ' ' + data.AccountNo);
+                        $('#Destination').val(data.AccountNo);
+                        $('#PaymentMethod').val(data.PaymentMethod);
+                        $('#PaymentNetwork').val(data.BankCode);
+                        $('#PCVName').val(data.PayeeName);
+                        //var defaultValue = data.find(function (value) {
+                        //    return value.IsDefault == true;
+                        //});
+
+                        //var s = '<option value="-1">-- SELECT ACCOUNT NUMBER --</option>';
+                        //for (var i = 0; i < data.length; i++) {
+                        //    console.log(data[i])
+                        //    s += '<option value="' + data[i].AcctNo + '">' + data[i].AcctNo + '</option>';
+                        //}
+                        //$("#Destination").html(s);
+                        //$("#Destination").val(defaultValue.id);
+
+                        Itemtrig();
+
+                    }, error: function (response) {
+                        alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        alert("failure " + response.responseText);
+                    }
+                });
+            }
+
+
+        });
+
+        function Itemtrig() {
+            //alert("s");
+            var inputVendorcode = $("#Vendorcode").val();
+            var inputItemDesc = $("#ItemDesc").val();
+            //alert(inputVendorcode);
+            $.ajax({
+                type: "GET",
+                url: "/PaymentRequest/GetVendorItemsList1/",
+                data: {
+                    vendorcode: inputVendorcode,
+                    itemdesc: inputItemDesc
+
+                },
+                success: function (data) {
+                    var s = '';
+                    for (var i = 0; i < data.length; i++) {
+                        console.log(data[i])
+                        s += '<option value="' + data[i].ItemDesc + '" data-id="' + data[i].ItemCode + '">' + data[i].ItemCode + '</option>';
+                    }
+                    $("#dtItemList").html(s);
+
+                }, error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert("failure " + response.responseText);
+                }
+            });
+        }
+
+
+
+        $("#ItemDesc").on('input', function () {
+            var selectedOption = $(this).val();
+
+            // Find the corresponding <option> element in the datalist
+            var optionElement = $("#dtItemList option[value='" + selectedOption + "']");
+
+            // Get the data-id attribute value from the selected option
+            var dataId = optionElement.data("id");
+            //$("#ItemCode").val() = optionElement.data("id");
+            $("#ItemCode").val(dataId);
+            alert(dataId);
+            // Display the data-id value (you can modify this part as needed)
+            //console.log("data-id:", dataId);
+            //alert(dataId);
+
+            if ($('#dtItemList option').filter(function () {
+                return this.value.toUpperCase() === selectedOption.toUpperCase();
+            }).length) {
+                //alert("s");
+                $.ajax({
+                    type: "GET",
+                    url: "/PaymentRequest/GetVendorItemsDetails/",
+                    data: {
+                        vendorcode: $("#Vendorcode").val(),
+                        itemdesc: $("#ItemDesc").val()
+                    },
+                    success: function (data) {
+                        console.log(data.UOM);
+                        //alert(data.UOM);
+                        $('#UOM').val(data.UOM);
+                        //$('#PaymentNetwork').val(data.BankCode);
+                    }
+                });
+
+            }
+
+
+        });
+
+        $("#addbtn").click(function () {
+            var disccode = $("#Discount").val();
+            var model =
+            {
+                PRNo: "Auto...",
+                ItemCode: $("#ItemCode").val(),
+                ItemDesc: $("#ItemDesc").val(),
+                UOM: $("#UOM").val(),
+                Qty: $("#Quantity").val(),
+                Price: $("#ItemPrice").val(),
+                VatRate: "",
+                Vat: "",
+                NetofVat: "",
+                Discount: $("#Discountprice").val(),
+                TotalAmt: $("#ItemPrice").val() * $("#Quantity").val(),
+                AuditUser: $("#AuditUser").val()
+
+            };
+            //alert(JSON.stringify(model));
+            $.ajax({
+                url: "/PaymentRequest/GettmpPaymentRequestInventory/",
+                //contentType: 'application/html; charset=utf-8',
+                type: "POST",
+                //dataType: 'json',
+                data: {
+                    _tmp: model,
+                    disccode: disccode
+                },
+                success: function (result) {
+
+                    $("#_tmpPRInventory").html(result);
+
+                },
+                error: function (xhr, status) {
+                    alert(xhr.statusText);
+                }
+            });
+
+        });
+
+        //$("#submit").click(function () {
+        //    //alert("s");
+        //    //var confirmed = confirm("Are you sure to save?");
+        //    ShowAlert(
+        //        {
+        //            title: "Payment Request",
+        //            text: "Are you sure you want to save?",
+        //            icon: "question",
+        //            showCancelButton: "true",
+        //            confirmButtonText: "Save",
+        //            successmethod: "SubmitPY()"
+        //        }
+        //    );
+        //});
+
+        //document.getElementById("#Totamt").style.cssFloat = "right";
+
+        // JavaScript code to handle file selection and display file names
+        document.getElementById('fileupload').addEventListener('change', function (event) {
+            var input = event.target;
+            var output = document.getElementById('fileNames');
+            output.innerHTML = ''; // Clear the previous file names
+
+            // Display selected file names
+            for (var i = 0; i < input.files.length; ++i) {
+                output.innerHTML += '<span>' + input.files[i].name + '</span><br>';
+            }
+        });
+
+
+
+        function JSalert(msgType, msg) {
+            if (msgType == "SUCCESS") {
+                Swal.fire(msg, "Payment Request", "success", 2000, true).then(okay => {
+                    if (okay) {
+                        location.reload(true);
+                    }
+                });
+            } else {
+                Swal.fire(msg, "Payment Request", "error", 2000, true);
+            }
+        }
+    });
+
+    function SubmitPY() {
+        alert('test');
+        document.getElementById("formcreate").submit();
+        ShowAlert(
+            {
+                title: "Payment Request",
+                text: "Payment Request successfully saved.",
+                icon: "success",
+                successmethod: "submitform()"
+            }
+        );
+    }
+
+</script>
+
+@*<script type="text/javascript">
+  var inputs = document.querySelectorAll('input');
+
+
+inputs.forEach((input) => {
+    input.addEventListener("blur", (event) => {
+        if (event.target.value) {
+            input.classList.add("is-valid");
+        } else {
+            input.classList.remove("is-valid");
+        }
+    });
+});
+</script>*@
+>
+
+
+
+@*<link href="~/template/vendor/bootstrap/css/StyleSheet.css" rel="stylesheet">*@
+
+
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+
+@*
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
+
+

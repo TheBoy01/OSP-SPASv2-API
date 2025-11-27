@@ -1,0 +1,121 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+@{
+    Layout = null;
+}
+
+<style>
+
+</style>
+
+<div class="col-12">
+    <div class="card recent-sales overflow-auto">
+       @* <div class="filter">
+            <button type="button" class="btn btn-outline-primary btn-sm" style="margin-right:20px;padding: 0px;" onclick="RefreshVendorBalList()"><i class="bx bx-refresh bx-2x"></i> </button>
+            <button type="button" class="btn btn-primary btn-sm" style="margin-right:20px;" onclick="RefreshList()"><i class="bx bx-refresh"></i> refresh</button>
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+        </div>*@
+
+        <div class="filter">
+            
+
+            <a class="icon" href="#" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right:5px;"><i class="bi bi-three-dots"></i></a>
+            <button type="button" class="btn btn-outline-primary btn-sm" style="margin-right:20px;padding: 0px; height: 20px;" onclick="RefreshVendorBalList()"><i class="bx bx-refresh bx-2x"></i> </button>
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" style="">
+                <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                </li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetAsof('MONTH')">This Month</a></li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetAsof('YEAR')">This Year</a></li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetAsof('ALL')">All Time</a></li>
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">Vendor Running Balance <span id="spanASof">/This Month</span></h5>
+
+            <div class="form-floating mb-3"> 
+                <select class="form-select" id="cboPayClass" aria-label="State" style="color:#012970;" onchange="RefreshVendorBalList()">
+
+                    <option value="" disabled selected>Select Payment Class</option>
+                    @foreach (var item in Model.Paymenttypelist.OrderBy(t=>t.PayDesc))
+                    {
+                        <option value="@item.PayClassCode">@item.PayDesc</option>
+                    }
+                </select>
+                <label for="floatingSelect" style=" font-weight: bolder; ">Payment Class</label>
+            </div>
+
+            <div id="divVendorRunningBalList">
+                @{
+
+                    await Html.RenderPartialAsync("_VendorRunningBalanceList", Model);
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<script>
+
+    var asOfMode = "MONTH";
+    var scr;
+
+    function SetAsof(Mode)
+    {
+        asOfMode = Mode;
+
+        switch (Mode) {
+            case 'MONTH':
+                $("#spanASof").html("/This Month");
+                break;
+            case 'YEAR':
+                $("#spanASof").html("/This Year");
+                break;
+            case 'ALL':
+                $("#spanASof").html("/All Time");
+                break;
+            
+        }
+
+        RefreshVendorBalList();
+
+    }
+    
+
+    function RefreshVendorBalList() {
+
+        var PyClass = $("#cboPayClass").val();
+
+        $.ajax({
+            url: '/Home/GetVendorRunningBalance',
+            type: 'GET',
+            dataType: 'html',    
+            data: { AsOfMode: asOfMode, PayClassCode: PyClass },
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (response) {
+                $("#divVendorRunningBalList").html(response);
+
+            },
+            error: function () {
+
+            },
+            complete: function (data) {
+                ShowAlert(
+                    {
+                        title: "Success",
+                        text: "Record successfully refreshed!",
+                        icon: "success"
+                    });
+
+                $("#loader").modal("hide");
+            }
+        });
+    }
+</script>

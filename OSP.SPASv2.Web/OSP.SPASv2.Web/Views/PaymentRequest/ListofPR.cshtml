@@ -1,0 +1,401 @@
+﻿@*@model IEnumerable<SPASv2.Models.PaymentRequestModel>*@
+@model SPASv2.Models.PaymentRequestModel
+@{
+    ViewData["Title"] = "List of Payment Requisition";
+}
+
+@*<h1>View</h1>*@
+
+@*<p>
+    <a asp-action="Create">Create New</a>
+</p>*@
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Payment Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Payment Requisition</li>
+                <li class="breadcrumb-item">Single</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Recent Sales -->
+
+   @* <div class="row">
+        <div class="col">
+            Filter By Date Requested
+        </div>
+    </div>*@
+    <div class="row">
+        <div class="col">
+            @*<input type="date" class="form-control" style="max-width:150px; display: inline;" id="dtpFrom">
+            -
+            <input type="date" class="form-control" style="max-width:150px; display: inline;" id="dtpTo">
+            <button class="btn btn-primary btn-sm"  type="button">View</button>*@
+           
+        </div>
+    </div>
+   
+
+    <div class="col-12">
+        <div class="card recent-sales overflow-auto mt-1">
+
+            @*   <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+            <li class="dropdown-header text-start">
+            <h6>Filter</h6>
+            </li>
+
+            <li><a class="dropdown-item" href="#">Today</a></li>
+            <li><a class="dropdown-item" href="#">This Month</a></li>
+            <li><a class="dropdown-item" href="#">This Year</a></li>
+            </ul>
+            </div>*@
+            
+            @*div.consent*@
+
+            <div class="card-body">
+                <div class="card-title mb-2">
+                    <a class="card-title">List of Active Request</a>
+                    <a asp-action="Create" class="btn btn-primary float-end" style="margin-right:10px;"><i class="bi bi-plus-circle me-1"></i> Create Request</a>
+                </div>
+
+                <table class="table table-borderless datatable table-striped " style="min-height:200px;">
+                    <thead >
+                        <tr>
+                            @*<th scope="col">Payment Request No</th>
+                            <th scope="col">Payment Class</th>
+                            <th scope="col">Supplier</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Status</th>*@
+                            <th>
+                                Request No:
+                                @*@Html.DisplayName("Request No:")*@
+                            </th>
+                            <th></th>
+                            <th>
+                                Purchase Order No:
+                                @*@Html.DisplayName("Request No:")*@
+                            </th>
+                            <th>
+                                @Html.DisplayName("Amount")
+                            </th>
+                           
+                            <th>
+                                @Html.DisplayName("Status")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Vendor")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Date")
+                            </th>
+
+                            <th>
+                                @Html.DisplayName("Class")
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.dashboardViewModel.RequestList)
+                        {
+                            <tr>
+                                <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { prno=item.RequestID})">@Convert.ToString(item.RequestID)</a></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View</a></li>
+                                            <li><a class="dropdown-item" href="#">Delete</a></li>
+                                            <li><a class="dropdown-item" href="#">Payment</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { prno=item.RequestID})">@Convert.ToString(item.RequestID)</a></td>
+                                <td class="money">
+                                    <div class="currencySymbol">
+                                        &#8369 @string.Format("{0:#,0.00##}", item.Amount)
+                                    </div>
+
+                                </td>
+                                <td>
+
+                                    @switch (item.Status.ToUpper())
+                                    {
+                                        case "APV PREPARATION":
+                                        case "FOR POSTING":
+                                        case "FOR CREDITATION":
+                                        case "APPROVED":
+                                        case "VERIFIED":
+                                        case "FOR PAYMENT":
+                                        default:
+                                            {
+                                                <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px;">
+                                                    @item.Status
+                                                </span>
+                                                break;
+                                            }
+
+                                    }
+
+
+                                </td>
+                                <td>@item.Vendor</td>
+
+                                <td>
+
+                                    @item.RequestDate.ToString("MM/dd/yyyy h:mm tt")
+                                </td>
+                                <td>@item.PayClass</td>
+                            </tr>
+                        }
+
+                        @*@foreach (var item in Model)
+                        {
+                        <tr>
+                                <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { prno=})">@Convert.ToString("SPLPI-MAYON-23040000")@i</a></td>
+                            <td class="money">
+                                <div class="currencySymbol">&#8369 82,000.00</div>
+
+                            </td>
+                            <td><span class="badge bg-success ">For Verification of Logistics Staff</span></td>
+                            <td>BLACKHOUNDS SECURITY AND INVESTIGATION AGENCY INC.</td>
+
+                            <td>4/19/2023</td>
+                            <td>REPAIRS & MAINTENANCE (OTHERS)</td>
+                        </tr>
+                        }
+*@
+                        @* <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600002</a></td>
+                        <td>CONTRACTED SERVICES (JANITORIAL)</td>
+                        <td>APD EXPERTS MANPOWER AND CONSULTANCY SERVICES, INC.</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 42,577.00</div>
+                        </td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600003</a></td>
+                        <td>CONTRACTED SERVICES (SECURITY)</td>
+                        <td>1SIGMAFORCE SECURITY AGENCY CORP</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 69,718.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600004</a></td>
+                        <td>REPAIR AND MAINTENANCE - BUILDING</td>
+                        <td>SENTINEL PEST CONTROL SERVICES</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 5,800.00</div>
+
+                        </td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600005</a></td>
+                        <td>WREATH EXPENSE</td>
+                        <td>LUIJIE'S CASA DE FLEUR</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 20,700.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600006</a></td>
+                        <td>ELECTRICITY EXPENSE</td>
+                        <td>MERALCO</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 45,587.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600007</a></td>
+                        <td>MEMORIAL SUPPLIES</td>
+                        <td>JBV WATER STATION</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 6,800.00</div>
+
+                        </td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600008</a></td>
+                        <td>WATER EXPENSE</td>
+                        <td>MAYNILAD WATER SERVICES INC.</td>
+                        <td class="money">
+                        <div class="currencySymbol">&#8369 22,383.00</div>
+
+                        </td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>*@
+                        @* <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600009</a></td>
+                        <td>Angus Grady</td>
+                        <td>Ut voluptatem id earum et</td>
+                        <td align="right">Php 67.00</td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600010</a></td>
+                        <td>Raheem Lehner</td>
+                        <td>Sunt similique distinctio</td>
+                        <td align="right">Php 165.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600011</a></td>
+                        <td>Brandon Jacob</td>
+                        <td>At praesentium minu</td>
+                        <td align="right">Php 64.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600012</a></td>
+                        <td>Bridie Kessler</td>
+                        <td>Blanditiis dolor omnis similique</td>
+                        <td align="right">Php 47.00</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600013</a></td>
+                        <td>Ashleigh Langosh</td>
+                        <td>At recusandae consectetur</td>
+                        <td align="right">Php 147.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600014</a></td>
+                        <td>Angus Grady</td>
+                        <td>Ut voluptatem id earum et</td>
+                        <td align="right">Php 67.00</td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                        <tr>
+                        <td scope="row"><a href="#">SPMC-QUEZAV-220600015</a></td>
+                        <td>Raheem Lehner</td>
+                        <td>Sunt similique distinctio</td>
+                        <td align="right">Php 165.00</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                        </tr>*@
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div><!-- End Recent Sales -->
+    @*
+
+
+    <div class="card">
+    <div class="card-body">
+    <table class="table ">
+    <div class="dataTable-search right"><input class="dataTable-input" placeholder="Search..." type="text"></div>
+    <thead>
+    <tr class="table-primary">
+
+    <th>
+    @Html.DisplayName("Request No")
+    </th>
+    <th>
+    @Html.DisplayName("Payment Type")
+    </th>
+    <th>
+    @Html.DisplayName("Supplier")
+    </th>
+    <th>
+    @Html.DisplayName("Amount")
+    </th>
+    <th>
+    @Html.DisplayName("Status")
+    </th>
+
+
+    <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>
+    @Html.Display("QA00001")
+    </td>
+
+    <td>
+    @Html.Display("Payment to Suppliers")
+    </td>
+
+    <td>
+    @Html.Display("NEED INK SALES AND SERVICES")
+    </td>
+    <td>
+    @Html.Display("20,000.00")
+    </td>
+    <td>
+    <span class="badge bg-success">Approved</span>
+    </td>
+
+    </tr>
+    <tr>
+    <td>
+    @Html.Display("QA00001")
+    </td>
+
+    <td>
+    @Html.Display("Payment to Suppliers")
+    </td>
+
+    <td>
+    @Html.Display("NEED INK SALES AND SERVICES")
+    </td>
+    <td>
+    @Html.Display("20,000.00")
+    </td>
+    <td>
+    <span class="badge bg-danger">Rejected</span>
+    </td>
+
+    </tr>
+    <tr>
+    <td>
+    @Html.Display("QA00001")
+    </td>
+
+    <td>
+    @Html.Display("Payment to Suppliers")
+    </td>
+
+    <td>
+    @Html.Display("NEED INK SALES AND SERVICES")
+    </td>
+    <td>
+    @Html.Display("20,000.00")
+    </td>
+    <td>
+    <span class="badge bg-warning">Pending</span>
+    </td>
+
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    </div>*@
+
+    <script src="~/js/PaymentRequest-11112022.js"></script>
+    <script src="~/template/vendor/simple-datatables/simple-datatables.js"></script>
+    @*<script src="~/template/js/main.js"></script>*@
+</main>
+

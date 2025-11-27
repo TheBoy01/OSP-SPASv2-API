@@ -1,0 +1,630 @@
+﻿@using System.Data;
+@model SPASv2.Models.PRAuthorizationModel
+
+@{
+    ViewData["Title"] = "Request Authorization";
+}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Requisition Authorizing</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Authorization</li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item active">Single</li>
+
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+    @* <h1>Endorsement</h1>*@
+    @* <h1>Authorization</h1>*@
+    @*<h1>Verification</h1>*@
+    <div class="col-12">
+        <div class="card recent-sales overflow-auto">
+            <div class="card-body">
+                <div class="card-title">
+                    <a class="card-title">List of Pending Request</a>
+                </div>
+
+                <div class=" btn-group" role="group" aria-label="Basic outlined example" style="margin-right:10px;">
+
+                    <button type="button" id="allcb" class=" btn btn-outline-primary"><i class="bi bi-list-check"></i><span id="btnLabel">Select all</span></button>
+
+                    <button type="button" class="btn btn-outline-primary" id="approved" value=@Model.AuthorizeClassButton Name="ApproveALL" onclick="approveswal()"><i class="bi bi-hand-thumbs-up-fill"></i> @Model.AuthorizeClassButton</button>
+
+                    <button type="button" class="btn btn-outline-danger" id="disapproved" onclick="disapproveswal()"><i class="bi bi-hand-thumbs-down-fill"></i>Deny Request</button>
+
+                </div>
+                @*<h2 class="card-title center">List of Authorization</h2>*@
+                @*<h2 class="card-title center">List of Payment Request</h2>*@
+
+
+                <table class="table table-borderless datatable table-striped" style="">
+                    <thead>
+
+                        @*<div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <button type="submit" id="approved" Name="ApproveALL" onclick="approveswal()" class=" btn btn-outline-primary"><i class="bi bi-hand-thumbs-up-fill"></i> @Model.AuthorizeClassButton</button>
+                        </div>*@
+
+
+                        @* <div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <button type="submit" id="approved" Name="ApproveALL" onclick="approveswal()" class=" btn btn-outline-primary"><i class="bi bi-hand-thumbs-up-fill"></i> @Model.AuthorizeClassButton </button>
+                        </div>
+                        *@
+
+                        @* <div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <button type="submit" id="disapproved" onclick="disapproveswal()" class=" btn btn-outline-danger"><i class="bi bi-hand-thumbs-down-fill"></i> Deny All Selected Request</button>
+                        <button type="submit" class="btn btn-outline-danger"><i class="bi bi-hand-thumbs-down-fill"></i>Deny Request</button>
+                        </div>*@
+
+                        @*   <input type="submit" Name="ApproveALL" value="@Model.AuthorizeClassButton" onclick="myFunction()" id="approved" class="btn btn-success" />
+                        <input type="submit" value="Disapprove All Selected" onclick="disapproveswal()" id="disapproved" class="btn btn-danger" />
+
+                        *@
+                        @*<input type="submit" value = "Test Create PaymentRequest" a href="@Url.Action("CreatePRAuthorization", "Authorization",new { prno="FCMCICUBAO1302-00000"}) " id="btnSun" class="btn btn-danger"/>*@
+                        @*<input type="submit" value="Test Create PaymentRequest" id="btnSun" class="btn btn-danger" />*@
+                        @*<input type="submit" value="Test Approved" id="btnApprove" class="btn btn-danger" />*@
+
+
+                        <tr>
+
+
+                            <th hidden scope="col">PRNo</th>
+                            <th>
+
+                                @* <div align="center" valign="top" class="colheadcheckbox">
+                                <input type="checkbox" id="allcb" aria-label="Select all"
+                                title="Select all" onclick="terms_changed(this)" />
+                                </div>*@
+
+                            </th>
+                            <th scope="col">Payment Request No.</th>
+                            @*<th scope="col">Company Type</th>*@
+                            <th scope="col">Amount</th>
+                            <th scope="col">Department</th>
+                            <th scope="col">Vendor</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Class</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var row in @Model.qryPRAuthorizationList)
+                        {
+                            <tr>
+
+                                <td>
+                                    <input type="checkbox" id="chkPrno" class="myCheckbox" value=@(row.Reqno) onclick="terms_changed(this)">
+                                    @*<input type="checkbox" id="chkPrno" class="myCheckbox" value=@(row.PRNo) onclick="terms_changed(this)">*@
+                                </td>
+
+                                <td hidden>
+                                    @row.Reqno
+                                </td>
+
+
+                                <td scope="row">
+                                    <a href="@Url.Action("ViewPR", "PaymentRequest",new { prno=row.Reqno})">@row.Reqno.Trim()</a>
+                                </td>
+
+                                @*<td> @row.CompanyCode.Trim()</td>*@
+                                @* <td>
+                            <div class="currencyformat">@row.TotalAmount</div>
+                            </td>*@
+
+                                <td class="money">
+                                    <div class="currencySymbol">
+                                        &#8369 @string.Format("{0:#,0.00##}",@row.TotalAmount)
+                                    </div>
+
+                                </td>
+
+
+
+                                <td>
+                                    @row.DeptCode.Trim()
+                                </td>
+
+                                <td>
+                                    @row.VendorDesc.Trim()
+                                </td>
+
+
+                                <td>
+                                    @row.ReqDate
+                                </td>
+
+                                <td>
+                                    @row.PayDesc
+                                </td>
+
+
+
+                                @*<td><span type="submit" class="btn btn-link">View Attachment</span></td>*@
+
+                                @*<td><span type="submit" class="btn btn-link">View Attachment</span></td>*@
+
+                                @*<td><span type="submit" class="btn btn-link">Price Comparison</span></td>*@
+
+
+                            </tr>
+                        }
+                        <a class="nav-link collapsed" asp-controller="Authorization" asp-action="PRAuthorizationLists">
+
+                            @*  <input type="checkbox" id="allcb">
+                            <label for="allcb">Select All</label>*@
+
+
+                            @*    <i class="bi bi-tools"></i>
+                            <span>AuthorizationLL</span>*@
+                        </a>
+
+                    </tbody>
+
+                </table>
+
+                @*<span type="button" onclick="myFunction()" class="btn btn-success"></span>*@
+                @*<span type="button" class="btn btn-secondary">View Attachment</span>
+
+                @*<span type="button" class="btn btn-info">View All Price Comparison</span>*@
+
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+
+
+    <style>
+        .currSign:before {
+            content: '₱';
+        }
+    </style>
+    <script>
+
+
+        let x = document.querySelectorAll(".currencyformat");
+        for (let i = 0, len = x.length; i < len; i++) {
+            let num = Number(x[i].innerHTML)
+                .toLocaleString('en');
+            x[i].innerHTML = num;
+            x[i].classList.add("currSign");
+        }
+
+        document.getElementById("disapproved").disabled = true;
+        document.getElementById("approved").disabled = true;
+
+    </script>
+
+    <script>
+
+
+        $(document).ready(function () {
+            //$('#approved').click(function () {
+            //    var values = $('input[type="checkbox"].myCheckbox:checked').map(function () {
+            //        return $(this).val();
+            //    }).toArray();
+
+
+            //    $.ajax(
+            //        {
+            //            type: 'POST',
+            //            url: '/ApprovePRAuthorizationALL/Authorization',
+
+            //            data: JSON.stringify({ prno: values }),
+            //            contentType: 'application/json',
+            //            success: function (response) {
+            //                JSalert(response.success, response.errormsg);
+            //            }
+            //        });
+            //});
+
+            //$('#approved').click(function () {
+            //    var values = $('input[type="checkbox"].myCheckbox:checked').map(function () {
+            //        return $(this).val();
+
+            //    }).toArray();
+
+
+            //    var url2 = '@Url.Action("ApprovePRAuthorizationALL", "Authorization")';
+
+
+            //    $.ajax(
+            //        {
+            //            url: url2,
+            //            data: 'prno=' + JSON.stringify(values),
+            //            dataType: "JSON",
+            //            type: "GET",
+            //            success: function (response) {
+            //                JSalert(response.success, response.errormsg);
+            //            }
+            //        });
+
+            //    return false;
+            //});
+
+
+        });
+
+
+        function disapproveswal() {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Are you sure you want to disapprove this payment request.',
+                text: "Please type reason :",
+                input: 'text',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm Disapprove',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swalWithBootstrapButtons.fire(
+                        'Disapprove!',
+                        'Payment Request has been Disapprove.',
+                        'success'
+                    )
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Cancelled',
+                        'This payment is not yet confirm to approve',
+                        'cancel'
+                    )
+                }
+            })
+        }
+        function titleCase(str) {
+            str = str.toLowerCase().split(' ');
+            for (var i = 0; i < str.length; i++) {
+                str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+            }
+            return str.join(' ');
+        }
+
+        function approveswal() {
+            var stringAuthirizeClass = $('#approved').val();
+            var stringAuthirizeClass2;
+
+            stringAuthirizeClass = stringAuthirizeClass.toString().toLowerCase();
+            var checkboxes = $('input:checkbox:checked').length;
+            if (checkboxes > 0) {
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: true
+                })
+                swalWithBootstrapButtons.fire({
+                    title: 'Are you sure you want to ' + stringAuthirizeClass + ' all selected request?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: titleCase(stringAuthirizeClass),
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: false
+
+                    //Swal.fire({
+                    //title: 'Are you sure you want to ' + stringAuthirizeClass + ' all selected  request?',
+                    //icon: 'question',
+                    //showCancelButton: true,
+                    //confirmButtonColor: titleCase(stringAuthirizeClass),
+                    // cancelButtonColor: 'Cancel',
+                    //reverseButtons: false
+
+
+
+
+
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        var values = $('input[type="checkbox"].myCheckbox:checked').map(function () {
+                            return $(this).val();
+
+                        }).toArray();
+
+                        var url2 = '@Url.Action("ApprovePRAuthorizationALL", "Authorization")';
+
+                        $.ajax(
+                            {
+                                url: url2,
+                                data: 'prno=' + JSON.stringify(values),
+                                dataType: "JSON",
+                                type: "GET",
+                                beforeSend: function () {
+                                    ShowLoader();
+                                },
+                                success: function (response) {
+                                    JSalert(response.success, response.errormsg);
+
+                                },
+                                error: function (xhr, status) {
+                                    JSalert(status, xhr.statusText);
+                                    alert(xhr.statusText);
+                                }
+
+                                        complete: function (data) {
+                                    $("#loader").modal("hide");
+                                }
+                            }
+                        );
+
+                        return false;
+
+                        swalWithBootstrapButtons.fire(
+                            stringAuthirizeClass,
+                            'Payment Request has been ' + stringAuthirizeClass,
+                            'success'
+                        )
+
+
+
+                    } else if (
+                        /* Read more about handling dismissals below */
+                        result.dismiss === Swal.DismissReason.cancel
+
+                    ) {
+                        //swalWithBootstrapButtons.fire(
+                        //    'Cancelled',
+                        //    'This payment request is not yet confirm to ' + stringAuthirizeClass,
+                        //    'cancel'
+                        //)
+                    }
+                })
+
+
+            }
+
+            if (checkboxes == 0) {
+
+
+                myFunction();
+                return;
+            }
+
+
+
+
+
+
+
+        }
+
+        function disapproveswal2() {
+
+            var checkboxes = $('input:checkbox:checked').length;
+            if (checkboxes > 0) {
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                })
+                swalWithBootstrapButtons.fire({
+                    title: 'Are you sure? You want to disapprove this payment request.',
+                    text: "Please type reason :",
+                    input: 'text',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm Disapprove',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        var values = $('input[type="checkbox"].myCheckbox:checked').map(function () {
+                            return $(this).val();
+
+                        }).toArray();
+
+                        var url2 = '@Url.Action("DisapprovePRAuthorizationALL", "Authorization")';
+
+                        $.ajax(
+                            {
+                                url: url2,
+                                data: 'prno=' + JSON.stringify(values),
+                                dataType: "JSON",
+                                type: "GET",
+                                success: function (response) {
+                                    JSalert(response.success, response.errormsg);
+                                }
+                            });
+
+                        return false;
+
+                        swalWithBootstrapButtons.fire(
+                            'Disapprove!',
+                            'Payment Request has been Disapprove.',
+                            'success'
+                        )
+                    } else if (
+                        /* Read more about handling dismissals below */
+                        result.dismiss === Swal.DismissReason.cancel
+
+                    ) {
+                        swalWithBootstrapButtons.fire(
+                            'Cancelled',
+                            'This payment is not yet confirm to disapprove',
+                            'cancel'
+                        )
+                    }
+                })
+
+
+            }
+
+            if (checkboxes == 0) {
+                myFunction();
+                return;
+            }
+
+
+
+
+
+
+
+        }
+
+        function JSalert(msgType, msg) {
+            if (msgType == "SUCCESS") {
+                Swal.fire(msg, "Authorization", "success", 2000, true).then(okay => {
+                    if (okay) {
+                        location.reload(true);
+                    }
+                });
+            } else {
+                Swal.fire(msg, "Authorization", "error", 2000, true);
+            }
+        }
+
+
+        document.getElementById("disapproved").disabled = false;
+        document.getElementById("approved").disabled = false;
+
+
+
+        function 
+        _changed(termsCheckBox) {
+            var checkboxes = $('input:checkbox:checked').length;
+            if (checkboxes > 0) {
+                //document.getElementById("disapproved").disabled = false;
+                //document.getElementById("approved").disabled = false;
+                document.getElementById("btnLabel").innerHTML = "Unselect all";
+            }
+
+            if (checkboxes == 0) {
+                //document.getElementById("disapproved").disabled = true;
+                //document.getElementById("approved").disabled = true;
+                document.getElementById("btnLabel").innerHTML = "Select all";
+            }
+        }
+
+
+        $('#allcb').click(function () {
+
+            let btn = document.getElementById("btnLabel").innerText
+            //alert(btn);
+            if (btn == "Select all") {
+
+                $('tbody tr td input[type="checkbox"]').each(function () {
+                    $(this).prop('checked', true);
+                });
+
+                document.getElementById("btnLabel").innerHTML = "Unselect all";
+                //document.getElementById("disapproved").disabled = false;
+                //document.getElementById("approved").disabled = false;
+            }
+            else {
+                $('tbody tr td input[type="checkbox"]').each(function () {
+                    $(this).prop('checked', false);
+                });
+                document.getElementById("btnLabel").innerHTML = "Select all";
+                //document.getElementById("disapproved").disabled = true;
+                //document.getElementById("approved").disabled = true;
+            }
+
+        });
+        function myFunction() {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Unable to proceed!',
+                text: 'Please select  atleast 1 record to process.',
+
+            })
+
+            //customAlert.alert('Please select  atleast 1 record to process.', 'Unable to proceed!')
+
+        }
+
+
+        function CustomAlert() {
+            this.alert = function (message, title) {
+                document.body.innerHTML = document.body.innerHTML + '<div id="dialogoverlay"></div><div id="dialogbox" class="slit-in-vertical"><div><div id="dialogboxhead"></div><div id="dialogboxbody"></div><div id="dialogboxfoot"></div></div></div>';
+
+                let dialogoverlay = document.getElementById('dialogoverlay');
+                let dialogbox = document.getElementById('dialogbox');
+
+                let winH = window.innerHeight;
+                dialogoverlay.style.height = winH + "px";
+
+                dialogbox.style.top = "100px";
+
+                dialogoverlay.style.display = "block";
+                dialogbox.style.display = "block";
+
+                document.getElementById('dialogboxhead').style.display = 'block';
+
+                if (typeof title === 'undefined') {
+                    document.getElementById('dialogboxhead').style.display = 'none';
+                } else {
+                    document.getElementById('dialogboxhead').innerHTML = '<i class="fa fa-exclamation-circle" aria-hidden="true"></i> ' + title;
+                }
+                document.getElementById('dialogboxbody').innerHTML = message;
+                document.getElementById('dialogboxfoot').innerHTML = '<button class="pure-material-button-contained active" onclick="customAlert.ok()">OK</button>';
+            }
+
+            this.ok = function () {
+                document.getElementById('dialogbox').style.display = "none";
+                document.getElementById('dialogoverlay').style.display = "none";
+            }
+        }
+
+        let customAlert = new CustomAlert();
+
+
+
+
+        function checkIfOther() {
+
+            a = document.getElementById("approved");
+
+            if (a.value == "other")
+
+                document.getElementById("approved").setAttribute("style", "display:inline");
+
+            else
+
+                document.getElementById("approved").setAttribute("style", "display:none");
+        }
+
+
+    </script>
+
+
+</main>
+
+
+
+
+
+
+
+
+

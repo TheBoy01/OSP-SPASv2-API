@@ -1,0 +1,66 @@
+﻿@model SPASv2.Models.UpdateDetailsModalViewModel
+
+@*modalDenyRequest*@
+<div class="modal fade" id="@Model.ModalName" tabindex="-1" style="display: none; margin-top:20px;" aria-hidden="true">
+    <div class="modal-dialog ">
+        @*<form id="@Html.Raw(Model.ModalName)frm">*@
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="card-title" style="padding: 0px;">@Model.ModalTitle</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                @Html.Raw(Model.Instruction)
+
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Sales Invoice No</label>
+                    <input type="text" class="form-control" id="@Model.SalesInvoiceNo" required>
+                </div>
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Sales Invoice Date</label>
+                    <input type="Date" class="form-control" id="@Model.SalesInvoiceDate" required>
+                </div>
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Deduction</label>
+                    <input type="number" class="form-control" id="@Model.Deduction" value="0" required>
+                </div>
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Total Amount</label>
+                    <input type="number" class="form-control" id="@Model.TotalAmount" value="0" required>
+                </div>
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Freight</label>
+                    <input type="number" class="form-control" id="@Model.Freight" required>
+                </div>
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Attachment</label>
+                    <input type="file" class="form-control" onchange="selectFolder(event);" multiple>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <center> 
+                    <button type="button" class="btn btn-success"  onclick="UpdateDetails(@Model.SuccessMethod)">Update</button>
+                </center>
+            </div>
+        </div>
+        @*</form>*@
+    </div>
+</div>
+
+<script>
+
+    window.onload = function () {
+
+    };
+
+    function UpdateDetails(method) {
+
+        var codeToExecute = method;
+        var tmpFunc = new Function(codeToExecute);
+        tmpFunc();
+    }
+
+
+</script>

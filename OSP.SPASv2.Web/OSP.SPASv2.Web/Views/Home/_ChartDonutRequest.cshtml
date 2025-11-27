@@ -1,0 +1,153 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.DashBoardViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="card" hidden>
+    <div class="filter">
+        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+            <li class="dropdown-header text-start">
+                <h6>Filter</h6>
+            </li>
+            <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilterDate('Today')">Today</a></li>
+            <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilterDate('ThisMonth')">This Month</a></li>
+            <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilterDate('ThisYear')">This Year</a></li>
+        </ul>
+    </div>
+
+    <div class="card-body pb-0">
+        <h5 class="card-title">Recent Request<br />by Status <span>| <span class="spanFilterDateStatus">This Month</span></span></h5>
+
+        <canvas id="doughnutChart" style="max-height: 400px;"></canvas>
+
+        <table class="table table-borderless datatable table-striped " id="dtDisplay" style="min-height:100px; margin-top: -200px;">
+            <thead style="background: #f6f6fe;">
+                <tr>
+                    <th>
+                        Status
+                    </th>
+                    <th class="flex-center">
+                       # of Request
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody id="statuslistbody1">
+                @foreach (var item in Model.DonutChartValue)
+                {
+                    <tr>
+                        <td>
+                            @item.name
+                        </td>
+                        <td class="flex-center">
+                            @item.value.ToString("#,##0")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<script>
+
+    var chartlabel = @Html.Raw(JsonConvert.SerializeObject(Model.DonutChartLabel));
+    var chartctr = @Html.Raw(JsonConvert.SerializeObject(Model.DonutChartCtr));  
+
+    document.addEventListener("DOMContentLoaded", () => {
+        new Chart(document.querySelector('#doughnutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: chartlabel,
+                datasets: [{
+                    label: 'Request Count',
+                    data: chartctr,
+                    backgroundColor: [
+                        'rgb(153, 102, 255)',   
+                        'rgb(255, 205, 86)',
+                        'rgb(255, 120, 254)',                        
+                        'rgb(201, 203, 207)',
+                        'rgb(75, 192, 192)',                                             
+                        'rgb(255, 99, 132)',                       
+                        'rgb(54, 162, 235)',
+                        'rgb(60, 179, 113)',
+                        'rgb(240, 61, 61)'
+                    ],
+                    hoverOffset: 4
+                }]
+            }
+        });
+    });
+
+
+    var filterDate = "ThisMonth";
+    var filterDateDesc = "This Month";
+
+    $('.linkbutton').click(function (e) {
+        e.preventDefault();
+    });
+
+    function SetFilterDate(filtertype) {
+        filterDate = filtertype;
+        filterDateDesc = filtertype;
+
+        switch (filtertype) {
+            case "ThisMonth":
+                {
+                    filterDateDesc = "This Month";
+                    break;
+                }
+            case "ThisYear":
+                {
+                    filterDateDesc = "This Year";
+                    break;
+                }
+            default:
+            {
+                    filterDateDesc = filter;
+                break;
+            }
+        };
+
+        $(".spanFilterDateStatus").html(filterDateDesc);
+        RefreshDoughnutChart();
+    }
+
+    function RefreshDoughnutChart() {
+
+        let canvas = document.querySelector('#doughnutChart')
+        let chart = Chart.getChart(canvas); // Select using the canvas element
+
+        $.ajax({
+            url: '/Home/GetRequestStatusCount',
+            type: 'GET',
+            dataType: 'json',
+            data: { filtertype: filter, sorttype: sort },
+            success: function (response) {
+                chart.data.labels = response.DonutChartLabel;
+                chart.data.datasets[0].data = response.DonutChartCtr;      
+
+                chart.update();
+
+                $("#statuslistbody1").html("");
+
+                var tablerows = "";
+                for (let i = 0; i < response.DonutChartLabel.length; i++) {
+
+                    tablerows = tablerows + '<tr>';
+                    tablerows = tablerows + '<td>' + response.DonutChartLabel[i] + '</td>';
+                    tablerows = tablerows + '<td><div class="moneyData" ><div class="currencySymbol" style = "text-align:right; margin-right:50px;" > ' + response.DonutChartCtr[i].toLocaleString("en-US", { maximumFractionDigits: 0, minimumFractionDigits: 0 }); + ' </div></div></td></tr>';
+                }
+
+                $("#statuslistbody1").html(tablerows);
+            }
+        });
+
+
+    }
+
+</script>

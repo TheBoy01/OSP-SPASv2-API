@@ -1,0 +1,63 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+
+@{
+    Layout = null;
+}
+
+<style>
+    @@media (min-width: 1200px) {
+    #mobQuickLinks {
+        display:none;
+    }
+
+    #webQuickLinks{
+        display:block;
+    }
+}
+
+    @@media (max-width: 1199px) {
+    #mobQuickLinks {
+        display:block;
+    }
+
+    #webQuickLinks{
+        display:none;
+    }
+}
+</style>
+
+@if(Model.DashboardType == "REQUESTER" || string.IsNullOrEmpty(Model.DashboardType))
+    {
+        <div class="card" style="min-height: 170px;" id="@Model.QuickLinkID">
+            <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-lightning-charge"></i>Quick Links</h5>
+                <a type="button" href="/Requisition/List" class="btn btn-outline-primary mr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="List of Requisition (Single)"><i class="bi bi-journal-check" style="font-size: x-large;"></i></a>
+            <a type="button" href="/Requisition/Create" class="btn btn-outline-primary mlr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Create Single Requsition"><i class="bi bi-journal-plus" style="font-size: x-large;"></i></a>
+            <a type="button" href="/BatchRequisition/List" class="btn btn-outline-primary ml-r mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="List of Requisition (Batch)"><i class="bi bi-folder-check" style="font-size: x-large;"></i></a>
+            <a type="button" href="/BatchRequisition/Create" class="btn btn-outline-primary ml-r mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Create Batch Requisition"><i class="bi bi-folder-plus" style="font-size: x-large;"></i></a>
+                <a type="button" href="/Reports/Index" class="btn btn-outline-primary ml-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Reports"><i class="bi bi-bar-chart" style="font-size: x-large;"></i></a>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card" style="min-height: 170px;" id="@Model.QuickLinkID">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-lightning-charge"></i>Quick Links</h5>
+                    <a type="button" href="/Authorization/PRAuthorizationLists" class="btn btn-outline-primary mr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Single Request Authorization"><i class="bi bi-journal-check" style="font-size: x-large;"></i></a>
+                    <a type="button" href="/Authorization/BatchPRAuthorization" class="btn btn-outline-primary mr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Batch Request Authorization"><i class="bi bi-folder-check" style="font-size: x-large;"></i></a>
+                    <a type="button" href="/" class="btn btn-outline-primary mr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Vendor Authorization"><i class="bi bi-person-check" style="font-size: x-large;"></i></a>
+                    <a type="button" href="/Authorization/AuthorizerMaintenance" class="btn btn-outline-primary mr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Authorization Maintenance "><i class="bi bi-shield-lock" style="font-size: x-large;"></i></a>
+                    <a type="button" href="/VendorMaintenance/VendorList" class="btn btn-outline-primary mr-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Vendor Maintenance "><i class="ri-admin-line" style="font-size: x-large;"></i></a>
+                    <a type="button" href="/Reports/Index" class="btn btn-outline-primary ml-3 mb-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Reports"><i class="bi bi-bar-chart" style="font-size: x-large;"></i></a>
+                </div>
+            </div>
+        }
+

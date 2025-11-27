@@ -1,0 +1,128 @@
+﻿@model SPASv2.Models.RequisitionViewModel
+@{
+    Layout = null;
+}
+
+<table class="table table-bordered nowrap" id="@Model.SupDocsListName" style="width:100%">
+    <thead>
+        @{
+            string isHidden = Model.showDeleteDocs ? "" : "hidden";
+        }
+
+        <tr>
+            <th @isHidden></th>
+            <th>
+                File Name
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Files.Where(t => t.ReqNo == Model.PRNo))
+        {
+            <tr>
+                <td @isHidden>
+                    
+
+                    <center>
+                        <a class="btn text-danger linkbutton" onclick="removeDocs('@item.Path')" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Remove" style="padding:0px;">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </center>
+                </td>
+                <td>
+
+                    @{
+                        string[] _validExtensions = { ".jpeg", ".jpg", ".bmp", ".gif", ".png", ".tiff", ".tif", ".raw" };
+                        bool isImage = _validExtensions.Contains(System.IO.Path.GetExtension(item.Name));
+
+                    }
+                    <a href="@item.Src" target="_blank" @*onclick="ShowImage('@item.Src', '@item.Name', @isImage.ToString().ToLower())"*@>
+                        <i class="bi bi-paperclip" style="color:darkblue;"></i>
+                        @item.Name
+                    </a>
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*<script>
+    new DataTable('#tblSupDocs', {
+        responsive: true
+    });
+</script>
+*@
+
+<div id="modalContainer"></div>
+
+<script>
+
+    var DocPath;
+    new DataTable('#@Html.Raw(Model.SupDocsListName)', {
+        responsive: true,
+        columnDefs: [
+            { width: '5%', targets: 0 },
+            { width: '95%', targets: 1 },
+        ],
+        fixedColumns: true
+    });
+
+    function removeDocs(path)
+    {
+        DocPath = path;
+        ShowAlert(
+            {
+                title: "Are you sure?",
+                text: "To proceed, you will be required to enter username and password!",
+                icon: "question",
+                showCancelButton: "true",
+                cancelButtonText: "Cancel",
+                confirmButtonText: "Yes, proceed!",
+                successmethod: "ShowAuthenticationTodelete()"
+            });
+    }
+
+    function ShowAuthenticationTodelete()
+    {
+        ShowAuthentication({
+            "successmethod": "Approved()"
+        });
+    }
+
+    function Approved()
+    {
+        $.ajax({
+            url: '@Url.Action("DeleteDocs", "Requisition")',
+            type: 'POST',
+            data: { DocPath: DocPath},
+            success: function (result) {
+                if (result.success) {
+                    ShowAlert(
+                        {
+                            title: "Success",
+                            text: "Authenticated. File successfully deleted!",
+                            icon: "success",
+                            showCancelButton: "false",
+                            confirmButtonText: "Ok",
+                            successmethod: "ReloadPage()",
+                            cancelmethod: "ReloadPage()"
+                        });
+                }
+                else {
+                }
+            },
+        });
+
+        
+
+    }
+
+
+    function ReloadPage() {
+        location.reload();
+    }
+
+
+</script>

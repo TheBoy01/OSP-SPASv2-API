@@ -1,0 +1,374 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+@using Microsoft.AspNetCore.Identity
+@using OSP.SPASv2.Web.Areas.Identity.Data
+
+@inject SignInManager<OSPSPASv2ApplicationUser> SignInManager
+@inject UserManager<OSPSPASv2ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Requester Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*
+<div class="text-center">
+    <h1 class="display-4">Welcome RudyBAB</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>*@
+
+<head>
+    <style>
+        .dashboard .active-card .card-icon {
+            color: #4154f1;
+            background: #dfe2ff;
+        }
+
+        .dashboard .denied-card .card-icon {
+            color: #ff0202;
+            background: #ffc3c3;
+        }
+
+        @@media only screen and (min-width: 991.12px) {
+            #cardList {
+                min-height: 719px !important;
+            }
+        }
+    </style>
+</head>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Requester Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Dashboard</li>
+                <li class="breadcrumb-item active">Requester</li>
+                <li class="breadcrumb-item active">User ID: @UserManager.GetUserId(User)</li>
+
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+
+                    @{
+                        Model.QuickLinkID = "mobQuickLinks";
+                        await Html.RenderPartialAsync("_DashboardQuickLinks", Model);
+                    }
+
+                    <!-- Sales Card -->
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card  active-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#divSelectedList"  onclick="setRequestStat('PD-REQUESTER',false)"><h5 class="card-title">Active Request</h5>
+                                    </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-REQUESTER',false)">
+                                        <i class="bi bi-file-earmark-check"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-REQUESTER',false)">
+                                        <h6 id="activeCtr" >@Model.ActiveCtr</h6>
+                                        <span class="text-muted small pt-2 ps-1">On process</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Sales Card -->
+                    <!-- Sales Card -->
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card  active-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#divSelectedList" onclick="setRequestStat('PD-FORPAYMENT',false)">
+                                    <h5 class="card-title">For Payment</h5>
+                                </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #e0f8e9;">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-FORPAYMENT',false)" style="color: #2eca6a;">
+                                            <i class="bx bxs-bookmark-alt-plus"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-FORPAYMENT',false)">
+                                            <h6 id="forPaymentCtr">@Model.ForPaymentCtr</h6>
+                                            <span class="text-muted small pt-2 ps-1">with Purchase Order</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Revenue Card -->
+
+                    <div class="col-xxl-4 col-md-6" >
+                        <div class="card info-card  active-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#divSelectedList" onclick="setRequestStat('PD-POWITHBAL',false)">
+                                    <h5 class="card-title">PO W/ Payment</h5>
+                                </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style=" background-color: #e3f6ff;">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-POWITHBAL',false)" style="color: #1e94cf;">
+                                            <i class="ri-shopping-cart-fill"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-POWITHBAL',false)">
+                                            <h6 id="poWithBalCtr">@Model.POWithBalanceCtr</h6>
+                                            <span class="text-muted small pt-2 ps-1">outstanding delivery</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-4 col-md-6" >
+                        <div class="card info-card denied-card">
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#divSelectedList" onclick="setRequestStat('PD-REQRUSH',false)">
+                                    <h5 class="card-title">Rush Request</h5>
+                                </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #ffbf0040;">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-REQRUSH',false)">
+                                            <i class="bx bx-alarm-exclamation" style="color: #e5a000 !important;"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#divSelectedList" onclick="setRequestStat('PD-REQRUSH',false)">
+                                            <h6 id="requesterRushCtr">@Model.RequesterRushCtr</h6>
+                                            <span class="text-muted small pt-2 ps-1">For Approval</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card denied-card">
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#divSelectedList" onclick="setRequestStat('DN-APPROVER',false)">
+                                    <h5 class="card-title">Denied Request</h5></a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <a href="#divSelectedList" onclick="setRequestStat('DN-APPROVER',false)">
+                                        <i class="bi bi-file-earmark-x text-danger"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#divSelectedList" onclick="setRequestStat('DN-APPROVER',false)">
+                                        <h6 id="deniedCtr">@Model.DeniedCtr</h6>
+                                        <span class="text-muted small pt-2 ps-1">Disapproved</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Revenue Card -->
+                    <!-- Customers Card -->
+                    @*col-xl-12*@
+                    <div class="col-xxl-4 col-md-6">
+
+                        <div class="card info-card customers-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#divSelectedList" onclick="setRequestStat('CR-REQUESTER',false)">
+                                    <h5 class="card-title">Payment Validation </h5>
+                                </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <a href="#divSelectedList" onclick="setRequestStat('CR-REQUESTER',false)">
+                                            <i class="bi bi-images" style="color: #ff771d !important;"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#divSelectedList" onclick="setRequestStat('CR-REQUESTER',false)">
+                                        <h6 id="paymentValCtr">@Model.PaymentValidationCtr</h6>
+                                        <span class="text-muted small pt-2 ps-1">for Confirmation</span>
+                                        </a>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div><!-- End Customers Card -->
+
+                    <div id="divSelectedList">
+                    @{
+                        
+                        await Html.RenderPartialAsync("_SelectedList", Model);
+                    }
+                    </div>
+                    
+                    <div id="divVendorRunningBal">
+                        @{
+
+                            await Html.RenderPartialAsync("_VendorRunningBalancePanel", Model);
+                        }
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-4">
+
+                @{
+                    Model.QuickLinkID = "webQuickLinks";
+                    await Html.RenderPartialAsync("_DashboardQuickLinks", Model);
+                }
+
+                @{
+                    await Html.RenderPartialAsync("_SearchSidePanel", Model);
+                }
+            </div>
+
+        </div>
+    </section>
+
+
+</main><!-- End #main -->
+
+<div id="divScript">
+    
+</div>
+
+<script type="text/javascript">
+    
+    var reqStat = "PD-REQUESTER";
+
+    function setRequestStat(stat,showRefresh) {
+        reqStat = stat;
+        
+        $.ajax({
+            url: '/Home/SetSelectedList',
+            type: 'GET',
+            dataType: 'html',
+            data: { requeststatus: reqStat },
+            beforeSend: function () {
+                ShowLoader();
+
+            },
+            success: function (response) {
+                //$("#dtDisplay").addClass('datatable');
+                $("#divSelectedList").html(response);
+                
+                if (showRefresh)
+                {
+                    ShowAlert(
+                        {
+                            title: "Success",
+                            text: "Record successfully refreshed!",
+                            icon: "success"
+                        });
+                }
+
+                },
+            error: function () {
+              
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+
+        
+    }
+
+    var DashboardDate = "1900-1-1";
+
+    function timerIncrement() {
+
+        $.ajax({
+            url: '/Home/GetDashboardCtr',
+            type: 'GET',
+            dataType: 'json',
+            data: { requeststatus: reqStat, DashboardDate: DashboardDate },            
+            success: function (response) {   
+                
+                DashboardDate = response.DashboardDate;
+
+                if(!response.DashboardIsUptodate)
+                {
+                    //alert('Dashboard is outdated');
+
+                    $("#activeCtr").html(response.ActiveCtr);
+                    $("#deniedCtr").html(response.DeniedCtr);
+                    $("#paymentValCtr").html(response.PaymentValidationCtr);
+                    $("#forPaymentCtr").html(response.ForPaymentCtr);   
+                    $("#poWithBalCtr").html(response.POWithBalanceCtr);
+                    $("#requesterRushCtr").html(response.RequesterRushCtr);
+
+                }
+            },
+            error: function () {
+                
+            }
+        });
+
+        
+    }
+
+    window.onload = function () {
+        let idleInterval =
+                setInterval(timerIncrement, 1000);
+        
+    };
+
+    
+</script>

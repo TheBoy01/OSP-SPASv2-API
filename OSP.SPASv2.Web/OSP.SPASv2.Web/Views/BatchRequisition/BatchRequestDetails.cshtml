@@ -1,0 +1,169 @@
+﻿@model SPASv2.Models.BatchRequisitionViewModel
+
+
+@{
+    ViewData["Title"] = "Batch Requisition";
+
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Batch Requisition Details</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/BatchRequisition/List">Requisition</a></li>
+                <li class="breadcrumb-item">Batch</li>
+                <li class="breadcrumb-item active">@Model.BatchPRNo</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col">
+                <div class="card overflow-auto">
+                    <div class="card-body">
+
+                            <div class="card-title">
+
+                                <a>Batch Request No.:</a>
+                            
+                            <a style="color:dimgray;">
+                                @Model.BatchPRNo
+                            </a>
+  
+                            <div class="">
+                                <a>Request Date:</a>
+
+                                <a style="color:dimgray;">
+                                    
+                                    @Model.RequisitionViewModel.dashboardViewModel.RequestList.FirstOrDefault().RequestDate.ToString("MM/dd/yyyy h:mm tt")
+                                </a>
+                            </div>
+
+                            <div class="">
+                                <a>Payment Class:</a>
+
+                                <a style="color:dimgray;">
+                                    @Model.RequisitionViewModel.dashboardViewModel.RequestList.FirstOrDefault().PayClass
+                                </a>
+                            </div>
+
+                            <div class="">
+                                <a>Total Amount:</a>
+
+                                <a style="color:dimgray;">
+                                    &#8369 @string.Format("{0:#,0.00##}",   @Model.RequisitionViewModel.dashboardViewModel.RequestList.Sum(a => a.Amount))
+                                </a>
+                            </div>
+                            
+                        </div>
+                        <div id="divRequisitionList">
+                            @{
+
+                                Model.RequisitionViewModel.ListHidenColumns = new List<string>()
+                            { "BatchNo","PayClass","RequestDate","Confirmation"};
+
+                                await Html.RenderPartialAsync("/Views/Requisition/_RequisitionList.cshtml", Model.RequisitionViewModel);
+                        }
+                        </div>
+                        
+                      @*  <table class="table table-borderless datatable table-striped " style="min-height:200px;" hidden>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Request No
+                                    </th>
+                                    <th>
+                                        Company
+                                    </th>
+                                    <th>
+                                        Department
+                                    </th>
+                                    <th>
+                                        Purchase Order No
+                                    </th> 
+                                    <th>
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Vendor")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Date")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Class")
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.DashBoardViewModel.RequestList)
+                                {
+                                    <tr>
+                                        
+                                        <td scope="row"> <a href="@Url.Action("ViewPR", "PaymentRequest",new { prno=item.RequestID})">@Convert.ToString(item.RequestID)</a></td>     
+                                        <td>
+                                           CHAPELS
+                                        </td>
+                                        <td>
+                                            @item.DeptDesc
+                                        </td>
+                                        <td>
+                                            @item.PONo
+                                        </td>
+
+                                        <td class="money">
+                                            &#8369 @string.Format("{0:#,0.00##}", item.Amount)
+                                        </td>
+                                        <td> 
+                                            @switch (item.Status.ToUpper())
+                                            {
+                                                case "APV PREPARATION":
+                                                case "FOR POSTING":
+                                                case "FOR CREDITATION":
+                                                case "APPROVED":
+                                                case "VERIFIED":
+                                                case "FOR PAYMENT":
+                                                default:
+                                                    {
+                                                        <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px;">
+                                                            @item.Status
+                                                        </span>
+                                                        break;
+                                                    }
+                                            } 
+                                        </td>
+                                        <td>
+                                            @item.Vendor
+                                        </td>
+                                        <td>
+                                            @item.RequestDate
+                                        </td>
+                                        <td>
+                                            @item.PayClass
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+*@
+
+                    </div>
+
+                </div>
+                </div>
+            
+        </div>
+        
+    </section>
+
+</main>

@@ -1,0 +1,111 @@
+﻿@{
+    //ViewData["Title"] = "Privacy Policy";
+    Layout = "/Views/Shared/_LoginLayout.cshtml";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="container" style="width:100%; margin-top:10%;" >
+    <div class="row">
+        <div class="col" style="">
+            <div class="flex-center">
+                <div class="row">
+                    <img src="~/lib/img/loginpage500x500.jpg" alt="Avatar" style="max-width:500px;width:100%;height:auto;">
+                </div>
+            </div>
+        </div>
+        <div class="col" style="">
+            <div style="margin:10px 10px 20px 20px;width:100%;">
+                <br /><br />
+                        <div class="container">
+                            <div class="pt-4 pb-2">
+                                <h2 class="card-title text-center pb-0 fs-2">SPASv2</h2>
+
+                                <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                                <p class="text-center small">Enter your username & password to login</p>
+                            </div>
+
+                            <form id="loginForm" asp-action="Login" asp-controller="Home">
+
+                                <div class="col-12">
+                                    <label for="yourUsername" class="form-label">Username</label>
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text" id="inputGroupPrepend"></span>
+                                        <input type="text" name="username" class="form-control" id="yourUsername" required>
+                                        <div class="invalid-feedback">Please enter your username.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="yourPassword" class="form-label">Password</label>
+                                    <input type="password" name="password" class="form-control" id="yourPassword" required>
+                                    <div class="invalid-feedback">Please enter your password!</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
+                                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100" id="btnLogin" type="submit" value="Login">Login</button>
+                                    @*<input type="button" value="Login" id="btnLogin" class="btn btn-primary w-100" />*@
+                                </div>
+                                <div class="col-12">
+                                    <p class="small mb-0">Don't have account? <a href="pages-register.html">Create an account</a></p>
+                                </div>
+                            </form>
+                        </div>
+                    <span class="msg" id="messageSpan"></span>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+        $(function () {
+            $("#btnLogin_").click(function () {
+                var model =
+                {
+                    Username: document.getElementById("yourUsername").value,
+                    Password: document.getElementById("yourPassword").value
+                };
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Home/Login',
+                    data: { Login: model },
+                    dataType: 'json',
+                    success: function (response) {
+                        document.getElementById("testpartial").innerHTML = response.v1;
+                        document.getElementById("testpartial2").innerHTML = response.v2;
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+
+            $("#btnTest").click(function () {
+                $.ajax({
+                    url: '/Home/TestResponse',
+                    type: 'GET',
+                    dataType: 'html',
+                    success: function (data) {
+                        alert(data.ErrorMessage);
+                    },
+                    error: function () {
+                        alert('Error getting products');
+                    }
+                });
+            });
+        });
+    </script>
+
+

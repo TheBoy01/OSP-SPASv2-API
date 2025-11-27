@@ -1,0 +1,1296 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using OSP.SPASv2.Web.Areas.Identity.Data
+@using Newtonsoft.Json;
+@model SPASv2.Models.RequisitionViewModel
+@inject SignInManager<OSPSPASv2ApplicationUser> SignInManager
+@inject UserManager<OSPSPASv2ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = ViewData["pagetitle"];
+    Layout = null;
+}
+
+@*<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+        integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
+        crossorigin="anonymous"></script>*@
+<style>
+    #basic-addon1 {
+        width: 150px;
+        background-color: #dedcff;
+    }
+
+    .input-group {
+        margin-bottom: 5px;
+    }
+</style>
+
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+@{
+    ReasonModalViewModel DeclineModalModel = new ReasonModalViewModel()
+            {
+                ModalName = "modalDenyRequest",
+                ModalTitle = "Deny Transaction Details",
+                SuccessMethod = "ConfirmDenialRequest()",
+                lstReason = Model.lstReason.Where(a => a.Category == "DECLINE").ToList(),
+                cboReasonId = "cboDenialReason",
+                txtReasonRemarksId = "txtDenialRemarksId",
+                Instruction = "<a style='color: #012970 !important;'>Please enter reason to deny the transaction!</a>"
+            };
+
+    await Html.RenderPartialAsync("_ReasonDetails.cshtml", DeclineModalModel);
+    // /Views/Requisition/_ReasonDetails.cshtml
+}
+
+@{
+    ReasonModalViewModel _voidReasonModal = new ReasonModalViewModel()
+            {
+                ModalName = "modalVoidRequest",
+                ModalTitle = "Void Transaction Details",
+                SuccessMethod = "ConfirmVoidRequest()",
+                lstReason = Model.lstReason.Where(a => a.Category == "DECLINE").ToList(),
+                cboReasonId = "cboVoidReason",
+                txtReasonRemarksId = "txtVoidRemarksId",
+                Instruction = "<a style='color: #012970 !important;'>Please enter reason to void the transaction!</a>"
+            };
+
+    await Html.RenderPartialAsync("_ReasonDetails.cshtml", _voidReasonModal);
+    // /Views/Requisition/_ReasonDetails.cshtml
+}
+
+@{
+    ReasonModalViewModel _rushReasonModal = new ReasonModalViewModel()
+            {
+                ModalName = "modalVerifyRush",
+                ModalTitle = "Rush Reason Details",
+                SuccessMethod = "ConfirmVerifyRush()",
+                lstReason = Model.lstReason.Where(a => a.Category == "RUSH").ToList(),
+                cboReasonId = "cboRushReason",
+                txtReasonRemarksId = "txtRushRemarksId",
+                Instruction = "<a style='color: #012970 !important;'>Please enter reason to tag transaction as rush!</a>"
+            };
+
+    await Html.RenderPartialAsync("_ReasonDetails.cshtml", _rushReasonModal);
+    // /Views/Requisition/_ReasonDetails.cshtml
+}
+
+@{
+    UpdateDetailsModalViewModel _UpdateDetailsModalViewModel = new UpdateDetailsModalViewModel()
+            {
+                ModalName = "modalUpdateDetails",
+                ModalTitle = "Update Requisition Details",
+                Instruction = "<a style='color: #012970 !important;'>Please enter details to update.</a>",
+                SalesInvoiceNo = "txtSalesInvoiceNo",
+                SalesInvoiceDate = "dtpSIDate",
+                Deduction = "txtDeduction",
+                TotalAmount = "txtTotalAmount",
+                Freight = "txtFreight",
+                SuccessMethod = "CanUpdateReqDetails()"
+            };
+
+    await Html.RenderPartialAsync("_UpdateReqDetails.cshtml", _UpdateDetailsModalViewModel);
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<section class="section dashboard">
+    <div class="card mb-10 overflow-auto">
+        <div class="card-body">
+
+            @if (Model.isDenied)
+            {
+                <h2 class="card-title" style="margin-bottom:0px; padding-bottom:0px;"> <center><span style="font-size: x-large;color: #dc3545;border: red;border-color: #f27474;border-width: thick;border-style: double;padding: 3px;margin-bottom: 10px;"> Requisition has been <b>DENIED</b></span></center></h2>
+            }
+
+            @if (Model.isDenied)
+            {
+                <div class="row">
+                    <div class="col" style="min-width:300px;">
+                        <h2 class="card-title">Denial Details</h2>
+
+                        @if (Model.RequisitionInfo.DenialReason != null)
+                        {
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Reason
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.DenialReason.ToUpper()" readonly style="max-width:400px;" />
+                            </div>
+                        }
+
+                        @if (Model.RequisitionInfo.DenialRemarks != null)
+                        {
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Remarks
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                @*<textarea class="form-control" style="resize:none"  required @strReadOnly></textarea>*@
+                                <textarea class="form-control" style="resize:none; max-width:400px;" readonly>@Model.RequisitionInfo.DenialRemarks.ToUpper()</textarea>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+
+            @if (Model.RequisitionInfo.TransType.ToUpper() == "RSH")
+            {
+                <div class="row">
+                    <div class="col" style="min-width:300px;">
+                        <h2 class="card-title" style="margin-bottom:0px; padding-bottom:0px;"> <span style="font-size: large;color: #dc3545;/* border: red; *//* border-color: #f27474; *//* border-width: thick; */border-style: dotted;padding: 3px;margin-bottom: 10px;"> Rush Transaction</span></h2>
+                    </div>
+                    <div class="col" style="min-width:300px;">
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col" style="min-width:300px;">
+                    <h2 class="card-title">Request No: <span style="font-size:large; color: #3b2ffb;"> @Model.PRNo.ToUpper()</span></h2>
+                </div>
+                <div class="col" style="min-width:300px;">
+                    <h2 class="card-title">Request Date: <span style="font-size:large; color: #3b2ffb;">@Model.RequisitionInfo.ReqDate.ToString("MM/dd/yyyy")</span></h2>
+                </div>
+            </div>
+
+            @if (string.IsNullOrEmpty(@Model.RequisitionInfo.SalesInvoiceNo) && Model.RequisitionInfo.ReqNo != Model.RequisitionInfo.MainReqNo)
+            {
+                <button id="btnUpdateDetails" type="submit" class="btn btn-success" onclick="UpdateDetails()" style="min-width: 200px;">
+                    Update Requisition
+                </button>
+            }
+
+
+            <div class="row my-2">
+                <div class="col">
+                    <div class="row">
+                        <div class="col" style="min-width:300px;">
+                            <h2 class="card-title" style="padding-top: 0px;">Purchase Order Details</h2>
+
+                            @if (@Model.RequisitionInfo.MainReqNo != @Model.RequisitionInfo.ReqNo)
+                            {
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Main Request No:</span>
+                                    </div>
+                                    <input type="text" class="form-control" value="@Model.RequisitionInfo.MainReqNo" readonly="">
+                                    <a class="btn btn-primary" href="/Requisition/Details/@Model.RequisitionInfo.MainReqNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Main Request"><i class="bi bi-eye"></i></a>
+                                </div>
+                            }
+
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        P.O. No.
+                                    </span>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.PONo" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        P.O. Date
+                                    </span>
+                                </div>
+                                @if (string.IsNullOrEmpty(@Model.RequisitionInfo.PONo))
+                                {
+                                    <input class="form-control " value="" readonly />
+                                }
+                                else
+                                {
+                                    <input class="form-control " value="@Model.RequisitionInfo.PODate.ToString(" MM /dd/yyyy")" readonly />
+                                }
+
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Approval No</span>
+                                </div>
+                                <input type="text" class="form-control" value="@Model.RequisitionInfo.MainReqApprovalNo" readonly="">
+                                <a class="btn btn-primary" href="/Requisition/BatchApprovalDetails/@Model.RequisitionInfo.MainReqApprovalNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Approval"><i class="bi bi-eye"></i></a>
+                            </div>
+
+
+                            <h2 class="card-title">Requester Details</h2>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Name
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.RequesterName" readonly />
+
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Company Type
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.RequesterCompanyType" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Department
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.RequesterDepartment" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Address
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.RequesterAddress" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col">
+                    <div class="row">
+                        <div class="col" style="min-width:300px;">
+
+                            <h2 class="card-title" style="padding-top: 0px;">Vendor Details</h2>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Payment Class
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <input class="form-control" value="@Model.RequisitionInfo.PayClass" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Supplier
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.Vendor" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Payee Name
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.PayeeName" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Payment Method
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.PayMethod" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Payment Channel
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.PaymentChannel" readonly />
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <label class="form-label"> Account No</label>
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.AccountNo" readonly />
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col" style="min-width:300px;">
+
+                    <h2 class="card-title">Other Details</h2>
+
+                    @if (!string.IsNullOrEmpty(Model.RequisitionInfo.BatchNo))
+                    {
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Batch No</span>
+                            </div>
+                            <input type="text" class="form-control" value="@Model.RequisitionInfo.BatchNo" readonly="">
+                            <a class="btn btn-primary" href="/BatchRequisition/Details/@Model.RequisitionInfo.BatchNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Batch"><i class="bi bi-eye"></i></a>
+                        </div>
+                    }
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">
+                                    Reference No
+                                </span>
+                            </div>
+                        </div>
+                        <input class="form-control" value="@Model.RequisitionInfo.RefNo" readonly />
+                    </div>
+
+                    @if (Model.RequisitionInfo.MainReqNo != Model.RequisitionInfo.ReqNo)
+                    {
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        Invoice No
+                                    </span>
+                                </div>
+                            </div>
+                            <input class="form-control" value="@Model.RequisitionInfo.SalesInvoiceNo" readonly />
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        Invoice Date
+                                    </span>
+                                </div>
+                            </div>
+                            <input class="form-control" value="@Convert.ToDateTime(Model.RequisitionInfo.SalesInvoiceDate).ToString("MM/dd/yyyy")" readonly />
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        Delivery No
+                                    </span>
+                                </div>
+                            </div>
+                            <input class="form-control" value="@Model.RequisitionInfo.DeliveryNo" readonly />
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        Delivery Date
+                                    </span>
+                                </div>
+                            </div>
+                            <input class="form-control" value="@Convert.ToDateTime(Model.RequisitionInfo.DeliveryDate).ToString("MM/dd/yyyy")" readonly />
+                        </div>
+
+                    }
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">
+                                    Remarks
+                                </span>
+                            </div>
+
+                        </div>
+
+                        @*<textarea class="form-control" style="resize:none"  required @strReadOnly></textarea>*@
+                        <textarea class="form-control" style="resize:none" readonly>@Model.RequisitionInfo.Remarks</textarea>
+                    </div>
+                    @if (Model.RequisitionInfo.TransType.ToUpper() == "RSH")
+                    {
+                        <h2 class="card-title">Rush Details</h2>
+
+                        @if (Model.RequisitionInfo.RushReason != null)
+                        {
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Reason
+                                        </span>
+                                    </div>
+                                </div>
+                                <input class="form-control" value="@Model.RequisitionInfo.RushReason.ToUpper()" readonly />
+                            </div>
+                        }
+
+
+
+                        @if (Model.RequisitionInfo.RushRemarks != null)
+                        {
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            Remarks
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                @*<textarea class="form-control" style="resize:none"  required @strReadOnly></textarea>*@
+                                <textarea class="form-control" style="resize:none" readonly>@Model.RequisitionInfo.RushRemarks.ToUpper()</textarea>
+                            </div>
+                        }
+
+                    }
+
+                    @if (@Model.RequisitionInfo.MainReqNo != @Model.RequisitionInfo.ReqNo && (!string.IsNullOrEmpty(Model.RequisitionInfo.ReqApprovalNo)))
+                    {
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Approval No</span>
+                            </div>
+                            <input type="text" class="form-control" value="@Model.RequisitionInfo.ReqApprovalNo" readonly="">
+                            <a class="btn btn-primary" href="/Requisition/BatchApprovalDetails/@Model.RequisitionInfo.ReqApprovalNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Approval"><i class="bi bi-eye"></i></a>
+                        </div>
+                    }
+                    <h2 class="card-title">
+                        Supporting Documents
+                    </h2>
+
+                    <div id="divSupDocs">
+                        @{
+                            Model.SupDocsListName = "sup1";
+                            await Html.RenderPartialAsync("_RequisitionDocs.cshtml", Model);
+                        }
+
+                    </div>
+                </div>
+                <div class="col">
+
+                    <div id="divReqJourney">
+                        @{
+                            Model.dashboardViewModel.RequestJourneyType = "Request PO Then Pay";
+                            await Html.RenderPartialAsync("/Views/Home/_RequestJourney.cshtml", Model.dashboardViewModel);
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.RequisitionInfo.MainReqNo != Model.RequisitionInfo.ReqNo)
+            {
+                <hr />
+                <div class="row">
+                    <div class="col" style="min-width:300px;">
+                        <h2 class="card-title">
+                            Deduction and Other Charges
+                        </h2>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-prepend" style="TEXT-ALIGN: RIGHT;">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        Deduction
+                                    </span>
+                                </div>
+                            </div>
+                            <input class="form-control" required="" style="/* text-transform:uppercase; */TEXT-ALIGN: RIGHT; max-width:247px;" value="@string.Format("{0:N2}", Model.RequisitionInfo.Deduction)" readonly>
+
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-prepend" style="TEXT-ALIGN: RIGHT;">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        Freight
+                                    </span>
+                                </div>
+                            </div>
+                            <input class="form-control" style="/* text-transform:uppercase; */TEXT-ALIGN: RIGHT; max-width:247px;" value="@string.Format("{0:N2}", Model.Freight)" readonly>
+
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            }
+
+
+            <hr />
+            <div class="row">
+                <div class="col">
+                    <h2 class="card-title">
+                        Items/Services
+                    </h2>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">
+                                    Company:
+                                </span>
+                            </div>
+                        </div>
+                        <input class="form-control" required="" style="text-align: left;max-width: 400px;" value="@Model.RequisitionInfo.ItemCompany" readonly>
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col" style="min-width:300px;">
+                            <div id="_tmpPRInventory">
+                                @{
+                                    Model.showItemBalance = Model.RequisitionInfo.ReqNo == Model.RequisitionInfo.MainReqNo;
+                                    Model.showAddItemButton = false;
+                                    Model.ItemListName = "t1";
+                                }
+
+                                <div class="row my-2">
+                                    <div class="form-group">
+                                        @await Html.PartialAsync("_RequisitionItemsList", Model)
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                        </div>
+                        <div class="col">
+                            <center>
+                                @if (Model.isverify)
+                                {
+
+                                    if (Model.forapproval == "VERIFIER" || Model.forapproval == "APPROVER")
+                                    {
+                                        <button id="btnDeny" class="btn btn-danger" style="min-width: 200px; margin-bottom:5px;" onclick="ShowDenyReason()">
+                                            <i class="bi bi-hand-thumbs-down-fill"></i>
+                                            Deny
+                                        </button>
+
+                                        <button id="Verify" type="submit" class="btn btn-primary" onclick="Verify()" style="min-width: 200px; margin-bottom:5px;">
+                                            <i class="bi bi-hand-thumbs-up-fill"></i>
+                                            @Model.lblAuth
+                                        </button>
+                                    }
+                                    else if (Model.forapproval == "REQUESTER-VALIDATION")
+                                    {
+                                        <input type="submit" value="Submit Requisition" class="btn btn-primary center" id="submit" style="min-width: 200px;">
+                                    }
+                                }
+
+                                @if (Model.CanVoid)
+                                {
+                                    <button id="btnVoid" type="submit" class="btn btn-danger" onclick="Void()" style="min-width: 200px;">
+                                        Void Requisition
+                                    </button>
+
+                                }
+                            </center>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+
+                    @if (Model.RequisitionInfo.ReqNo == Model.RequisitionInfo.MainReqNo && (!String.IsNullOrEmpty(Model.RequisitionInfo.PONo)))
+                    {
+                        <div class="row">
+                            <div class="col" style="min-width:300px;">
+                                @*<a class="float-right btn btn-outline-primary" >Create Payment</a>*@
+                                @if (Model.isCreatePaymentBtn)
+                                {
+                                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("SPASV2-Requester"))
+                                    {
+                                        <a href="#PaymentRequisitionEntry" class="btn btn-sm btn-outline-primary" onclick="DisplayPaymentForm()"><i class="bi bi-plus-circle me-1"></i> Create Payment</a>
+                                    }
+
+                                }
+                                <h2 class="card-title" style="padding-bottom: 0px;"> Payment Request Details </h2>
+
+                                @if (Model.PaymentRequisitionInfoList.Count == 0)
+                                {
+                                    <div style="background-color: #dedcff; padding: 10px;">
+                                        No Payment Request Found
+                                    </div>
+                                }
+                                <div class="accordion" id="accordionExample">
+                                    @{
+                                        int i = 2;
+                                    }
+                                    @foreach (var ReqInfo in Model.PaymentRequisitionInfoList)
+                                    {
+                                        string prno = ReqInfo.ReqNo;
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingOne">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@prno" aria-expanded="false" aria-controls="collapseOne">
+                                                    <b>PR No: </b>
+                                                    <b style="margin-left:10px; margin-right:10px; color:green;">@prno -</b>
+
+                                                    <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px; text-wrap: balance;">
+                                                        @ReqInfo.Status
+                                                    </span>
+                                                </button>
+
+                                            </h2>
+                                            <div id="@prno" class="accordion-collapse collapse " aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+                                                <div class="accordion-body" style="background-color:#f6f6ff;">
+
+                                                    <div class="row my-2">
+                                                        <div class="col" style="min-width:300px">
+                                                            <h2 class="card-title">Details </h2>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text" id="basic-addon1">Request No</span>
+                                                                </div>
+                                                                <input type="text" class="form-control" value="@ReqInfo.ReqNo" readonly="">
+                                                                <a class="btn btn-primary" href="/Requisition/Details/@ReqInfo.ReqNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Payment Request Details"><i class="bi bi-eye"></i></a>
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            P.R. Date:
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input value="@ReqInfo.ReqDate.ToString("MM/dd/yyyy")" class="form-control" readonly />
+                                                            </div>
+
+
+                                                            @if (!string.IsNullOrEmpty(ReqInfo.BatchNo))
+                                                            {
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">Batch No</span>
+                                                                    </div>
+                                                                    <input type="text" class="form-control" value="@ReqInfo.BatchNo" readonly="">
+                                                                    <a class="btn btn-primary" href="/BatchRequisition/Details/@ReqInfo.BatchNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Batch"><i class="bi bi-eye"></i></a>
+                                                                </div>
+                                                            }
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            Invoice No
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="form-control" value="@ReqInfo.SalesInvoiceNo" readonly />
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            Invoice Date
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="form-control" value="@Convert.ToDateTime(ReqInfo.SalesInvoiceDate).ToString("MM/dd/yyyy")" readonly />
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            Delivery No
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="form-control" value="@ReqInfo.DeliveryNo" readonly />
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            Delivery Date
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="form-control" value="@Convert.ToDateTime(ReqInfo.DeliveryDate).ToString("MM/dd/yyyy")" readonly />
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            Reference No
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input value="@ReqInfo.RefNo" readonly class="form-control" />
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text" id="basic-addon1">
+                                                                            Remarks
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <textarea readonly class="form-control" style="resize:none">@ReqInfo.Remarks</textarea>
+
+                                                            </div>
+
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text" id="basic-addon1">Approval No</span>
+                                                                </div>
+                                                                <input type="text" class="form-control" value="@ReqInfo.MainReqApprovalNo" readonly="">
+                                                                <a class="btn btn-primary" href="/Requisition/BatchApprovalDetails/@ReqInfo.MainReqApprovalNo" type="button" data-toggle="tooltip" data-placement="Top" title="View Approval No"><i class="bi bi-eye"></i></a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <h2 class="card-title"> Supporting Documents</h2>
+                                                            <div id="divpySupDocs">
+                                                                @{
+                                                                    Model.SupDocsListName = "Sup" + ReqInfo.ReqNo;
+                                                                    Model.PRNo = ReqInfo.ReqNo;
+                                                                    await Html.RenderPartialAsync("_RequisitionDocs.cshtml", Model);
+                                                                }
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <h2 class="card-title">Items/Services </h2>
+                                                    <div class="row my-2">
+                                                        <div class="col">
+                                                            <div class="overflow-autoo">
+                                                                @{
+                                                                    Model.showAddItemButton = false;
+                                                                    Model.showItemBalance = false;
+                                                                    Model.PRNo = ReqInfo.ReqNo;
+                                                                    Model.ItemListName = "t" + i;
+                                                                    i++;
+                                                                }
+
+                                                                @await Html.PartialAsync("_RequisitionItemsList", Model)
+
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="display:none;">
+                                                        <div class="col">
+                                                        </div>
+                                                        <div class="col">
+                                                            <center>
+                                                                <a class="btn btn-outline-primary" href="/Requisition/Details/@ReqInfo.ReqNo">View Payment Requisition Details</a>
+                                                            </center>
+                                                        </div>
+                                                        <div class="col">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <hr />
+
+
+
+            <div id="gohere"></div>
+
+
+        </div>
+    </div>
+</section>
+
+@if (Model.isCreatePaymentBtn)
+{
+    <section id="secPaymentEntry" class="section dashboard" style="display:none;">
+        <div class="card mb-10 overflow-auto">
+            <div class="card-body">
+                <div id="PaymentRequisitionEntry">
+                </div>
+
+            </div>
+        </div>
+    </section>
+}
+
+<script>
+
+    var process;
+    var RequestFiles;
+
+    function DisplayPaymentForm() {
+        document.getElementById("secPaymentEntry").style.display = "block";
+        var ReqNo = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.MainReqNo));
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/GetCreatePaymentForm",
+            data: { ReqNo: ReqNo },
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#PaymentRequisitionEntry").html(result);
+                location.href = "#gohere";
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+
+
+            }
+        });
+    }
+
+    function ShowDenyReason() {
+
+        $("#modalDenyRequest").modal("show");
+    }
+
+
+    //ModalName = "modalVerifyRush",
+    //ModalTitle = "Rush Reason Details",
+    //SuccessMethod = "ConfirmVerifyRush()",
+    //lstReason = Model.lstReason.Where(a => a.Category == "RUSH").ToList(),
+    //cboReasonId = "cboRushReason",
+    //txtReasonRemarksId = "txtRushRemarksId",
+    //Instruction = "<a style='color: #012970 !important;'>Please enter reason to tag transaction as rush!</a>"
+
+    function VerifyAsRush() {
+        $("#modalVerifyRush").modal("show");
+    }
+
+    var RushReason;
+    var RushRemarks;
+
+    function ConfirmVerifyRush() {
+
+        RushReason = $('#cboRushReason').val();
+        RushRemarks = $('#txtRushRemarksId').val();
+
+        if (ValidateReason(RushReason, RushRemarks, "verify (RUSH)") == false) { return; }
+        $("#modalVerifyRush").modal("hide");
+
+        SetAsVerified(true);
+    }
+
+
+    function ConfirmDenialRequest() {
+
+        //alert('Record successfully denied! ' + $('#cboDenialReason').val() + ' ' + $('#txtDenialRemarksId').val());
+        //location.reload();
+        var ReqNoList = [];
+
+        var ReqNo = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo));
+        var rescode = $('#cboDenialReason').val();
+        var remarks = $('#txtDenialRemarksId').val();
+
+
+        if (ValidateReason(rescode, remarks, "deny") == false) { return; }
+
+        $("#modalDenyRequest").modal("hide");
+
+        ReqNoList.push(ReqNo);
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/DisapprovePRAuthorizationALL",
+            data: { prno: JSON.stringify(ReqNoList), reason: rescode, Remarks: remarks },
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                if (result.success) {
+                    ShowAlert({
+                        title: 'Requisition',
+                        text: "Request no. " + ReqNo + " successfully tagged as denied!",
+                        icon: 'success',
+                        successmethod: "SuccessfulVoid()",
+                    });
+                }
+                else {
+                    ShowAlert({
+                        title: 'Requisition',
+                        text: result.errormsg,
+                        icon: 'error',
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    function UpdateDetails() {
+        $("#modalUpdateDetails").modal("show");
+        //ShowAlert({
+        //    title: 'Requisition',
+        //    text: "Are you sure you want to void <b class='text-primary' >" + @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo)) + "</b> ?",
+        //    icon: 'question',
+        //    showCancelButton: true,
+        //    successmethod: "ConfirmVoidRequest()",
+        //    confirmButtonText: "Yes"
+        //})
+    }
+
+    function selectFolder(e) { 
+
+        //var fileData = new FormData();
+        RequestFiles = e.target.files; 
+        //for (var i = 0; i < RequestFiles.length; i++) {
+        //    fileData.append("files", RequestFiles[i]);
+        //}
+         
+        //fileData.append("vm", JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model))));
+
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/BatchRequisition/ReadRequisitionAttachments",
+        //    processData: false,
+        //    contentType: false,
+        //    data: fileData,
+        //    dataType: 'html',
+        //    beforeSend: function () {
+        //        ShowLoader();
+        //    },
+        //    success: function (result) {
+        //        $("#tbodyBatchSummary").html(result);
+        //    },
+        //    error: function (xhr, status, error) {
+
+        //    },
+        //    complete: function (data) {
+        //        $("#loader").modal("hide");
+        //    }
+        //});
+    }
+
+    function UploadBatch() {
+        ShowAlert({
+            title: 'Update Requisition Details',
+            text: "Are you sure to update details?",
+            icon: 'question',
+            showCancelButton: true,
+            successmethod: "UpdateReqDetails()"
+        })
+    }
+
+    function CanUpdateReqDetails() {
+        var fileData = new FormData();
+
+        var qryUpdateReqDetails = {
+            UserCode: "",
+            ReqNo: @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo)),
+            SINo: $('#txtSalesInvoiceNo').val(),
+            SIDate: $('#dtpSIDate').val(),
+            Deduction: $('#txtDeduction').val(),
+            TotalAmount: $('#txtTotalAmount').val(),
+            Freight: $('#txtFreight').val()
+        };
+
+        if (RequestFiles != null) {
+            for (var i = 0; i < RequestFiles.length; i++) {
+                fileData.append("files", RequestFiles[i]);
+            }
+        }
+
+        fileData.append("model", JSON.stringify(qryUpdateReqDetails));
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/CanUpdateReqDetails",
+            processData: false,
+            contentType: false,
+            //data: { ReqNo: ReqNo, SalesInvoiceNo: SINo, SIDate: SIDate, Deduction: Deduction, Freight: Freight },
+            data: fileData,
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                //console.log(result);
+                //console.log(result._respo.ErrorMessage);
+                if (result._respo.Status == "SUCCESS") {
+                    UploadBatch();
+                    //ShowAlert({
+                    //    title: 'Requisition Update',
+                    //    text: "Request no. " + qryUpdateReqDetails.ReqNo + " successfully updated!",
+                    //    icon: 'success',
+                    //    successmethod: "UpdateReqDetails()",
+                    //});
+                }
+                else
+                {
+                    ShowAlert(
+                        {
+                            title: 'Update Requisition',
+                            text: result._respo.ErrorMessage,
+                            icon: 'error',
+                            //successmethod: "GotoBatchDetails()"
+                        });
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    function UpdateReqDetails() {
+        var fileData = new FormData();
+        //var ReqNo = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo));
+        //var SINo = $('#txtSalesInvoiceNo').val();
+        //var SIDate = $('#txtSIDate').val();
+        //var Deduction = $('#txtDeduction').val();
+        //var Freight = $('#txtFreight').val();
+
+        var qryUpdateReqDetails = {
+            UserCode: "",
+            ReqNo: @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo)),
+            SINo: $('#txtSalesInvoiceNo').val(),
+            SIDate: $('#dtpSIDate').val(),
+            Deduction: $('#txtDeduction').val(),
+            TotalAmount: $('#txtTotalAmount').val(),
+            Freight: $('#txtFreight').val()
+        };
+
+        if (RequestFiles != null) {
+            for (var i = 0; i < RequestFiles.length; i++) {
+                fileData.append("files", RequestFiles[i]); 
+            }
+        }
+        
+        //alert(qryUpdateReqDetails);
+
+        fileData.append("model", JSON.stringify(qryUpdateReqDetails));
+        //alert(fileData);
+        //if (ValidateReason(rescode, remarks, "void") == false) { return; } //CREATE VALIDATION FOR UPDATE REQUISITION
+
+        $("#modalUpdateDetails").modal("hide");
+        //alert($('#cboVoidReason').val() + ' ' + $('#txtVoidRemarksId').val());
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/UpdateReqDetails",
+            processData: false,
+            contentType: false,
+            //data: { ReqNo: ReqNo, SalesInvoiceNo: SINo, SIDate: SIDate, Deduction: Deduction, Freight: Freight },
+            data: fileData,
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) { 
+                if (result.isSuccess) { 
+                    ShowAlert({
+                        title: 'Requisition Update',
+                        text: "Request no. " + qryUpdateReqDetails.ReqNo + " successfully updated!",
+                        icon: 'success',
+                        successmethod: "SuccessfulUpdate()",
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+
+        //alert("HAVING YOU NEAR ME!" + ReqNo + SINo + SIDate);
+
+    }
+
+    function Void() {
+        $("#modalVoidRequest").modal("show");
+        //ShowAlert({
+        //    title: 'Requisition',
+        //    text: "Are you sure you want to void <b class='text-primary' >" + @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo)) + "</b> ?",
+        //    icon: 'question',
+        //    showCancelButton: true,
+        //    successmethod: "ConfirmVoidRequest()",
+        //    confirmButtonText: "Yes"
+        //})
+    }
+
+    function ConfirmVoidRequest() {
+        var ReqNo = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo));
+        var rescode = $('#cboVoidReason').val();
+        var remarks = $('#txtVoidRemarksId').val();
+
+        if (ValidateReason(rescode, remarks, "void") == false) { return; }
+
+        $("#modalVoidRequest").modal("hide");
+        //alert($('#cboVoidReason').val() + ' ' + $('#txtVoidRemarksId').val());
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/VoidRequest",
+            data: { ReqNo: ReqNo, ReasonCode: rescode, Remarks: remarks },
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                if (result.isVoid) {
+                    ShowAlert({
+                        title: 'Requisition',
+                        text: "Request no. " + ReqNo + " successfully tagged as void!",
+                        icon: 'success',
+                        successmethod: "SuccessfulVoid()",
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+
+    }
+
+    function SuccessfulUpdate()
+    {
+        location.reload();
+    }
+
+    function SuccessfulVoid() {
+        window.location.href = "/";
+    }
+
+    function Verify() {
+
+        var mode = @Html.Raw(JsonConvert.SerializeObject(Model.forapproval));
+        if (mode == "VERIFIER") {
+            process = "verified";
+
+            ShowAlert({
+                title: 'Requisition',
+                text: "Are you sure you want to tag requisition as verified?",
+                icon: 'question',
+                showCancelButton: true,
+                successmethod: "VerifyAsRegular()",
+                cancelmethod: "VerifyAsRush()",
+                cancelButtonText: "Tag As RUSH",
+                confirmButtonText: "Tag As REGULAR"
+            })
+        }
+        else {
+            process = "approved";
+            ShowAlert({
+                title: 'Requisition',
+                text: "Are you sure you want to tag requisition as approved?",
+                icon: 'question',
+                showCancelButton: true,
+                successmethod: "VerifyAsRegular()",
+                confirmButtonText: "Yes"
+            })
+        }
+    }
+
+    function VerifyAsRegular() {
+        SetAsVerified(false);
+    }
+
+
+    function SetAsVerified(isRush) {
+        var ReqNo = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.ReqNo));
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/VerifyRequest",
+            data: { ReqNo: ReqNo, isRush: isRush, RushReason: RushReason, RushRemarks: RushRemarks },
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                if (result.isVerified) {
+                    ShowAlert({
+                        title: 'Requisition',
+                        text: "Record successfully tagged as " + process + "!",
+                        icon: 'success',
+                        successmethod: "SuccessfulVerification()",
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+
+
+            }
+        });
+    }
+
+    function SuccessfulVerification() {
+        location.reload();
+    }
+
+</script>

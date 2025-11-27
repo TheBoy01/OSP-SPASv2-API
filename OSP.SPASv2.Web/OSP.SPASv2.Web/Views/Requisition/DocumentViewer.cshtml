@@ -1,0 +1,27 @@
+﻿
+@{Layout = null;}
+
+<html>
+<head>
+    <title>ePPs - Document Viewer</title>
+    <link href="/template/img/stpeter_goldenlogo.png" rel="icon">
+</head>
+<body>
+    <div class="container" style="background-color: #f6f9ff;">
+        <center>
+            <p class="lead" style="color: #012970;margin-bottom:5px;"><strong>File Name:</strong> <strong style="color: #6c63ff !important;">@ViewBag.filename</strong></p>
+            @if (ViewBag.isImage)
+        {
+            <img src="@ViewBag.url" id="modalImage" style="width:auto;height:auto;max-height:90%;border-style: ridge;">
+        }
+        else
+        {
+
+            <iframe id="modalIframe" src="@ViewBag.url" class="responsive-iframe" style="height:98%; width: 100%;"></iframe>
+        }
+
+        </center>
+    </div>
+</body>
+</html>
+

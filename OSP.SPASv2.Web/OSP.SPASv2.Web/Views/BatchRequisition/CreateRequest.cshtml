@@ -1,0 +1,156 @@
+﻿@using Newtonsoft.Json;
+@*@model IEnumerable<SPASv2.Models.PaymentRequestModel>*@
+@model SPASv2.Models.BatchRequisitionViewModel
+
+@{
+    ViewData["Title"] = "Create Payment Request Batch";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Payment Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Payment Requisition</li>
+                <li class="breadcrumb-item"><a href="/BatchRequisition/ActiveRequests">Batch</a></li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        @*<div class="card mb-10">
+        <div class="card-body">
+        <button type="button" class="btn btn-info"><i class="bi bi-cloud-download me-1"></i>Download Template</button>
+        <hr />
+        <label for="myfile">Select a file:</label>
+        <input type="file" id="myfile" name="myfile"><br/>
+        </div>
+        </div>*@
+
+        <div class="card overflow-auto">
+            <div class="card-body">
+
+                <div class="card-title mb-2">
+                    <a class="card-title">Batch Request Summary</a>
+                    <div class="float-end" style="margin-right:10px; width:max-content;">
+                        <div class=" btn-group" role="group">
+                            @*<a class="btn btn-outline-primary" href="~/Files/SPASv2 Batch Template.xls" onclick="showsuccess()"><i class="bi bi-cloud-download-fill"></i> Download Template</a>*@
+                            <button class="btn btn-outline-primary" id="btnDownload" onclick="DownloadTemplate()"><i class="bi bi-cloud-download-fill"></i> Download Templates</button>
+                            <button class="btn btn-outline-primary" id="btnUpload"><i class="bi bi-cloud-upload"></i> Upload Batch File</button>
+                            <button type="button" class="btn btn-outline-primary" id="btnSelectAttachment"><i class="ri-attachment-2"></i>Select Attachment</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>
+
+                            <input hidden type="file" id="btnOpenFile" name="btnOpenFile" accept="application/vnd.ms-excel" onchange="ReadTemplate(this)" >
+                            <input hidden type="file" id="btnSelectFile" name="btnSelectFile" onchange="selectFolder(event);" multiple="multiple"
+                                   webkitdirectory mozdirectory msdirectory odirectory directory >
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tbodyBatchSummary">
+
+                    @{
+                        await Html.RenderPartialAsync("_BatchSummaryList", Model);
+                    }
+
+                </div>
+                <button type="button" class="btn btn-outline-primary float-end" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>
+            </div>
+        </div>
+
+        @*<div class="card">
+        <div class="card-body">
+
+        <div class="card-title mb-2">
+        <a class="card-title">Batch Request Details</a>
+        </div>
+
+        <div id="tbodyBatchItems"> </div>
+
+        </div>
+
+        </div>*@
+
+    </section>
+</main>
+
+<script>
+     
+    function showsuccess()
+    {
+        alert('successfully downloaded');
+    }
+
+    function JSalert(msgType, msg) {
+        if (msgType == "SUCCESS") {
+            Swal.fire(msg, "Batch Requisition", "success", 2000, true).then(okay => {
+                if (okay) {
+                    location.reload(true);
+                }
+            });
+        } else {
+            Swal.fire(msg, "Batch Requisition", "error", 2000, true);
+        }
+    }
+    
+    $('#btnSelectAttachment').click(function () {
+        $('#btnSelectFile').click();
+    });
+
+    $('#btnUpload').click(function () {
+        $('#btnOpenFile').click();
+    });
+
+    function DownloadTemplate(){
+        $.ajax({
+            type: "Get",
+            url: "/BatchRequisition/DownloadFileFromWeb",
+            //processData: false,
+            //contentType: false,
+            //data: fileData,
+            //dataType: 'html',
+            success: function (result) {
+                JSalert(response.success, response.errormsg);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+
+    function ReadTemplate(input) {
+        if (window.FormData !== undefined) {
+
+            var fileData = new FormData();
+            var files = $("#btnOpenFile")[0].files;
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("files", files[i]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/ReadBatchTemplate",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                dataType: 'html',
+                success: function (result) {
+                    $("#tbodyBatchSummary").html(result);
+                    //$("#tbodyBatchItems").html(result);
+                },
+                error: function (xhr, status, error) {
+
+                }
+            });
+
+        } else {
+            alert("Data is not supported.");
+        }
+    }
+
+    
+
+</script>

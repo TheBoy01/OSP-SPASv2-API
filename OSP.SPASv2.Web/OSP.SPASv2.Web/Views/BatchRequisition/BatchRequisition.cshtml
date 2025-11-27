@@ -1,0 +1,291 @@
+﻿@using Newtonsoft.Json;
+@*@model IEnumerable<SPASv2.Models.PaymentRequestModel>*@
+@model SPASv2.Models.BatchRequisitionViewModel
+
+@{
+    ViewData["Title"] = "Create Batch Requisition";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Batch Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item"><a href="/BatchRequisition/List">Requisition for PO</a></li>
+                @*<li class="breadcrumb-item"><a href="/BatchRequisition/List">List</a></li>*@
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        @*<div class="card mb-10">
+        <div class="card-body">
+        <button type="button" class="btn btn-info"><i class="bi bi-cloud-download me-1"></i>Download Template</button>
+        <hr />
+        <label for="myfile">Select a file:</label>
+        <input type="file" id="myfile" name="myfile"><br/>
+        </div>
+        </div>*@
+
+        <div class="card overflow-auto">
+            <div class="card-body">
+
+                <div class="card-title mb-2">
+                    <a class="card-title">Batch Request Summary</a>
+                    <div class="float-end" style="margin-right:10px; width:max-content;">
+                        <div class=" btn-group" role="group">
+
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu" style="">
+                                    <li><button class="btn btn-outline-primary" id="btnDownload" onclick="DownloadTemplate()"><i class="bi bi-cloud-download-fill"></i>Download Template</button>
+                                    <li>
+                                        <button class="btn btn-outline-primary" id="btnUpload"><i class="bi bi-cloud-upload"></i> Upload Batch File</button>
+                                       @* <a class="dropdown-item">
+                                            <i class="bi bi-cloud-upload" />
+                                            Upload Batch File
+                                        </a>*@
+                                    </li>
+                                    <li>
+                                        <button  class="btn btn-outline-primary" id="btnDownload" onclick="RedirecttoFiles()"><i class="bi bi-folder-plus"></i>Download Folder</button>
+                                       
+                                    </li>
+                                    <li>
+                                        <button type="button" class="btn btn-outline-primary" id="btnSelectAttachment"><i class="ri-attachment-2"></i>Select Attachment</button>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+                            @*<a class="btn btn-outline-primary" href="~/Files/SPASv2 Batch Template.xlsx" onclick="showsuccess()"><i class="bi bi-cloud-download-fill"></i> Download Template</a>*@
+                           @* <button class="btn btn-outline-primary" id="btnDownload" onclick="DownloadTemplate()"><i class="bi bi-cloud-download-fill"></i> Downloads Templates</button>
+                            <button class="btn btn-outline-primary" id="btnUpload"><i class="bi bi-cloud-upload"></i> Upload Batch File</button>
+                            <button class="btn btn-outline-primary" id="btnDownload" onclick="DownloadTemplate()"><i class="bi bi-folder-plus"></i> Downloads Folder</button>
+                            <button type="button" class="btn btn-outline-primary" id="btnSelectAttachment"><i class="ri-attachment-2"></i>Select Attachment</button>*@
+                            <button type="button" class="btn btn-outline-primary" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>
+
+                            <input hidden type="file" id="btnOpenFile" name="btnOpenFile" accept=".xlsx, .xls, .ods" onchange="ReadTemplate(this)">
+                            <input hidden type="file" id="btnSelectFile" name="btnSelectFile" onchange="selectFolder(event);" multiple="multiple"
+                                   webkitdirectory mozdirectory msdirectory odirectory directory>
+
+                          
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tbodyBatchSummary">
+                    <table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Company
+                                </th>
+                                <th>
+                                    Vendor Name
+                                </th>
+                                <th>
+                                    Payee Name
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>Remarks</th>
+                                <th>Attachments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                    <div class="card-title mb-2">
+                        <a class="card-title">Batch Request Details</a>
+                    </div>
+
+                    <table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Company Type
+                                </th>
+                                <th>
+                                    Department
+                                </th>
+                                <th>
+                                    Item Description
+                                </th>
+                                <th>
+                                    Item Amount
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-outline-primary float-end" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>
+            </div>
+        </div>
+
+        @*<div class="card">
+        <div class="card-body">
+
+        <div class="card-title mb-2">
+        <a class="card-title">Batch Request Details</a>
+        </div>
+
+        <div id="tbodyBatchItems"> </div>
+
+        </div>
+
+        </div>*@
+
+    </section>
+</main>
+
+<script>
+
+    $('#btnSelectAttachment').click(function () {
+        $('#btnSelectFile').click();
+    });
+
+    $('#btnUpload').click(function () {
+        $('#btnOpenFile').click();
+    });
+
+    var filedir = document.getElementById("btnOpenFolder").innerHTML;
+
+    if (filedir != '') {
+        //navigator.clipboard.writeText(filedir);
+        ShowAlert({
+            title: 'Batch Folder Created',
+            text: "Please organize files into the folder for attachments. <br/><br/>Folder path: <b style= 'color:#6c63ff;'>" + filedir + "</b>",
+            icon: 'success',
+            showCancelButton: false,
+            successmethod: "RedirecttoFiles()"
+        });
+    }
+
+
+    function ReadTemplate(input) {
+        if (window.FormData !== undefined) {
+
+            var fileData = new FormData();
+            var files = $("#btnOpenFile")[0].files;
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("files", files[i]);
+            }
+
+            //$('#btnOpenFile').value ="";
+
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/ReadBatchTemplate",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                //dataType: 'html',
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                success: function (result) {
+                    //alert(result);
+                    if ( result.success == false)
+                    {
+                        ShowAlert(
+                            {
+                                title: 'Batch Upload',
+                                text: result.error,
+                                icon: 'error',
+                                //successmethod: "GotoBatchDetails()"
+                            });
+
+                    }
+                    else { $("#tbodyBatchSummary").html(result); }
+                    
+                    $("#btnOpenFile").value = '';
+                    //alert("oh nono");
+                    //$("#tbodyBatchItems").html(result);
+                },
+                error: function (xhr, status, error) {
+                    $("#btnOpenFile").value = '';
+                    ShowAlert(
+                        {
+                            title: 'Error',
+                            text: error,
+                            icon: 'error'
+                        });
+                },
+                complete: function (data) {
+                    $("#loader").modal("hide");
+                }
+            });
+
+        } else {
+            alert("Data is not supported.");
+        }
+    }
+
+    function OpenDirectory() {
+        $.ajax({
+            url: '/Requisition/OpenFolderPath',
+            type: 'GET',
+            dataType: 'json',
+            data: { path: filedir },
+            beforeSend: function () {
+                $("#loader").modal("show");
+            },
+            success: function (response) {
+            },
+            error: function () {
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+
+    }
+
+    var filedir;
+
+ 
+
+    function DownloadTemplate() {
+        //      string serverName = HttpContext.Request.Host.Value;
+
+        //serverName =  serverName /Files/SPASv2 Batch Template.xlsx";
+        window.location.href = "/BatchRequisition/DownloadFileFromWeb";
+
+        //$.ajax({
+        //    type: "Get",
+        //    url: "/BatchRequisition/DownloadFileFromWeb",
+        //    //processData: false,
+        //    contentType: 'application/x-www-form-urlencoded;charset=UTF-8',
+        //    data:'json',
+        //    //dataType: 'html',
+        //    success: function (result) {
+        //        //JSalert(response.success, response.errormsg);
+        //        alert('2 ' + result.response.ErrorMessage );
+        //        alert(result.filedir);
+        //        filedir = result.filedir;
+
+        //        ShowAlert({
+        //            title: 'Batch Requisition',
+        //            text: result.response.ErrorMessage +   " <br/><br/>Folder path: <b style= 'color:#6c63ff;'>" + filedir + "</b>",
+        //            icon: result.response.Status ,
+        //            showCancelButton: false,
+        //            successmethod: "OpenDirectory()"
+        //        });
+        //    },
+        //    error: function (response) {
+        //        alert("1");
+        //    }
+        //});
+    }
+
+</script>

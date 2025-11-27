@@ -1,0 +1,128 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
+    <Content Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
+    <Content Remove="Reports\rptPO.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Reports\rptChapelAdvisory.rdlc" />
+    <None Remove="Reports\rptPO - Copy (2).rdlc" />
+    <None Remove="Reports\rptPOVendor.rdlc" />
+    <None Remove="Reports\rptPurchaseOrderConsolidated.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\rptChapelAdvisory.rdlc" />
+    <EmbeddedResource Include="Reports\rptPO - Copy (2).rdlc" />
+    <EmbeddedResource Include="Reports\rptPurchaseOrderConsolidated.rdlc" />
+    <EmbeddedResource Include="Reports\rptPOVendor.rdlc" />
+    <EmbeddedResource Include="Reports\rptPO.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.Reporting" Version="2.1.0" />
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
+    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.27" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.21" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.27" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.4.0" />
+    <PackageReference Include="Microsoft.DotNet.Scaffolding.Shared" Version="6.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.21">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.27" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="6.0.16" />
+    <PackageReference Include="ReportViewerCore.NETCore" Version="15.1.19" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+    <PackageReference Include="System.CodeDom" Version="8.0.0" />
+    <PackageReference Include="System.Data.Odbc" Version="6.0.0" />
+    <PackageReference Include="System.Data.OleDb" Version="7.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.8.*" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="4.8.*" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.8.*" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.*" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.8.*" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <Folder Include="APIFactory\OSPService\" />
+    <Folder Include="APIFactory\OSPRepo\" />
+    <Folder Include="APIFactory\SPASv2Service\" />
+    <Folder Include="Connected Services\" />
+    <Folder Include="Files\" />
+    <Folder Include="Logs\" />
+    <Folder Include="Scripts\" />
+    <Folder Include="Views\BatchRequsition\" />
+    <Folder Include="Views\PRAuthorization\" />
+    <Folder Include="Views\UserMaintenance\" />
+    <Folder Include="wwwroot\NewFolder\" />
+    <Folder Include="wwwroot\templatelogin\" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <None Include="wwwroot\template\css\sweetalert2.min.css" />
+    <None Include="wwwroot\template\src\sweetalert2.all.min.js" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <Reference Include="OSP.Common.Domain">
+      <HintPath>..\..\..\..\..\..\..\OCX\SPASv2\OSP\OSP.Common.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="OSP.SPASv2.Domain">
+      <HintPath>..\..\..\..\..\..\..\OCX\SPASv2\OSP.SPASv2.Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <Compile Update="ReportDataSet\Dataset1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <None Update="ReportDataSet\DataSet1.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Dataset1.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

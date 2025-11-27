@@ -1,0 +1,230 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+@using Microsoft.AspNetCore.Identity
+@using OSP.SPASv2.Web.Areas.Identity.Data
+@using System.Globalization;
+
+@inject SignInManager<OSPSPASv2ApplicationUser> SignInManager
+@inject UserManager<OSPSPASv2ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Verifier Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*
+<div class="text-center">
+    <h1 class="display-4">Welcome RudyBAB</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>*@
+
+<head>
+    <style>
+        .dashboard .sales-card .card-icon {
+            color: #4154f1;
+            background: #cdd2ff;
+        }
+
+        .dashboard .revenue-card .card-icon {
+            color: #ff0202;
+            background: #ffc3c3;
+        }
+    </style>
+</head>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Verifier Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Dashboard</li>
+                <li class="breadcrumb-item active">Verifier</li>
+                <li class="breadcrumb-item active">User ID: @UserManager.GetUserId(User)</li>
+
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+                    @{
+                        Model.QuickLinkID = "mobQuickLinks";
+                        await Html.RenderPartialAsync("_DashboardQuickLinks", Model);
+                    }
+                    <!-- Sales Card -->
+                    <div class="col">
+                        <div class="card info-card sales-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body" id ="gotohere">
+                                <a href="#gotohere" onclick="setRequestStat('PD-VERIFIER',false)">
+                                <h5 class="card-title">For Verification </h5>
+                                </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <a href="#gotohere" onclick="setRequestStat('PD-VERIFIER',false)">
+                                        <i class="bi bi-file-earmark-check"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#gotohere" onclick="setRequestStat('PD-VERIFIER',false)">
+                                        <h6 id="pdverifierCtr">@Model.PDVerifierCtr</h6>
+                                        <span class="text-muted small pt-2 ps-1">Pending Payment Requisition</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Sales Card -->
+                    <!-- Revenue Card -->
+                    <div class="col">
+                        <div class="card info-card revenue-card">
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+
+                            </div>
+
+                            <div class="card-body">
+                                <a href="#gotohere" onclick="setRequestStat('PD-VERIFIERDUE',false)">
+                                <h5 class="card-title">Over 7 Days Past</h5>
+                                </a>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <a href="#gotohere" onclick="setRequestStat('PD-VERIFIERDUE',false)">
+                                        <i class="bi bi-clock-history"></i>
+                                        </a>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="#gotohere" onclick="setRequestStat('PD-VERIFIERDUE',false)">
+                                        <h6 id="pdoverdueCtr">@Model.OverdueCtr</h6>
+                                        <span class="text-muted small pt-2 ps-1">Overdue Request</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Revenue Card -->
+                    <div id="divSelectedList">
+                        @{
+
+                            await Html.RenderPartialAsync("_SelectedList", Model);
+                        }
+                    </div>
+                    <div id="divVendorRunningBal">
+                        @{
+
+                            await Html.RenderPartialAsync("_VendorRunningBalancePanel", Model);
+                        }
+                    </div>
+                    <div class="col-12" hidden>
+                        @{
+                            await Html.RenderPartialAsync("_ChartBarRequest", Model);
+                        }
+                    </div>
+
+                </div>
+            </div><!-- End Left side columns -->
+            <div class="col-lg-4">
+                @{
+                    Model.QuickLinkID = "webQuickLinks";
+                    await Html.RenderPartialAsync("_DashboardQuickLinks", Model);
+                }
+
+                @{
+                    await Html.RenderPartialAsync("_SearchSidePanel", Model);
+                }
+
+                @{
+                    await Html.RenderPartialAsync("_ChartDonutRequest", Model);
+                }
+            </div>
+
+
+            
+        </div>
+    </section>
+
+
+</main><!-- End #main -->
+
+<script type="text/javascript">
+
+    var reqStat = "PD-VERIFIER";
+
+    function setRequestStat(stat, showRefresh) {
+        reqStat = stat;
+
+        $.ajax({
+            url: '/Home/SetSelectedList',
+            type: 'GET',
+            dataType: 'html',
+            data: { requeststatus: reqStat },
+            success: function (response) {
+                $("#divSelectedList").html(response);
+                if (showRefresh) {
+                    ShowAlert(
+                        {
+                            title: "Success",
+                            text: "Record successfully refreshed!",
+                            icon: "success"
+                        });
+                }
+            },
+            error: function () {
+                
+            }
+        });
+    }
+
+    var DashboardDate = "1900-1-1";
+
+    function timerIncrement() {
+
+        $.ajax({
+            url: '/Home/GetDashboardCtr',
+            type: 'GET',
+            dataType: 'json',
+            data: { requeststatus: reqStat, DashboardDate: DashboardDate },
+            success: function (response) {
+                DashboardDate = response.DashboardDate;
+
+                if (!response.DashboardIsUptodate) 
+                {
+                    //alert('Dashboard is outdated');
+
+                $("#pdverifierCtr").html(response.PDVerifierCtr);
+                $("#pdoverdueCtr").html(response.OverdueCtr);
+                }
+                //if (DashboardDate != response.DashboardDate) {
+                //    setRequestStat(reqStat);
+                //    DashboardDate = response.DashboardDate;
+
+                //}
+            dbvm.OverdueCtr = "0";
+            },
+            error: function () {
+                
+            }
+        });
+
+
+    }
+
+    window.onload = function () {
+        let idleInterval =
+            setInterval(timerIncrement, 1000);
+    };
+
+
+</script>

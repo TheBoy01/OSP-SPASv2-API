@@ -1,0 +1,361 @@
+﻿@model SPASv2.Models.DashBoardViewModel
+@using Microsoft.AspNetCore.Identity
+@using OSP.SPASv2.Web.Areas.Identity.Data
+
+@inject SignInManager<OSPSPASv2ApplicationUser> SignInManager
+@inject UserManager<OSPSPASv2ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*
+<div class="text-center">
+    <h1 class="display-4">Welcome RudyBAB</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>*@
+
+<head>
+    <style>
+        .dashboard .sales-card .card-icon {
+            color: #4154f1;
+            background: #cdd2ff;
+        }
+
+        .dashboard .revenue-card .card-icon {
+            color: #ff0202;
+            background: #ffc3c3;
+        }
+    </style>
+</head>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Requester Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Dashboard</li>
+                <li class="breadcrumb-item active">Requester</li>
+                <li class="breadcrumb-item active">User ID: @UserManager.GetUserId(User)</li>
+                
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+
+                    <!-- Sales Card -->
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card sales-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title">Active Request </h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-file-earmark-check"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>5</h6>
+                                        <span class="text-muted small pt-2 ps-1">for Verification/Approval</span>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Sales Card -->
+                    <!-- Revenue Card -->
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card revenue-card">
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title">Denied Request</h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-file-earmark-x"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>4</h6>
+                                         <span class="text-muted small pt-2 ps-1">Disapproved</span>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Revenue Card -->
+                    <!-- Customers Card -->
+                    <div class="col-xxl-4 col-xl-12">
+
+                        <div class="card info-card customers-card">
+
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title">Payment Validation </h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-images"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>10</h6>
+                                        <span class="text-muted small pt-2 ps-1">for uploading of Proof of Payment</span>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div><!-- End Customers Card -->                    
+                    <!-- Recent Sales -->
+                    <div class="col-12">
+                        <div class="card recent-sales overflow-auto">
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title">List of Active Request </h5>
+
+                                <table class="table table-borderless datatable table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Request No:
+                                            </th>
+                                            <th>
+                                                @Html.DisplayName("Amount")
+                                            </th>
+                                            <th>
+                                                @Html.DisplayName("Status")
+                                            </th>
+                                            <th>
+                                                @Html.DisplayName("Vendor")
+                                            </th>
+                                            <th>
+                                                @Html.DisplayName("Date")
+                                            </th>
+
+                                            <th>
+                                                @Html.DisplayName("Class")
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < 7; i++)
+                                        {
+                                            <tr>
+                                                <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest",new { forapproval=true})">@Convert.ToString("SPLPI-MAYON-23040000")@i</a></td>
+                                                <td class="money">
+                                                    <div class="currencySymbol">&#8369 82,000.00</div>
+
+                                                </td>
+                                                <td>
+                                                    <span class="badge" style="
+                                                      background-color: #dcffdc;
+                                                      color: green; font-size:14px;">
+                                                        For Verification of Logistics Staff
+                                                    </span>
+                                            </td>
+                                                <td>BLACKHOUNDS SECURITY AND INVESTIGATION AGENCY INC.</td>
+
+                                                <td>4/19/2023</td>
+                                                <td>REPAIRS & MAINTENANCE (OTHERS)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div><!-- End Recent Sales -->
+                    
+
+                </div>
+            </div><!-- End Left side columns -->
+            <div class="col-lg-4">
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="filter">
+                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <li class="dropdown-header text-start">
+                                <h6>Filter</h6>
+                            </li>
+
+                            <li><a class="dropdown-item" href="#">Today</a></li>
+                            <li><a class="dropdown-item" href="#">This Month</a></li>
+                            <li><a class="dropdown-item" href="#">This Year</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bx bx-search-alt-2"></i>Track Your Request</h5>
+                        <form class="row g-3 mb-2">
+                            <div class="col-12">
+                                @*<label for="inputNanme4" class="form-label">Enter Request No.</label>
+                                <input type="text" class="form-control" id="inputNanme4">*@
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="floatingName" placeholder="Request No.">
+                                    <label for="floatingName"> Your Request No.</label>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button type="reset" class="btn btn-secondary">Clear</button>
+                            </div>
+                        </form>
+                        <h4 class="card-title">Request No. <br /><i class="text-primary">SPLPI-MAYON-2304000001</i></h4>
+                        <div class="activity">
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">01 AUG <br /><a style="font-size:small;">11:23 AM</a><br /></div>
+                                <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                                <div class="activity-content">
+                                    Already verified by <a class="fw-bold text-dark">Rudy Boy Bautista</a><br /><br />
+                                </div>
+                            </div><!-- End activity item-->
+
+                             <div class="activity-item d-flex">
+                                <div class="activite-label">02 AUG <br /><a style="font-size:small;">11:23 AM</a><br /></div>
+                                <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                                <div class="activity-content">
+                                    Already approved by <a class="fw-bold text-dark">John Michael Dumaua</a> <br /><br />
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">03 AUG <br /><a style="font-size:small;">11:23 AM</a><br /></div>
+                                <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                                <div class="activity-content">
+                                    Already approved by  <a class="fw-bold text-dark">Warren Bolivar</a><br /><br />
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">04 AUG <br /><a style="font-size:small;">11:23 AM</a><br /></div>
+                                <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                                <div class="activity-content">
+                                    Already approved by<a class="fw-bold text-dark">Ron Allan marfa</a><br /><br />
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">05 AUG <br /><a style="font-size:small;">11:23 AM</a><br /></div>
+                                <i class="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
+                                <div class="activity-content">
+                                    For APV preparation <br /><br />
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">@*06 AUG <br /><a style="font-size:small;">11:23 AM*@</a><br /></div>
+                                <i class="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
+                                <div class="activity-content">
+                                    For posting 
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">@*07 AUG <br /><a style="font-size:small;">11:23 AM</a><br />*@</div>
+                                <i class="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
+                                <div class="activity-content">
+                                    For payment
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">@*0 AUG <br /><a style="font-size:small;">11:23 AM</a><br />*@</div>
+                                <i class="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
+                                <div class="activity-content">
+                                    For creditation
+                                </div>
+                            </div><!-- End activity item-->
+
+
+                            @* ALREADY VERIFIED BY RUDY BOY BAUTISTA
+                            ALREADY APPROVED BY JOHN MICHAEL DUMAUA
+                            ALREADY APPROVED BY WARREN BOLIVAR JR
+                            ALREADY APPROVED BY RON ALLAN MARFA
+                            FOR APV
+                            FOR POSTING
+                            FOR PAYMENT
+                            FOR POSTING
+                            FOR CREDITATION*@
+
+                            @*<div class="activity-item d-flex">
+                                <div class="activite-label">56 min</div>
+                                <i class="bi bi-circle-fill activity-badge text-danger align-self-start"></i>
+                                <div class="activity-content">
+                                    Voluptatem blanditiis blanditiis eveniet
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">2 hrs</div>
+                                <i class="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
+                                <div class="activity-content">
+                                    Voluptates corrupti molestias voluptatem
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">1 day</div>
+                                <i class="bi bi-circle-fill activity-badge text-info align-self-start"></i>
+                                <div class="activity-content">
+                                    Tempore autem saepe <a href="#" class="fw-bold text-dark">occaecati voluptatem</a> tempore
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">2 days</div>
+                                <i class="bi bi-circle-fill activity-badge text-warning align-self-start"></i>
+                                <div class="activity-content">
+                                    Est sit eum reiciendis exercitationem
+                                </div>
+                            </div><!-- End activity item-->
+
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">4 weeks</div>
+                                <i class="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
+                                <div class="activity-content">
+                                    Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
+                                </div>
+                            </div>*@<!-- End activity item-->
+
+                        </div>
+
+                    </div>
+                </div><!-- End Recent Activity -->
+
+            </div>
+        </div>
+    </section>
+
+
+</main><!-- End #main -->

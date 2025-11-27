@@ -1,0 +1,356 @@
+﻿@using Newtonsoft.Json;
+@*@model IEnumerable<SPASv2.Models.PaymentRequestModel>*@
+@model SPASv2.Models.BatchRequisitionViewModel
+
+@{
+    ViewData["Title"] = "Create Batch RFP";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Batch Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/BatchRequisition/List">Requisition</a></li>
+                <li class="breadcrumb-item">Batch Payment</li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="card overflow-auto">
+            <div class="card-body">
+
+                <div class="card-title mb-2">
+                    <a class="card-title">Batch Summary</a>
+                    <div class="float-end" style="margin-right:10px; width:max-content;">
+                        <div class=" btn-group" role="group">
+                            @* <button class="btn btn-outline-primary" id="btnUpload"><i class="bi bi-cloud-upload"></i> Upload Batch File</button>
+                            <button type="button" class="btn btn-outline-primary" id="btnSelectAttachment"><i class="ri-attachment-2"></i>Select Attachment</button>
+                            *@
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu" style="">
+                                    <li><button hidden class="btn btn-outline-primary" id="btnDownload" onclick="DownloadTemplate()"><i class="bi bi-cloud-download-fill"></i> Download Blank Template</button>
+                                    <li><button hidden class="btn btn-outline-primary" id="btnDownload" onclick="RedirecttoFiles()"><i class="bi bi-folder-plus"></i> Download Folder</button></li>
+                                    <li><button class="btn btn-outline-primary" id="btnUpload"><i class="bi bi-cloud-upload"></i> Upload Batch File</button> </li>
+                                    <li><button type="button" class="btn btn-outline-primary" id="btnSelectAttachment"><i class="ri-attachment-2"></i>Select Attachment</button></li>
+                                </ul>
+                            </div>
+
+                            <button type="button" class="btn btn-outline-primary" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>
+                            <input hidden type="file" id="btnOpenFile" name="btnOpenFile" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onchange="CheckTemplate(this)">
+                            <input hidden type="file" id="btnSelectFile" name="btnSelectFile" onchange="selectFolder(event);" multiple="multiple"
+                                   webkitdirectory mozdirectory msdirectory odirectory directory>
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tbodyBatchSummary">
+                    <table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+                        <thead>
+                            <tr>
+                                <th>
+                                    P.O. No
+                                </th>
+                                <th>
+                                    Sales Invoice
+                                </th>
+                                <th>
+                                    Vendor Name
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    HP Deduction
+                                </th>
+                                <th>
+                                    Freight Amount
+                                </th>
+                                <th>Attachments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.BatchPaymentHdrList)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.PONo
+                                    </td>
+                                    <td>
+                                        @item.SalesInvoiceNo
+                                    </td>
+                                    <td>
+                                        @item.PayeeName
+                                    </td>
+                                    <td class="money">
+                                        <div class="currencySymbol">
+                                            &#8369 @string.Format("{0:#,0.00##}",  item.Amount)
+                                        </div>
+                                    </td>
+                                    <td class="money">
+                                        <div class="currencySymbol">
+                                            &#8369 @string.Format("{0:#,0.00##}",  item.HPDeduction)
+                                        </div>
+                                    </td>
+                                    <td class="money">
+                                        <div class="currencySymbol">
+                                            &#8369 @string.Format("{0:#,0.00##}",  item.FreightAmount)
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @foreach (var attItem in Model.RequestAttachments.Where(t => t.RequestNo == (item.PONo + item.SalesInvoiceNo)).ToList())
+                                        {
+                                            <a><i class="bi bi-paperclip" style="color:darkblue;"></i>@attItem.FileName</a> <br />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+                    <div class="card-title mb-2">
+                        <a class="card-title">Item Details</a>
+                    </div>
+
+                    <table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+                        <thead>
+                            <tr>
+                                <th>
+                                    P.O. No
+                                </th>
+                                <th>
+                                    Department
+                                </th>
+                                <th>
+                                    Item Description
+                                </th>
+                                <th>
+                                    Balance
+                                </th>
+                                <th>
+                                    Quantity
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Reference Receipt
+                                </th>
+                                <th>
+                                    DR.No
+                                </th>
+                                <th>
+                                    DR.Date
+                                </th>
+                                <th>
+                                    S.I. No
+                                </th>
+                                <th>
+                                    SI.Date
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+
+                </div>
+                <button type="button" class="btn btn-outline-primary float-end" onclick="UploadBatch()"><i class="bi bi-plus-circle me-1"></i>Create Request</button>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script>
+
+    $('#btnSelectAttachment').click(function () {
+        $('#btnSelectFile').click();
+    });
+
+    $('#btnUpload').click(function () {
+        $('#btnOpenFile').click();
+    });
+
+    function CheckTemplate(input) {
+        if (window.FormData !== undefined) {
+
+            var fileData = new FormData();
+            var files = $("#btnOpenFile")[0].files;
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("files", files[i]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/CheckTemplate",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                //dataType: 'html',
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                success: function (result) {
+                    //console.log(result);
+                    if (result.IsPOAndPAY == true) {
+                        ShowAlert(
+                            {
+                                title: 'PO and PAY Batch Upload',
+                                text: "You are uploading PO and PAY, are you sure to continue?",
+                                icon: 'question',
+                                showCancelButton: true,
+                                successmethod: "ReadPOAndPayTemplate()",
+                                //    cancelmethod: "RedirectToBatchPaymentEntry()",
+                                cancelButtonText: "No, cancel uploading",
+                                confirmButtonText: "Yes, upload PO and PAY"
+                            });
+                    }
+                    else { ReadTemplate(input); }// $("#tbodyBatchSummary").html(result); }
+
+                    //$("#btnOpenFile").value = '';
+                    //$("#tbodyBatchSummary").html(result);
+
+                    //$("#btnOpenFile").value = '';
+                    //$('#btnOpenFolder').click();
+                },
+                error: function (xhr, status, error) {
+                    $("#btnOpenFile").value = '';
+                    ShowAlert(
+                        {
+                            title: 'Error',
+                            text: error,
+                            icon: 'error'
+                        });
+                },
+                complete: function (data) {
+                    $("#loader").modal("hide");
+                }
+            });
+
+        } else {
+            alert("Data is not supported.");
+        }
+    }
+
+    function ReadTemplate(input) {
+        if (window.FormData !== undefined) {
+
+            var fileData = new FormData();
+            var files = $("#btnOpenFile")[0].files;
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("files", files[i]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/ReadPaymentTemplateNew",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                //dataType: 'html',
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                success: function (result) {
+                    //console.log(result);
+                    if (result.success == false) {
+                        ShowAlert(
+                            {
+                                title: 'Batch Upload',
+                                text: result.error,
+                                icon: 'error',
+                                //successmethod: "GotoBatchDetails()"
+                            });
+                    }
+                    else { $("#tbodyBatchSummary").html(result); }
+
+                    $("#btnOpenFile").value = '';
+                    //$("#tbodyBatchSummary").html(result);
+
+                    //$("#btnOpenFile").value = '';
+                    //$('#btnOpenFolder').click();
+                },
+                error: function (xhr, status, error) {
+                    $("#btnOpenFile").value = '';
+                    ShowAlert(
+                        {
+                            title: 'Error',
+                            text: error,
+                            icon: 'error'
+                        });
+                },
+                complete: function (data) {
+                    $("#loader").modal("hide");
+                }
+            });
+
+        } else {
+            alert("Data is not supported.");
+        }
+    }
+
+    function ReadPOAndPayTemplate() {
+        //alert("hey!");
+        if (window.FormData !== undefined) {
+
+            var fileData = new FormData();
+            var files = $("#btnOpenFile")[0].files;
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("files", files[i]);
+            }
+        }
+
+            $.ajax({
+                type: "POST",
+                url: "/BatchRequisition/ReadPOAndPayTemplate",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                //dataType: 'html',
+                beforeSend: function () {
+                    ShowLoader();
+                },
+                success: function (result) {
+                    //console.log(result);
+                    if (result.success == false) {
+                        ShowAlert(
+                            {
+                                title: 'Batch Upload',
+                                text: result.error,
+                                icon: 'error',
+                            });
+                    }
+                    else { $("#tbodyBatchSummary").html(result); }
+
+                    $("#btnOpenFile").value = '';
+                },
+                error: function (xhr, status, error) {
+                    $("#btnOpenFile").value = '';
+                    ShowAlert(
+                        {
+                            title: 'Error',
+                            text: error,
+                            icon: 'error'
+                        });
+                },
+                complete: function (data) {
+                    $("#loader").modal("hide");
+                }
+            }); 
+    }
+
+
+</script>

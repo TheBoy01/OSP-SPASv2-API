@@ -1,0 +1,68 @@
+﻿@using System.Data;
+@model SPASv2.Models.PRAuthorizationModel
+
+@{
+    ViewData["Title"] = "tmpListOfAuthorizerPayClass";
+}
+
+    @foreach (var row in @Model.qryListOfAuthorizerPayclass)
+    {
+        <tr >
+
+            <td scope="row">
+            @* <input type="text" id="name-input" value=@(row.PersonID)>*@
+            @(row.PersonID)
+            </td>
+
+            <td>
+                @(row.PayClassDesc)
+            </td>
+
+            <td>
+                @(row.AuthorizeLevel)
+            </td>
+
+            <td>
+                @(row.AuthorizeClass)
+            </td>
+
+            <td>
+            <input type="submit" value="Edit" id="btnEdit" class="btn btn-danger" />
+            </td>
+
+
+        </tr>
+    }
+
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <style>
+        .currSign:before {
+            content: '₱';
+        }
+    </style>
+    <script>
+
+
+        let x = document.querySelectorAll(".currencyformat");
+        for (let i = 0, len = x.length; i < len; i++) {
+            let num = Number(x[i].innerHTML)
+                .toLocaleString('en');
+            x[i].innerHTML = num;
+            x[i].classList.add("currSign");
+        }
+
+        //document.getElementById("disapproved").disabled = true;
+        //document.getElementById("approved").disabled = true;
+
+    </script>
+
+
+
+
+
+
+
+
+

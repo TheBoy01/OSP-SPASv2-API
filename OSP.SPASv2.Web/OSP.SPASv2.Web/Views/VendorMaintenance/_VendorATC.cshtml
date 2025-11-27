@@ -1,0 +1,130 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+@{
+
+    switch (Model.SelectedDiv.ToUpper())
+    {
+        case "CREATE":
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add ATC</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="col-md-6">
+                        <label for="inputName5" class="form-label">ATC Type</label>
+                        @Html.DropDownListFor(model => model.RefATCList,Model.RefATCList.Select(m => new SelectListItem { Value = m.ATCDesc + "|" + m.TaxRate, Text = m.ATCCode }), "-- SELECT ATC TYPE --", htmlAttributes: new { @class = "form-select",@id = "Add_CmbVendorType",@onchange="GetATCDesc('Add')" })
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+
+                    <div class="col-12">
+                        <label for="inputAddress5" class="form-label">ATC Description</label>
+                        <textarea class="form-control" id="Add_txtATCDesc" style="height: 100px;" disabled></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputPassword5" class="form-label">Rate</label>
+                        <input type="text" class="form-control" id="Add_txtRate">
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Add_chkVAT">
+                            <label class="form-check-label" for="gridCheck">
+                                VAT Included
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="Add_chkDefault">
+                            <label class="form-check-label" for="gridCheck">
+                                Default
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary add-VendorATC">Add</button>
+                </div>
+            </div>
+
+            break;
+
+
+        case "EDIT":
+
+                
+
+            break;
+
+    }
+
+}
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} 
+
+<script type="text/javascript"> 
+
+    $(document).ready(function () {
+        $(".add-VendorATC").click(function () { 
+            const VendorATCCode = document.getElementById("Add_CmbVendorType").options[document.getElementById("Add_CmbVendorType").selectedIndex].text;
+            const VendorATCDesc = document.getElementById("Add_txtATCDesc").value;
+            const Rate = document.getElementById("Add_txtRate").value;
+            //alert(/*document.getElementById("Add_txtATCDesc").value*/);
+            var table = document.getElementById("Tbl_VendorATC");
+            var table_len = (table.rows.length);
+            const Module = "Alphanumeric Tax Code";
+            //const tableName = table.getAttribute("id");
+
+            //var markup = "<tr><td><input type='checkbox' name='record'></td><td id='BankAcctType_row" + table_len + "'>"
+            var markup = "<tr id='ATC_TR_" + table_len + "'><td>" //"<tr><td id='row_no" + table_len + "'>"
+                + VendorATCCode +
+                "</td><td>"
+                + VendorATCDesc +
+                "</td><td>"
+                + Rate +
+                "</td><td>"
+                + GetCheckBoxVal("Add_chkVAT") +
+                "</td><td>"
+                + GetCheckBoxVal("Add_chkDefault") + 
+                "</td><td>"
+                + "<a onclick='edit_row(ATC_TR_" + table_len + ",\"Vendor ATC\")'> <i class='bi bi-pencil-square fa-lg'></i> </a>  <a onclick='delete_row(ATC_TR_" + table_len + "," + table.getAttribute("id") + ",\"" + Module + "\")'> <i class='bi bi-x-square fa-lg' style='color: red'></i> </a>" +
+                "</td>"
+            //+ ZipCode +
+            "</tr>";
+            //alert(tableName);
+            $("#Tbl_VendorATC").append(markup);
+            $('#Generic_Modal').modal('toggle');
+        });
+    });
+
+    $(document).ready(function () {
+        $(".edit-VendorATC").click(function () {
+
+
+
+        });
+    });
+
+    function GetATCDesc(FieldFunc) {
+        var select = document.getElementById(FieldFunc + '_CmbVendorType');
+        var option = select.options[select.selectedIndex];
+        //alert(option.value.substring(option.value.indexOf("|") + 1));
+
+        document.getElementById(FieldFunc + '_txtATCDesc').value = option.value.substring(0, option.value.indexOf("|"));
+        document.getElementById(FieldFunc + '_txtRate').value = option.value.substring(option.value.indexOf("|") + 1);
+    }
+
+</script>

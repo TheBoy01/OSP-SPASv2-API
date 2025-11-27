@@ -1,0 +1,58 @@
+﻿@model SPASv2.Controllers.IDCard
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<h2>Upload Image</h2>
+
+<form asp-controller="Home" asp-action="UploadImage" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="imageFile">Select Image:</label>
+        <input type="file" class="form-control-file" id="imageFile" name="imageFile" multiple>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+@if (Model != null)
+{
+    @switch (Model.Type)
+    {
+        case "DLC":
+            {
+
+                <table>
+                    <tr><th><b>ID Type :  </b> </th><td>Driver's License</td></tr>
+                    <tr><th><b>No :  </b> </th><td><span>@Model.IDNo</span></td></tr>
+                    <tr><th><b>Name :  </b> </th><td><span>@Model.Name</span></td></tr>
+                    <tr><th><b>Nationality :  </b> </th><td>@Model.Nationality</td></tr>
+                    <tr><th><b>Sex :  </b> </th><td>@Model.Sex</td></tr>
+                    <tr><th><b>Date of Birth :  </b> </th><td>@Model.DOB</td></tr>
+                    <tr><th><b>Weight :  </b> </th><td>@Model.Weight</td></tr>
+                    <tr><th><b>Height :  </b> </th><td>@Model.Height</td></tr>
+                </table>
+
+
+                break;
+            }
+        case "PSSPRT":
+            {
+                <table>
+                    <tr><th><b>ID Type :  </b> </th><td>Passport</td></tr>
+                    <tr><th><b>Name :  </b> </th><td><span>@Model.Name</span></td></tr>
+                    <tr><th><b>Date of Birth :  </b> </th><td><span>@Model.DOB</span></td></tr>
+                    <tr><th><b>Place of Birth :  </b> </th><td><span>@Model.POB</span></td></tr>
+                    <tr><th><b>Validity :  </b> </th><td><span>@Model.Validity</span></td></tr>
+                </table>
+                break;
+            }
+        default:
+            {
+                <b>ID Type : Invalid ID </b>
+                break;
+            }
+    }
+
+    <p><b> Card Text : </b> @Html.Raw(Model.CardText)</p>
+}

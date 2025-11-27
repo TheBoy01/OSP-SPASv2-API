@@ -1,0 +1,112 @@
+﻿@*@model IEnumerable<tmpPaymentRequestInventory>*@
+@model SPASv2.Models.PaymentRequestModel
+@*@model ViewDataDictionary*@
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+*@
+@{
+    <div>@ViewData["resp"]</div>
+    <div class="row my-2">
+        <div class="form-group col-md-12">
+            <table class="table table-bordered nowrap" style="width:100%;">
+                <thead>
+
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().ItemDesc)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().UOM)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Price)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Qty)
+                        </th>
+                        
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Discount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().TotalAmt)
+                        </th>
+                        @if (Model.isCreate)
+                        {
+                            <th></th>
+                        }
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var item in (List<tmpPaymentRequestInventory>)ViewData["tmp"])
+                    //@foreach (var item in Model)
+                    {
+                        <tr>
+                            @Html.HiddenFor(m=>item.PRNo)
+                            @Html.HiddenFor(m=>item.ItemCode)
+                            @Html.HiddenFor(m=>item.Gross)
+                            <td>
+                                @Html.DisplayFor(m=>item.ItemDesc)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(m=>item.UOM)
+                            </td>
+
+                            
+                            <td class="money">
+
+                                &#8369 @string.Format("{0:#,0.00##}", item.Price)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(m=>item.Qty)
+                            </td>
+                            
+                            
+                            <td class="money">
+                                @if (item.Discount == 0)
+                                {
+                                    @Html.Display("-")
+                                }
+                                else
+                                {
+                                    @string.Format("{0:#,0.00##}", "&#8369 "+ item.Discount)
+                                }
+                                    
+                                
+                            
+                               
+                            </td>
+
+                            <td class="money">
+
+                                 &#8369 @string.Format("{0:#,0.00##}", item.TotalAmt)
+                            </td>
+
+                            @if (Model.isCreate)
+                            {
+                                <td>
+
+                                    <a asp-action="Delete"><i class="bi bi-trash"></i> Remove</a>
+                                </td>
+                            }
+                            
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+     
+    </div>
+
+
+}
+<script>
+    new DataTable('#dtActiveBatchPR', {
+        responsive: true
+    });
+</script>

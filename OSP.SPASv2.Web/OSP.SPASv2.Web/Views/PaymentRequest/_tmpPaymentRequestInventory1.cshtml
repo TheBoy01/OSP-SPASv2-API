@@ -1,0 +1,69 @@
+﻿@model IEnumerable<tmpPaymentRequestInventory>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    <table class="table table-bordered ">
+        <thead>
+            <tr>
+
+                <th>
+                    @Html.DisplayNameFor(m=>m.ItemDesc)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m=>m.UOM)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m=>m.Price)
+                </th>
+                <th>
+                     @Html.DisplayNameFor(m=>m.Price)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(m=>m.TotalAmt)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in  Model)
+            {
+                    <tr>
+                @Html.HiddenFor(m=>item.PRNo)
+                @Html.HiddenFor(m=>item.ItemCode)
+                <td>
+                    @Html.DisplayFor(m=>item.ItemDesc)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(m=>item.UOM)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(m=>item.Price)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(m=>item.Qty)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(m=>item.TotalAmt)
+                </td>
+
+                <td>
+                    <a asp-action="Delete">Remove</a>
+                </td>
+            </tr>
+            }
+        
+        </tbody>
+    </table>
+
+
+
+
+
+}

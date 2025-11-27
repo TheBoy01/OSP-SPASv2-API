@@ -1,0 +1,217 @@
+﻿@{
+    //ViewData["Title"] = "Privacy Policy";
+    Layout = "/Views/Shared/_LoginLayout.cshtml";
+}
+<h1>@ViewData["Title"]</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Pages / Login - NiceAdmin Bootstrap Template</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="~template/img/favicon.png" rel="icon">
+    <link href="~template/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="~template/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~template/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~template/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="~template/vendor/quill/quill.snow.css" rel="stylesheet">
+    <link href="~template/vendor/quill/quill.bubble.css" rel="stylesheet">
+    <link href="~template/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="~template/vendor/simple-datatables/style.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="~template/css/style.css" rel="stylesheet">
+
+
+    <!-- Vendor JS Files -->
+    <script src="~template/vendor/apexcharts/apexcharts.min.js"></script>
+    <script src="~template/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~template/vendor/chart.js/chart.min.js"></script>
+    <script src="~template/vendor/echarts/echarts.min.js"></script>
+    <script src="~template/vendor/quill/quill.min.js"></script>
+    <script src="~template/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="~template/vendor/tinymce/tinymce.min.js"></script>
+    <script src="~template/vendor/php-email-form/validate.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!-- Template Main JS File -->
+    <script src="~template/js/main.js"></script>
+
+    <!-- =======================================================
+    * Template Name: NiceAdmin - v2.2.2
+    * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+
+
+</head>
+
+<body>
+
+
+    <main>
+        <div class="container">
+            <div class="d-flex justify-content-center py-4">
+                <a href="index.html" class="logo d-flex align-items-center w-auto">
+                    <img src="assets/img/logo.png" alt="">
+                    <span class="d-none d-lg-block">SPASv2</span>
+                </a>
+            </div>
+            <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="d-flex flex-column align-items-center justify-content-center">
+
+                            <div class="d-flex justify-content-center py-4">
+                                <a href="index.html" class="logo d-flex align-items-center w-auto">
+                                    <img src="~template/img/logo.png" alt="">
+                                    @*<span class="d-none d-lg-block">SPASv2</span>*@
+                                </a>
+                            </div><!-- End Logo -->
+
+                            <div class="card mb-3">
+
+                                <div class="card-body">
+
+                                    <div class="pt-4 pb-2">
+                                        <h2 class="card-title text-center pb-0 fs-2">SPASv2</h2>
+
+                                        <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                                        <p class="text-center small">Enter your username & password to login</p>
+                                    </div>
+
+                                    <form id="loginForm" asp-action="Login" asp-controller="Home">
+                                        @*<div class="col-12">
+                                            <label for="yourCompany" class="form-label">Company</label>
+                                            <div class="input-group has-validation">
+                                                <select class="form-control" id="yourCompany" name="Company">
+                                                    <option>Select company</option>
+                                                    <option>FAMILY CHOICE MEMORIAL CHAPELS , INC.</option>
+                                                    <option>FOREST HILL FUNERAL HOMES & SERVICES INC.</option>
+                                                    <option>GOLDEN GATE MEMORIAL CHAPELS VISAYAS, INC.</option>
+                                                    <option>ST. PETER CASKET FACTORY AND TRADING VISAYAS, INC.</option>
+                                                    <option>ST. PETER CHAPELS LUZON, INC.</option>
+                                                    <option>ST. PETER CASKET MANUFACTURING MINDANAO, INC.</option>
+                                                    <option>ST. PETER CASKET MANUFACTURING AND TRADING LUZON, INC.</option>
+                                                    <option>ST. PETER CHAPELS MINDANAO WEST, INC.</option>
+                                                    <option>ST. PETER CHAPELS NORTHERN LUZON, INC.</option>
+                                                    <option>ST. PETER CHAPELS SOUTHERN LUZON, INC.</option>
+                                                    <option>ST. PETER FRANCHISE MANAGEMENT, INC.</option>
+                                                    <option>ST. PETER LIFEPLAN, INC</option>
+                                                    <option>ST. PETER MEMORIAL CHAPELS, INC.</option>
+                                                    <option>ST. PETERLIFE MEMORIAL HOMES (LUZON), INC.</option>
+                                                    <option>ST. PETERLIFE MEMORIAL HOMES (MINDANAO), INC.</option>
+                                                    <option>ST. PETERLIFE MEMORIAL HOMES (VISAYAS), INC.</option>
+                                                </select>
+                                            </div>
+                                        </div>*@
+
+                                        <div class="col-12">
+                                            <label for="yourUsername" class="form-label">Username</label>
+                                            <div class="input-group has-validation">
+                                                <span class="input-group-text" id="inputGroupPrepend"></span>
+                                                <input type="text" name="username" class="form-control" id="yourUsername" required>
+                                                <div class="invalid-feedback">Please enter your username.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label for="yourPassword" class="form-label">Password</label>
+                                            <input type="password" name="password" class="form-control" id="yourPassword" required>
+                                            <div class="invalid-feedback">Please enter your password!</div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
+                                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button class="btn btn-primary w-100" id="btnLogin" type="submit" value="Login">Login</button>
+                                            @*<input type="button" value="Login" id="btnLogin" class="btn btn-primary w-100" />*@
+                                        </div>
+                                        <div class="col-12">
+                                            <p class="small mb-0">Don't have account? <a href="pages-register.html">Create an account</a></p>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main><!-- End #main -->
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+    <script type="text/javascript">
+        $(function () {
+            $("#btnLogin_").click(function () {
+                var model =
+                {
+                    Username: document.getElementById("yourUsername").value,
+                    Password: document.getElementById("yourPassword").value
+                };
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Home/Login',
+                    data: { Login: model },
+                    dataType: 'json',
+                    success: function (response) {
+                        document.getElementById("testpartial").innerHTML = response.v1;
+                        document.getElementById("testpartial2").innerHTML = response.v2;
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+
+            $("#btnTest").click(function () {
+                $.ajax({
+                    url: '/Home/TestResponse',
+                    type: 'GET',
+                    dataType: 'html',
+                    success: function (data) {
+                        alert(data.ErrorMessage);
+                    },
+                    error: function () {
+                        alert('Error getting products');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
+

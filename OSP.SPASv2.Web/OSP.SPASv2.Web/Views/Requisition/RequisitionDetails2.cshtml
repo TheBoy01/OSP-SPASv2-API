@@ -1,0 +1,15 @@
+﻿@model SPASv2.Models.RequisitionViewModel
+
+@{
+    ViewData["Title"] = "Requester Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<main id="main" class="main">
+    <section class="section dashboard">
+<div id="divReqJourney">
+    @{
+        await Html.RenderPartialAsync("/Views/Home/_RequestJourney.cshtml", Model.dashboardViewModel);
+    }
+</div>
+</section>
+</main>

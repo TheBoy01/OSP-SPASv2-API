@@ -1,0 +1,110 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+@{
+    ViewData["Title"] = "Vendor Items List";
+}
+
+<form id="VendorItems">
+
+    <main id="main" class="main">
+        <section class="section dashboard">
+            <div class="card">
+                <div class="card-body">
+                    <h1 id="Testing_return">Vendor Items</h1>
+                    <h4>Vendor Maintenance</h4>
+                    <hr />
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="control-label required">Vendor Name</label>
+                            <input class="form-control" id="LastName" />
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <h2 class="card-title center">Items List</h2>
+                    <hr />
+                    <div class="row">
+                        <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#ATC_Modal"></a></span>
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Item Code
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Category
+                                    </th>
+                                    <th>
+                                        Unit Of Measure
+                                    </th> 
+                                    <th>
+                                        Payment Class
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        001
+                                    </td>
+                                    <td>
+                                        ELECTRICITY
+                                    </td>
+                                    <td>
+                                        SERVICE
+                                    </td>
+                                    <td>
+                                        KWH
+                                    </td> 
+                                    <td>
+                                        LIGHT AND WATER
+                                    </td>
+                                    <td>
+                                        <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>
+                                        <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    </td>
+                                </tr>
+                                 <tr>
+                                    <td>
+                                        002
+                                    </td>
+                                    <td>
+                                        SOLAR POWER
+                                    </td>
+                                    <td>
+                                        SERVICE
+                                    </td>
+                                    <td>
+                                        KWH
+                                    </td> 
+                                    <td>
+                                        LIGHT AND WATER
+                                    </td>
+                                    <td>
+                                        <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>
+                                        <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+</form>
+

@@ -1,0 +1,308 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.RequisitionViewModel
+<style>
+    .filter-ids
+    {
+        float: left;
+        padding: 4px;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        background: #f5f5f5;
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: small;
+        color: #a77d00 !important;
+    }
+
+    .cancel-filter
+    {
+        border: 1px solid #ccc;
+        width: 18px;
+        display: block;
+        float: right;
+        text-align: center;
+        margin-left: 20px;
+        border-radius: 49%;
+        height: 18px;
+        line-height: 15px;
+        margin-top: 1px;
+        cursor: pointer;
+        background-color: #b73340;
+        color: white!important;
+    }
+
+    #divFilterOptions {
+        margin-right: 100px;
+    }
+
+    #lblFilterBy {
+        max-width: 13%;
+        min-width: 90px;
+    }
+
+    #cboFilterBy {
+        max-width: 150px;
+        min-height: 27px !important;
+        padding: 10px;
+        min-width: 55px;
+    }
+
+    #FilterVal
+    {
+        padding: 0px 0px 0px 10px !important;
+        min-width: 150px; 
+        max-width: 350px;
+    }
+
+    #lblFilterList
+    {
+        float: left;
+        margin-right: 5px;
+    }
+
+    #btnClearFilter
+    {
+        font-size: medium;
+        float: left;
+        color: var(--bs-form-invalid-color) !important;
+    }
+</style>
+
+<div class="card-title" style="padding-bottom:0px; margin-bottom:0px;">
+    <a class="card-title ">List of Requisitions</a> <a href="#" id="btnShowHideFilter" onclick="ShowHideFilter()"><span id="spanShowHideFilter">Show Filter Option</span></a>
+    <div style="">
+        <div id="divFilterOptions" class="input-group mb-1 mt-1"  hidden>
+            <input id="lblFilterBy" type="text" class="form-control" value="Filter By:" readonly="" style="">
+            <select id="cboFilterBy" class="form-control form-control-sm" onchange="SetFilterValDataList()">
+                <option>Payclass</option>
+                <option>Status</option>
+                <option>Company</option>
+                <option>Vendor</option>
+            </select>
+            <input list="dtFilterValList" type="text" id="FilterVal" name="FilterVal" value="" class="form-control form-control-sm">
+
+            <datalist id="dtFilterValList">
+                @foreach (var item in Model.dashboardViewModel.RequestList.Select(t=>t.PayClass).ToList().Distinct())
+                {
+                    <option value="@item" data-value="@item"></option>
+                }
+            </datalist>
+            <button class="btn btn-primary" type="button" id="AddFilter" onclick="AddFilter()"><i class="ri-filter-2-fill"></i></button>
+        </div>
+
+        <div id="divFilterList"class="overflow-auto" style="max-height: 150px;">
+            
+        </div>
+
+        
+    </div>
+    <br>
+</div>
+
+<script src="~/template/js/datatableRefresh.js"></script>
+<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7860391.js"></script>
+
+
+<script type="text/javascript">
+    
+    var filterByTodelete;
+    var filterValTodelete;
+
+    function ShowHideFilter() {
+        var content = document.getElementById("divFilterOptions");
+        content.hidden = !content.hidden;
+        var mySpan = document.getElementById("spanShowHideFilter");
+        
+        if(content.hidden)
+        {
+            mySpan.textContent = "Show Filter Option";
+        }
+        else        
+        {
+            mySpan.textContent = "Hide Filter Option";
+        }
+    }
+
+    function SetFilterValDataList()
+    {
+        var data ;
+        var txt = $('#cboFilterBy').val();
+        switch (txt) {
+            case "Status":
+                   data = @Html.Raw(JsonConvert.SerializeObject(Model.dashboardViewModel.RequestList.Select(t => t.Status).OrderBy(t=>t).ToList().Distinct()));
+                break;
+            case "Vendor":
+                data = @Html.Raw(JsonConvert.SerializeObject(Model.dashboardViewModel.RequestList.Select(t => t.Vendor).OrderBy(t=>t).ToList().Distinct()));
+                break;
+            case "Payclass":
+                data = @Html.Raw(JsonConvert.SerializeObject(Model.dashboardViewModel.RequestList.Select(t => t.PayClass).OrderBy(t=>t).ToList().Distinct()));
+                break;
+            case "Company":
+                data = @Html.Raw(JsonConvert.SerializeObject(Model.dashboardViewModel.RequestList.Select(t => t.ItemCompany).OrderBy(t=>t).ToList().Distinct()));
+                break;
+        }
+
+        var s = '';
+        for (var i = 0; i < data.length; i++) {
+            s += '<option value="' + data[i] + '" data-value="' + data[i] + '"></option>';
+        }
+        $("#dtFilterValList").html(s);
+
+        $('#FilterVal').val('');
+    }
+
+    function AddFilter()
+    {
+       var filterBy = $('#cboFilterBy').val();
+       var filterVal =$('#FilterVal').val();
+
+        if (FilterExist(filterBy, filterVal)) {
+
+            ShowAlert(
+                {
+                    title: "Requisition",
+                    text: "Filter already added!",
+                    icon: "error",
+                });
+
+
+            $('#FilterVal').val('');
+           return;
+       }
+
+
+        if (filterVal === '')
+        {
+            ShowAlert(
+                {
+                    title: "Requisition",
+                    text: "Please enter filter value!",
+                    icon: "error",
+                });
+
+
+            $('#FilterVal').val('');
+            return;
+        }
+
+            var NewFilter =
+        {
+            FilterBy: filterBy,
+            FilterVal: filterVal
+        };
+
+        Filters.push(NewFilter);
+        $('#FilterVal').val('');
+        RefreshFilterList();
+    }
+
+    function FilterExist(filterby, filterval)
+    {
+        const filteredData = Filters.filter(item => item.FilterBy === filterby && item.FilterVal === filterval);
+       
+        if (filteredData.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+        
+    }
+
+    function RefreshFilterList()
+    {
+
+        var myDiv = document.getElementById("divFilterList");
+        
+        myDiv.innerHTML = "";
+
+        for (var i = 0; i < Filters.length; i++) {
+
+            if (i==0)
+            {
+                var lblFilter = document.createElement("a");
+                lblFilter.innerHTML = "Filters:";
+                lblFilter.id = "lblFilterList";
+                myDiv.appendChild(lblFilter);
+            }
+
+            var mySpan = document.createElement("span");
+            mySpan.innerHTML = " <b>" + Filters[i].FilterBy + "</b>: " + Filters[i].FilterVal + "<span class='cancel-filter' name = '" + Filters[i].FilterBy + "' id ='" + Filters[i].FilterVal + "' onclick='removeItem(this)'> x</span>";
+            mySpan.classList.add("filter-ids");
+
+            myDiv.appendChild(mySpan);
+
+            if (i == Filters.length-1) {
+                
+                var btnClearAll = document.createElement("a");
+                btnClearAll.innerHTML = "Clear All";
+                btnClearAll.id = "btnClearFilter";
+                btnClearAll.classList.add("btn", "btn-sm");
+                btnClearAll.onclick = ClearFilters;
+                myDiv.appendChild(btnClearAll);
+            }
+        }
+
+        RefreshRequisitionList();
+        
+    }
+
+    function ClearFilters()
+    {
+        ShowAlert(
+            {
+                title: "Requisition",
+                text: "Are you sure you want to clear all filters?",
+                icon: "question",
+                showCancelButton: "true",
+                confirmButtonText: "Yes!",
+                successmethod: "ConfirmClearFilters()"
+            });
+        
+    }
+
+    function ConfirmClearFilters() {
+        Filters = [];
+        RefreshFilterList();
+    }
+
+    
+    function removeItem(element) {
+        //filterToDelete = { Filterby: FilterBy, FilterVal: FilterVal };
+        filterByTodelete = element.getAttribute("name");
+        filterValTodelete = element.id;
+        ShowAlert(
+            {
+                title: "Requisition?",
+                text: "Are you sure you want to remove filter?",
+                icon: "question",
+                showCancelButton: "true",
+                confirmButtonText: "Yes!",
+                successmethod: "ConfirmRemoveFilter()"
+            });
+
+
+    }
+
+    function ConfirmRemoveFilter() {
+
+        for (var i = 0; i < Filters.length; i++) {
+            if (Filters[i].FilterBy === filterByTodelete && Filters[i].FilterVal === filterValTodelete) {
+                Filters.splice(i, 1);
+                break;
+            }
+        }
+
+        RefreshFilterList();
+    }
+
+
+</script>
+@*
+<a id="lblFilterList">Filters:</a>
+
+<span class="filter-ids">
+    <b>Status</b>: For Payment<span class="cancel-filter"> x</span>
+</span>
+<a id="btnClearFilter" href="#" style="" class="btn btn-sm">Clear All</a>*@

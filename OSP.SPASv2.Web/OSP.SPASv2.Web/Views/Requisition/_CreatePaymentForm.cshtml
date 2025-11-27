@@ -1,0 +1,441 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.RequisitionViewModel
+@{
+    Layout = null;
+}
+
+<div class="modal fade" id="modalItems" tabindex="-1" style="display: none; /*margin-top:40px;*/" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="card-title" style="">Add Items/Services </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="frmAddItems">
+
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label>Company Type</label>
+                        @Html.DropDownListFor(model => model.Company, new SelectList(Model.CompanyList, "CompanyType", "CompanyType"), htmlAttributes: new { @class = "form-select" })
+                    </div>
+
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label>Department</label>
+                        @Html.DropDownListFor(model => model.Code, new SelectList(Model.DeptList, "DeptCode", "DeptDesc"),  htmlAttributes: new { @class = "form-select" })
+                    </div>
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label asp-for="ItemDesc" class="form-label "></label>
+                        <input asp-for="ItemDesc" class="form-control" list="dtItemList" onkeyup="SetItemDetails()" style="text-transform: uppercase;" />
+                        <datalist id="dtItemList">
+                            @foreach (var item in Model.VendorItemList)
+                            {
+                                <option value="@item.ItemDesc" data-value="@item.ItemCode"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="ItemDesc" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5" style="margin-top: 5px; ">
+                        <label asp-for="UOM" class="form-label "></label>
+                        <input asp-for="UOM" class="form-control" readonly />
+                        <span asp-validation-for="UOM" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5" style="margin-top: 5px; ">
+                        <label asp-for="ItemPrice" class="form-label "></label>
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Php</span>
+                            <input asp-for="ItemPrice" asp-format="{0:#,###.00}" class="form-control" style="text-align: right;" readonly>
+                        </div>
+                        <span asp-validation-for="ItemPrice" class="text-danger"></span>
+
+                    </div>
+                    <div class="col-2" style="margin-top: 5px; ">
+                        <label asp-for="Quantity" class="form-label "></label>
+                        <input asp-for="Quantity" type="number" value ="1" min="1" max="999" class="form-control" style="text-align: center;" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label asp-for="Discount" class="form-label "></label>
+
+                        <div class="input-group mb-3 ">
+                            @Html.DropDownListFor(model => model.Discount, new SelectList(Model.Discountlist, "DiscountCode", "DiscountDesc"), "-- SELECT DISCOUNT TYPE --", htmlAttributes: new { @class = "form-select width=50px", @onchange="SetDiscountType()" })
+                            <input asp-for="Discountprice" type="number" class="form-control" style="text-align: center;" readonly />
+
+                        </div>
+                        <span asp-validation-for="Discountprice" class="text-danger"></span>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="AddItem()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="CreatePayment" class="row g-3 needs-validation" id="frmCreate" enctype="multipart/form-data">
+    @Html.HiddenFor(model => Model.RequisitionItemList)
+    @Html.HiddenFor(model => Model.MainReqNo)
+    <div class="row">
+        <div class="col" style="min-width:300px;">
+            <h2 class="card-title">Payment Requisition Entry</h2>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <label asp-for="RefNo" class="form-label "></label>
+                        </span>
+                    </div>
+                </div>
+                <input asp-for="RefNo" class="form-control" style="text-transform:uppercase;" />
+                <span asp-validation-for="RefNo" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            Invoice No
+                        </span>
+                    </div>
+                </div>
+                <input asp-for="SalesInvoiceNo" class="form-control" style="text-transform:uppercase;" />
+                <span asp-validation-for="SalesInvoiceNo" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            Invoice Date
+                        </span>
+                    </div>
+                </div>
+                <input type="date" asp-for="SalesInvoiceDate" class="form-control" style="text-transform:uppercase;" />
+                <span asp-validation-for="SalesInvoiceDate" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            Delivery No
+                        </span>
+                    </div>
+                </div>
+                <input asp-for="DeliveryNo" class="form-control" style="text-transform:uppercase;" />
+                <span asp-validation-for="DeliveryNo" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            Delivery Date
+                        </span>
+                    </div>
+                </div>
+                <input type="date" asp-for="DeliveryDate" class="form-control" style="text-transform:uppercase;" />
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <label asp-for="Remarks" class="form-label "></label>
+                        </span>
+                    </div>
+                </div>
+
+                <textarea asp-for="Remarks" class="form-control" style="resize:none; text-transform:uppercase;" required></textarea>
+                <span asp-validation-for="Remarks" class="text-danger"></span>
+            </div>
+
+            <h2 class="card-title">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btnPyReqAttachment" style="display:inline-block;"><i class="ri-attachment-2"></i>  </button>
+                <a href="#" class="btn btn-danger linkbutton" id="ResetDocs" onclick="ResetDocs()" style="display: none; "> <i class="bx bx-reset"></i> Reset</a>
+                Supporting Documents
+            </h2>
+            <input type="file" id="inpPyReqAttachment" name="inpPyReqAttachment" multiple hidden onchange="ReadDocs(this)">
+
+
+            <div id="divPYSupDocs">
+                @{
+                    Model.SupDocsListName = "PYNEW";
+                    Model.PRNo = "PYNEW";
+                    await Html.RenderPartialAsync("_RequisitionDocs.cshtml", Model);
+                }
+            </div>
+        </div>
+        <div class="col">
+
+            <div id="divReqJourney">
+                @{
+                    Model.dashboardViewModel.RequestJourneyType = "";
+                    Model.dashboardViewModel.RequestNo = "";
+                    Model.dashboardViewModel.RequestJourney = new List<qryPaymentRequestAuthDtl>();
+                    await Html.RenderPartialAsync("/Views/Home/_RequestJourney.cshtml", Model.dashboardViewModel);
+                }
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <div class="row">
+        <div class="col" style="min-width:300px;">
+            <h2 class="card-title">
+                Deduction and Other Charges
+            </h2>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend" style="TEXT-ALIGN: RIGHT;">
+                        <span class="input-group-text" id="basic-addon1">
+                            Deduction
+                        </span>
+                    </div>
+                </div>
+                <input asp-for="Deduction" class="form-control" style="/* text-transform:uppercase; */TEXT-ALIGN: RIGHT; max-width:247px;" value="0.00" onblur="EvaluateNumber('Deduction')">
+            </div>
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend" style="TEXT-ALIGN: RIGHT;">
+                        <span class="input-group-text" id="basic-addon1">
+                            Freight
+                        </span>
+                    </div>
+                </div>
+                <input asp-for="Freight" class="form-control" style="/* text-transform:uppercase; */TEXT-ALIGN: RIGHT; max-width:247px;" value="0.00" onblur="EvaluateNumber('Freight')">
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+
+
+    <h2 class="card-title">
+        <button type="button"
+                class="btn btn-outline-primary btn-sm" id="btnAddItem"
+                data-bs-toggle="modal" data-bs-target="#modalItems">
+            <i class="bi bi-plus-circle"></i>
+        </button> Items/Services
+    </h2>
+    <div class="row my-2">
+        <div class="col" style="min-width:300px;">
+            <div id="divItemList">
+                @{
+                    Model.showAddItemButton = true;
+                    Model.showItemBalance = false;
+                    Model.ItemListName = "pyItem";
+                    Model.PRNo = "";
+                }
+
+                @await Html.PartialAsync("_RequisitionItemsList", Model)
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col">
+            <center>
+                <input type="submit" value="Submit Requisition" class="btn btn-primary center" id="submit" style="max-width: 200px;" />
+            </center>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</form>
+
+
+<script>
+
+    var items = @Html.Raw(JsonConvert.SerializeObject(Model.VendorItemList));
+    var reqItems = [];
+    var payclass = @Html.Raw(JsonConvert.SerializeObject(Model.PaymentClass));
+
+    $('#btnPyReqAttachment').click(function () {
+        $('#inpPyReqAttachment').click();
+    });
+
+    new DataTable('#tblpySupDocs', {
+        responsive: true
+    });
+
+    function EvaluateNumber(id)
+    {
+        var textval = $('#' + id).val();
+
+        if(textval == "")
+        {
+            textval = 0;
+        }
+
+        document.getElementById(id).value = Number(textval).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+        RefreshItemList();
+
+    }
+
+    function SetItemDetails() {
+
+        var textval = $('#ItemDesc').val();
+        var itemCode = $('#dtItemList [value="' + textval + '"]').data('value');
+
+        var found = 0;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].ItemCode == itemCode) {
+                var amt = items[i].Amount.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+                $('#UOM').val(items[i].UOM);
+                $('#ItemPrice').val(amt);
+                found = 1;
+                break;
+            }
+        }
+
+        if (found == 0) {
+            $('#UOM').val("");
+            $('#ItemPrice').val("0.00");
+        }
+    }
+
+    function SetDiscountType() {
+        var DiscountCode = $("#Discount").val();
+
+        if (DiscountCode == '') {
+            $("#Discountprice").attr("readonly", true);
+            $("#Discountprice").val("0");
+        }
+        else {
+            $("#Discountprice").attr("readonly", false);
+        }
+    }
+
+    function ReadDocs(input) {
+
+
+        var fileData = new FormData();
+        var files = $("#inpPyReqAttachment")[0].files;
+        for (var i = 0; i < files.length; i++) {
+            fileData.append("files", files[i]);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/SetDocs",
+            processData: false,
+            contentType: false,
+            data: fileData,
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#divPYSupDocs").html(result);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+
+        if (files.length > 0) {
+            document.getElementById("ResetDocs").style.display = "inline-block";
+            document.getElementById("btnPyReqAttachment").style.display = "none";
+        }
+        else {
+            document.getElementById("btnPyReqAttachment").style.display = "inline-block";
+            document.getElementById("ResetDocs").style.display = "none";
+        }
+    }
+
+    function ResetDocs() {
+
+        ShowAlert(
+            {
+                title: "Are you sure?",
+                text: "All selected files will be removed!",
+                icon: "question",
+                showCancelButton: "true",
+                confirmButtonText: "Yes!",
+                successmethod: "ConfirmReset()"
+            });
+    }
+
+    function ConfirmReset() {
+        $('#inpPyReqAttachment').val("");
+        ReadDocs();
+    }
+
+    function AddItem() {
+        var itemDesc = $('#ItemDesc').val();
+        var itemCode = $('#dtItemList [value="' + itemDesc + '"]').data('value');
+
+        var Company = $("#Company").val();
+        var DeptDesc = $("#Code option:selected").text();
+        var Code = $("#Code").val();
+        var Quantity = $("#Quantity").val();
+        var Discountprice = $("#Discountprice").val();
+        var DiscountCode = $("#Discount").val();
+
+        reqItems.push({
+
+            CompanyType: Company,
+            DeptDesc: DeptDesc,
+            DeptCode: Code,
+            ItemCode: itemCode,
+            Item: itemDesc,
+            Quantity: Quantity,
+            DiscountCode: DiscountCode,
+            Discount: Discountprice
+
+        });
+
+        document.getElementById('frmAddItems').reset();
+        $("#modalItems").modal("hide");
+
+        ShowAlert(
+            {
+                title: "Requisition",
+                text: "Item/service successfully added!",
+                icon: "success",
+                successmethod: "RefreshItemList()"
+            });
+    }
+
+    function RefreshItemList() {
+        var vendorcode = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionInfo.VendorCode));
+
+        $("#RequisitionItemList").val(JSON.stringify(reqItems));
+        $("#Vendorcode").val(JSON.stringify(vendorcode));
+        
+        var deduction = $("#Deduction").val();
+        var freight = $("#Freight").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/GenerateItemList",
+            data: { item: JSON.stringify(reqItems), vendorcode: vendorcode, deduction: deduction, freight: freight, isCreatePayment: true, payclass: payclass },
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#divItemList").html(result);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+</script>

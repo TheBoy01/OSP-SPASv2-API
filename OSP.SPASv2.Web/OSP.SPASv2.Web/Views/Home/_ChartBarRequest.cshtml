@@ -1,0 +1,287 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.DashBoardViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="col-12">
+    <div class="card recent-sales overflow-auto">
+        <div class="filter">
+            <button type="button" class="btn btn-outline-primary btn-sm" style="padding: 0px;" onclick="RefreshList()"><i class="bx bx-refresh bx-2x"></i> </button>
+            @* <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>*@
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                </li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilter('Vendor')">Vendor</a></li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilter('Payclass')">Payclass</a></li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilter('Company')">Company</a></li>
+                <li><a class="dropdown-item linkbutton" href="#" onclick="SetFilter('ItemsPaid')">Items Paid</a></li>
+            </ul>
+        </div>
+    <div class="card-body">
+            <h5 class="card-title">Top 10 Request <span>| by <span class="spanFilter">Vendor</span></span></h5>
+            <div class="" style="display:inline;">
+                as of
+                <select class="form-select" onchange="SetSorting(this)" style="width: auto;display: inline; font-size:small;">
+                    <option value="ThisMonth">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    <option value="ThisYear">This Year</option>
+                </select>
+            </div>
+            
+            <!-- Bar Chart -->  
+            @*<div id="divchart">
+                @{ await Html.RenderPartialAsync("ChartBar", Model);}
+            </div>*@
+            <canvas id="barChart" style="max-height:250px;"></canvas>
+            <!-- End Bar CHart -->
+            <div id="divChartList">
+                @{
+                    await Html.RenderPartialAsync("_ChartBarRequestList", Model);
+                }
+            </div>
+    </div>
+    </div>
+
+
+</div>
+
+<script>
+    var chartdata1 = @Html.Raw(JsonConvert.SerializeObject(Model.BarChartRequestData));
+    var chartdata2 = @Html.Raw(JsonConvert.SerializeObject(Model.BarChartRequestData));    
+    var barColor = ['rgba(54, 162, 235, 0.2)'];
+    var barBorderColor = ['rgba(54, 162, 235)'];
+
+    const data = 
+    {
+        labels: ['Top 1', 'Top 2', 'Top 3', 'Top 4', 'Top 5', 'Top 6', 'Top 7', 'Top 8', 'Top 9', 'Top 10'],
+        datasets: [{
+            label: 'Requested Amount',
+            data: chartdata1,
+            backgroundColor: [
+                //'rgba(255, 99, 132, 0.2)',
+                //'rgba(255, 159, 64, 0.2)',
+                //'rgba(255, 205, 86, 0.2)',
+                //'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                //'rgba(153, 102, 255, 0.2)',
+                //'rgba(201, 203, 207, 0.2)'
+            ],
+            borderColor: [
+                //'rgb(255, 99, 132)',
+                //'rgb(255, 159, 64)',
+                //'rgb(255, 205, 86)',
+                //'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                //'rgb(153, 102, 255)',
+                //'rgb(201, 203, 207)'
+            ],
+            borderWidth: 1
+        }
+            //,
+            //{
+            //    label: 'Credited Amount',
+            //    data: chartdata2,
+            //    backgroundColor: [
+            //        //'rgba(255, 99, 132, 0.2)',
+            //        //'rgba(255, 159, 64, 0.2)',
+            //        //'rgba(255, 205, 86, 0.2)',
+            //        //'rgba(75, 192, 192, 0.2)',
+            //        //'rgba(54, 162, 235, 0.2)',
+            //        'rgba(153, 102, 255, 0.2)',
+            //        //'rgba(201, 203, 207, 0.2)'
+            //    ],
+            //    borderColor: [
+            //        //'rgb(255, 99, 132)',
+            //        //'rgb(255, 159, 64)',
+            //        //'rgb(255, 205, 86)',
+            //        //'rgb(75, 192, 192)',
+            //        //'rgb(54, 162, 235)',
+            //        'rgb(153, 102, 255)',
+            //        //'rgb(201, 203, 207)'
+            //    ],
+            //    borderWidth: 1
+            //},
+            //{
+            //    label: 'Request Count',
+            //    data: chartdata3,
+            //    backgroundColor: [
+            //        'rgba(255, 99, 132, 0.2)',
+            //        'rgba(255, 159, 64, 0.2)',
+            //        'rgba(255, 205, 86, 0.2)',
+            //        'rgba(75, 192, 192, 0.2)',
+            //        'rgba(54, 162, 235, 0.2)',
+            //        'rgba(153, 102, 255, 0.2)',
+            //        'rgba(201, 203, 207, 0.2)'
+            //    ],
+            //    borderColor: [
+            //        'rgb(255, 99, 132)',
+            //        'rgb(255, 159, 64)',
+            //        'rgb(255, 205, 86)',
+            //        'rgb(75, 192, 192)',
+            //        'rgb(54, 162, 235)',
+            //        'rgb(153, 102, 255)',
+            //        'rgb(201, 203, 207)'
+            //    ],
+            //    borderWidth: 1
+            //}
+        ]
+    }
+
+    const config = {
+        type: 'bar',
+        data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        new Chart(document.querySelector('#barChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Top 1', 'Top 2', 'Top 3', 'Top 4', 'Top 5', 'Top 6', 'Top 7', 'Top 8', 'Top 9', 'Top 10'],
+                datasets: [{
+                    label: 'Requested Amount',
+                    data: chartdata1,
+                    backgroundColor: ['rgba(75, 192, 192,0.2)'],
+                    borderColor: ['rgba(75, 192, 192)'],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Credited Amount',
+                    data: chartdata2,
+                    backgroundColor: ['rgba(153, 102, 255, 0.2)',],
+                    borderColor: ['rgb(153, 102, 255)',],
+                    borderWidth: 1
+                    },
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+    var filter = "Vendor";
+    var filterDesc = "Vendor";
+
+    var sort = "RequestAmount";
+    var sortDesc = "Request Amount";
+
+    function SetFilter(filtertype) {
+        filter = filtertype;
+        filterDesc = filter;
+
+        switch (filtertype) {
+            case "ItemsPaid":
+                {
+                    filterDesc = "Items Paid";
+                    break;
+                }
+        };
+
+        $(".spanFilter").html(filterDesc);
+        RefreshChart();
+    }
+
+    function SetSorting(sel) {
+        var sortType = sel.value;
+        sort = sortType;
+        sortDesc = sortDesc;
+        switch (sortType) {
+            case "RequestAmount":
+                {
+                    sortDesc = "Request Amount";
+                    //barColor = ['rgba(54, 162, 235, 0.2)'];
+                    //barBorderColor = ['rgba(54, 162, 235)'];
+                    break;
+                }
+            case "RequestUnits":
+                {
+                    sortDesc = "Request Units";
+                    //barColor = ['rgba(153, 102, 255, 0.2)'];
+                    //barBorderColor = ['rgba(153, 102, 255)'];
+                    break;
+                }
+            case "CreditedAmount":
+                {
+                    sortDesc = "Credited Amount";
+                    //barColor = ['rgba(75, 192, 192, 0.2)'];
+                    //barBorderColor = ['rgba(75, 192, 192)'];
+                    break;
+                }
+        };
+
+        //$(".spanSort").html(sortDesc);
+        RefreshChart();
+    }
+
+    function RefreshChart() {
+        let canvas = document.querySelector('#barChart')
+        let chart = Chart.getChart(canvas); // Select using the canvas element
+
+        $.ajax({
+            url: '/Home/GetDashboardTop10Data',
+            type: 'GET',
+            dataType: 'json',
+            data: { filtertype: filter, sorttype: sort },
+            success: function (response) {
+                chart.data.datasets[0].data = response.BarChartRequestData;
+                chart.data.datasets[1].data = response.BarChartCreditedData;
+                //chart.data.datasets[0].label = sortDesc;
+                //chart.data.datasets[0].backgroundColor = barColor;
+                //chart.data.datasets[0].borderColor = barBorderColor;
+                chart.update();
+
+                //alert(response.BarCharRequestList.length);
+                $("#listbody").html("");
+
+                var tablerows = "";
+                for (let i = 0; i < response.BarCharRequestList.length; i++) {
+                    
+                    tablerows = tablerows + '<tr><td><b style="color:darkslateblue;" > Top ' + (i + 1) +' </b></td>';
+                    tablerows = tablerows + '<td>' + response.BarCharRequestList[i] + '</td>';
+                    tablerows = tablerows + '<td><div class="moneyData" ><div class="currencySymbol" style = "text-align:right; margin-right:50px;" >₱' + response.BarChartRequestData[i].toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 }); + ' </div></div></td></tr>';
+                    tablerows = tablerows + '<td><div class="moneyData" ><div class="currencySymbol" style = "text-align:right; margin-right:50px;" >₱' + response.BarChartCreditedData[i].toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 }); + ' </div></div></td></tr>';
+                    
+
+                    //alert(tablerows);
+                }
+                $("#listbody").html(tablerows);
+
+                //$.ajax({
+                //    url: '/Home/GetDashboardTop10List',
+                //    type: 'GET',
+                //    dataType: 'html',
+                //    data: { RequestList: response.BarCharRequestList[0] },
+                //    success: function (response) {
+                //        alert('test');
+                //        $("#divChartList").html(response);
+
+                //    },
+                //    error: function () {
+                //        alert('Error getting products');
+                //    }
+                //});
+            }
+        });
+        
+        
+    }
+
+    $(document).ready(function () {
+        
+    });
+</script>

@@ -1,0 +1,1252 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+@{
+    ViewData["Title"] = "Edit Vendor";
+}
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+@*<link rel="stylesheet" href="/resources/demos/style.css">*@
+<script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+
+<main id="main" class="main">
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h1 id="Testing_return">Vendor Maintenance</h1>
+                <h4>Edit Vendor</h4>
+                <hr />
+
+                <div class="row">
+                    <div class="col-4">
+                        <label asp-for="VendorTypeList" class="control-label required"></label>
+                        @Html.DropDownListFor(model => model.VendorTypeList,Model.VendorTypeList.Select(m => new SelectListItem { Value = m.VendorTypeCode, Text = m.VendorTypeDesc }), "-- SELECT PAYMENT TYPE --", htmlAttributes: new { @class = "form-select",@id = "VendorType" })
+                        <span asp-validation-for="TblVendor.VendorType" class="text-danger"></span>
+                    </div>
+                    <div class="col" id="DisplayNameDiv" style="display:none;">
+                        <label asp-for="TblVendor.DisplayName" class="control-label required">Vendor Name</label>
+                        <input asp-for="TblVendor.DisplayName" class="form-control" id="VendorName" />
+                        <span asp-validation-for="TblVendor.DisplayName" class="text-danger"></span>
+                    </div>
+                    <div class="col" id="EmployeeDiv" style="display:none;">
+                        <div class="row">
+                            <div class="col-sm">
+                                <label asp-for="TblVendor.LastName" class="control-label required">Last Name</label>
+                                <input asp-for="TblVendor.LastName" class="form-control" id="LastName" />
+                                <span asp-validation-for="TblVendor.LastName" class="text-danger"></span>
+
+                            </div>
+                            <div class="col-sm">
+                                <label asp-for="TblVendor.FirstName" class="control-label required">First Name</label>
+                                <input asp-for="TblVendor.FirstName" class="form-control" id="FirstName" />
+                                <span asp-validation-for="TblVendor.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm">
+                                <label asp-for="TblVendor.MiddleName" class="control-label required">Middle Name</label>
+                                <input asp-for="TblVendor.MiddleName" class="form-control" id="MiddleName" />
+                                <span asp-validation-for="TblVendor.MiddleName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2">
+                                <label asp-for="TblVendor.Suffix" class="control-label required">Suffix</label>
+                                <input asp-for="TblVendor.Suffix" class="form-control" id="Suffix" />
+                                <span asp-validation-for="TblVendor.Suffix" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row my-2">
+                    <div class="col-md-8" id="DisplayNameDiv">
+                        <label class="control-label required">Payee Name</label>
+                        <input asp-for="TblVendor.DisplayName" class="form-control" id="VendorName" />
+                        <span asp-validation-for="TblVendor.DisplayName" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">Attachment Required</h2>
+                <hr />
+                <a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#Bank_Modal"></a>
+
+                <table class="table ">
+                    <thead>
+                        <tr>
+                            <th>
+                                Documents
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                            <td>
+                                BILLING STATEMENT
+                            </td>
+                            <td>
+                                <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td>
+                                DELIVERY RECEIPT
+                            </td>
+                            <td>
+                                <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">Attached Documents</h2>
+                <hr />
+
+                <a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#Bank_Modal"></a>
+
+                <table class="table" id="Address_DataTable">
+                    <thead>
+                        <tr>
+                            @* <th>
+                            @Html.DisplayName("")
+                            </th>*@
+                            <th>
+                                @Html.DisplayName("FileName")
+                            </th>
+                            <th>
+                                @Html.DisplayName("File Type")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Validity")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Action")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        <tr>
+                            <td>
+                                <a href="">BusinessPermit</a>
+                            </td>
+                            <td>
+                                JPG
+                            </td>
+                            <td>
+                                5/25/2023
+                            </td>
+                            <td>
+                                <a data-bs-toggle="modal" data-bs-target="#Address_Modal_Edit"> <i class="bi bi-eye "></i> </a>
+                                <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">ATC List</h2>
+                <hr />
+                <div class="row">
+                    <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#ATC_Modal"></a></span>
+                    <table class="table ">
+                        <thead>
+                            <tr>
+
+                                <td>
+                                    ATC
+                                    </th>
+                                <td>
+                                    Description
+                                    </th>
+                                <td>
+                                    Rate
+                                <td>
+                                    VAT
+                                    </th>
+                                <td>
+                                    Default
+                                    </th>
+                                <td>
+                                    Action
+                                    </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @*@foreach (var item in Model.PaymentRequestdtl) {
+                            @Html.HiddenFor(m => item.PRNo)
+                            @Html.HiddenFor(m => item.ItemCode)
+                            @Html.HiddenFor(m => item.UoM)
+                            @Html.HiddenFor(m => item.VATRate)
+                            @Html.HiddenFor(m => item.GovtDiscRate)
+                            @Html.HiddenFor(m => item.Gross)*@
+                            <tr>
+
+                                <td>
+
+                                    @*@Html.DisplayFor(m=>item.ItemDesc)*@
+                                    WC 160
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m=>item.UoMDesc)*@
+                                    Payments made by top 10,000 private corporations to their local/resident suppliers of services
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    0.0200
+
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    Yes
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    Yes
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    @*@Html.DisplayFor(m => item.Quantity)*@
+                                    @*@Html.DisplayName("20")*@
+                                </td>
+
+                                @* <td>
+                                <a asp-action="Edit">Remove</a>
+
+                                </td>*@
+                            </tr>
+
+                            <tr>
+
+                                <td>
+
+                                    @*@Html.DisplayFor(m=>item.ItemDesc)*@
+                                    WC 051
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m=>item.UoMDesc)*@
+                                    Management & technical consultants-if current years gross income exceeds P720,000.00
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    0.1500
+
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    No
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    No
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    @*@Html.DisplayFor(m => item.Quantity)*@
+                                    @*@Html.DisplayName("20")*@
+                                </td>
+
+                                @* <td>
+                                <a asp-action="Edit">Remove</a>
+
+                                </td>*@
+                            </tr>
+                            @*}*@
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @*ADDRESS TABLE*@
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">Addresses</h2>
+                <hr />
+                <div class="row">
+                    @*<span> <a class="bi bi-plus-circle fa-2x" id="CreateAddressModal"></a> </span>*@
+                    <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#Address_Modal"></a></span>
+
+                    <table class="table" id="Address_DataTable">
+                        <thead>
+                            <tr>
+                                @* <th>
+                                @Html.DisplayName("")
+                                </th>*@
+                                <th>
+                                    @Html.DisplayName("Address Type")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Address")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Zip Code")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Default")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Action")
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+
+                            <tr>
+                                <td>
+                                    @Html.DisplayName("BUSINESS")
+                                </td>
+                                <td>
+                                    #15 Bantay St., Brgy. Bago, Q.C
+                                </td>
+                                <td>
+                                    @Html.DisplayName("11535")
+                                </td>
+                                <td>
+                                    @Html.DisplayName("Yes")
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#Address_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">TIN List</h2>
+                <hr />
+                <div class="row">
+
+                    <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#ATC_Modal"></a></span>
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>
+                                    TIN
+                                </th>
+                                <th>
+                                    Default
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @*@foreach (var item in Model.PaymentRequestdtl) {
+                            @Html.HiddenFor(m => item.PRNo)
+                            @Html.HiddenFor(m => item.ItemCode)
+                            @Html.HiddenFor(m => item.UoM)
+                            @Html.HiddenFor(m => item.VATRate)
+                            @Html.HiddenFor(m => item.GovtDiscRate)
+                            @Html.HiddenFor(m => item.Gross)*@
+                            <tr>
+
+                                <td>
+
+                                    @*@Html.DisplayFor(m=>item.ItemDesc)*@
+                                    0000-5132-1234-4561
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(m => item.Price)*@
+                                    Yes
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    @*@Html.DisplayFor(m => item.Quantity)*@
+                                    @*@Html.DisplayName("20")*@
+                                </td>
+
+                                @* <td>
+                                <a asp-action="Edit">Remove</a>
+
+                                </td>*@
+                            </tr>
+                            @*}*@
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">Contact Details</h2>
+                <hr />
+                <div class="row">
+
+                    <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#ATC_Modal"></a></span>
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Contact Person
+                                </th>
+                                <th>
+                                    Email
+                                </th>
+                                <th>
+                                    Contact No
+                                </th>
+                                <th>
+                                    Default
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Juan B. Dela Cruz
+                                </td>
+                                <td>
+                                    Juandelacruz@gmail.com
+                                </td>
+                                <td>
+                                    09168777787 - GLOBE
+                                </td>
+                                <td>
+                                    YES
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    @*@Html.DisplayFor(m => item.Quantity)*@
+                                    @*@Html.DisplayName("20")*@
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">Payment Class</h2>
+                <hr />
+                <div class="row">
+
+                    <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#ATC_Modal"></a></span>
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Request Type
+                                </th>
+                                <th>
+                                    Default
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    REPAIRS AND MAINTENANCE(OTHERS)
+                                </td>
+                                <td>
+                                    YES
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                    @*@Html.DisplayFor(m => item.Quantity)*@
+                                    @*@Html.DisplayName("20")*@
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        @*BANK ACCOUNTS TABLE*@
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title center">Payment Method</h2>
+                <hr />
+                <div class="row">
+                    <span><a class="bi bi-plus-circle fa-2x" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#Bank_Modal"></a></span>
+                    <table class="table" id="Bank_DataTable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayName("Payment Method")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Bank Code")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Account No")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Default")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Action")
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="Bank_Tbody">
+                            <tr>
+
+                                <td>
+                                    ONLINE BANKING
+                                </td>
+                                <td>
+                                    BDO
+                                </td>
+                                <td>
+                                    002010300234
+                                <td>
+                                    YES
+                                </td>
+                                <td>
+                                    <a data-bs-toggle="modal" data-bs-target="#ATC_Modal_Edit"> <i class="bi bi-pencil-square fa-lg"></i> </a>  @* <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" ></i>    *@
+                                    <a data-bs-toggle="modal" data-bs-target="#Delete"> <i class="bi bi-x-square fa-lg" aria-hidden="true" style="color:red"></i> </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Update" class="btn btn-primary" id="UpdateVendor" />
+            <input type="submit" value="Deactivate" class="btn btn-danger" id="DeactivateVendor" />
+            @*<input type="submit" value="Update" class="btn btn-primary" id="CreateVendor" />*@
+            @*<input type="submit" value="Disapprove" class="btn btn-secondary" id="CreateVendor" />*@
+            @*<input type="submit" value="Deactivate" class="btn btn-danger" id="CreateVendor" />*@
+        </div>
+
+
+
+        <!--#region CREATE MODAL -->
+
+        <div class="modal fade " id="Address_Modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddressModal_Title">Add New Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label asp-for="TblVendorAddress.AddressType" class="control-label required">Address Type</label>
+                                    @*@Html.DropDownListFor(model => model.VendorTypeList,Model.AddressTypeList.Select(m => new SelectListItem { Value = m, Text = m }), "-- SELECT ADDRESS TYPE --", htmlAttributes: new { @class = "form-select",@id = "AddressType" })*@
+                                    @Html.DropDownListFor(model => model.AddressTypeList,Model.AddressTypeList.Select(m => new SelectListItem { Value = m.AddressTypeCode, Text = m.AddressDesc }), "-- SELECT ADDRESS TYPE --", htmlAttributes: new { @class = "form-select",@id = "AddressType" })
+                                    <span asp-validation-for="TblVendorAddress.AddressType" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label asp-for="TblVendorAddress.Province" class="control-label required">Province</label>
+                                    <input asp-for="TblVendorAddress.Province" class="form-control" id="Province" />
+                                    <span asp-validation-for="TblVendorAddress.Province" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="TblVendorAddress.ZipCode" class="control-label required">ZipCode</label>
+                                    <input asp-for="TblVendorAddress.ZipCode" class="form-control" id="ZipCode" />
+                                    <span asp-validation-for="TblVendorAddress.ZipCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label asp-for="TblVendorAddress.District" class="control-label required">District</label>
+                                    <input asp-for="TblVendorAddress.District" class="form-control" id="District" />
+                                    <span asp-validation-for="TblVendorAddress.District" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="TblVendorAddress.City" class="control-label required">City</label>
+                                    <input asp-for="TblVendorAddress.City" class="form-control" id="City" />
+                                    <span asp-validation-for="TblVendorAddress.City" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="TblVendorAddress.Brgy" class="control-label required">Brgy</label>
+                                    <input asp-for="TblVendorAddress.Brgy" class="form-control" id="Brgy" />
+                                    <span asp-validation-for="TblVendorAddress.Brgy" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label asp-for="TblVendorAddress.AddressNo" class="control-label required">Address No.</label>
+                                    <input asp-for="TblVendorAddress.AddressNo" class="form-control" id="AddressNo" />
+                                    <span asp-validation-for="TblVendorAddress.AddressNo" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <label asp-for="TblVendorAddress.Street" class="control-label required">Street</label>
+                                    <input asp-for="TblVendorAddress.Street" class="form-control" id="Street" />
+                                    <span asp-validation-for="TblVendorAddress.Street" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="Address_Default">
+                                        <label class="form-check-label" for="Address_Default">
+                                            Default
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary add-Address">Add</button>
+                        @*<button type="button" class="btn btn-primary id=" "">Save</button>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="Bank_Modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Bank Account</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form>
+                            @*
+                            <div class="row">
+                            <div class="col-md-8">
+                            <label asp-for="TblVendorBankAccount.AcctType" class="control-label required">Payment Method Type: </label>
+                            <select>
+                            <option>
+                            CHEQUE
+                            </option>
+                            <option>
+                            ONLINE BANKING
+                            </option>
+                            </select>
+                            <span asp-validation-for="TblVendorBankAccount.AcctType" class="text-danger"></span>
+                            </div>
+                            </div>*@
+
+                            <div class="row">
+                                @*<div class="col-md-8">
+                                <label asp-for="TblVendorpaymethod.AcctType" class="control-label required">Account Type</label>
+                                @Html.DropDownListFor(model => model.BankAccTypeList,Model.BankAccTypeList.Select(m => new SelectListItem { Value = m, Text = m }), "-- SELECT BANK ACCT TYPE --", htmlAttributes: new { @class = "form-select",@id = "BankAcctType" })
+                                <span asp-validation-for="TblVendorpaymethod.AcctType" class="text-danger"></span>
+                                </div>*@
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label asp-for="TblVendorpaymethod.BankCode" class="control-label required">Bank</label>
+                                    <input asp-for="TblVendorpaymethod.BankCode" class="form-control" id="txtBankDesc" />
+                                    <span asp-validation-for="TblVendorpaymethod.BankCode" class="text-danger"></span>
+                                    <input asp-for="TblVendorpaymethod.BankCode" class="form-control" id="txtBankCode" hidden />
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="TblVendorpaymethod.AcctNo" class="control-label required">Account Number</label>
+                                    <input asp-for="TblVendorpaymethod.AcctNo" class="form-control" id="txtBankAcctNo" />
+                                    <span asp-validation-for="TblVendorpaymethod.AcctNo" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="Bank_Default">
+                                    <label class="form-check-label" for="Bank_Default">
+                                        Default
+                                    </label>
+                                </div>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary add-BankAcct">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="ATC_Modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add ATC</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form class="row g-3">
+                            <div class="col-md-6">
+                                <label for="inputName5" class="form-label">ATC Type</label>
+                                @*@Html.DropDownListFor(model => model.RefATCList,Model.RefATCList.Select(m => new SelectListItem { Value = m.ATC, Text = m.ATC }), "-- SELECT PAYMENT TYPE --", htmlAttributes: new { @class = "form-select",@id = "VendorType" })*@
+
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="inputAddress5" class="form-label">ATC Description</label>
+                                <textarea class="form-control" placeholder="Address" id="floatingTextarea" style="height: 100px;" disabled>Rentals - Real Properties and Personal Properties, Poles, Satellites and Transmission facilities and Billboards</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputPassword5" class="form-label">Rate</label>
+                                <input type="text" class="form-control" id="inputPassword5" value="0.0500">
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        VAT Included
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Default
+                                    </label>
+                                </div>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion CREATE MODAL -->
+        <!--#region EDIT MODAL -->
+
+        <div class="modal fade" id="Address_Modal_Edit" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit New Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form class="row g-3">
+                            <div class="col-md-6">
+                                <label for="inputName5" class="form-label">Address Type</label>
+                                <select id="inputState" class="form-select">
+                                    <option selected>BUSINESS</option>
+                                    <option>RESIDENTIAL</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputPassword5" class="form-label">City</label>
+                                <input type="text" class="form-control" id="inputPassword5">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputPassword5" class="form-label">Zip Code</label>
+                                <input type="text" class="form-control" id="inputPassword5">
+                            </div>
+                            <div class="col-12">
+                                <label for="inputAddress5" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="inputAddres5s" placeholder="1234 Main St">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Default
+                                    </label>
+                                </div>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="Bank_Modal_Edit" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Bank Account</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form class="row g-3">
+                            <div class="col-md-6">
+                                <label for="inputName5" class="form-label">Account Type</label>
+                                <select id="inputState" class="form-select">
+                                    <option selected>SAVINGS</option>
+                                    <option>CHECKING</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputPassword5" class="form-label">Bank Code</label>
+                                <input type="text" class="form-control" id="inputPassword5">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputPassword5" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="inputPassword5">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Default
+                                    </label>
+                                </div>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="ATC_Modal_Edit" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit ATC</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form class="row g-3">
+                            <div class="col-md-6">
+                                <label for="inputName5" class="form-label">ATC Type</label>
+                                @*<select id="inputState" class="form-select">
+                                <option selected>WC 100</option>
+                                </select>*@
+
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="inputAddress5" class="form-label">ATC Description</label>
+                                <textarea class="form-control" placeholder="Address" id="floatingTextarea" style="height: 100px;" disabled>Rentals - Real Properties and Personal Properties, Poles, Satellites and Transmission facilities and Billboards</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputPassword5" class="form-label">Rate</label>
+                                <input type="text" class="form-control" id="inputPassword5" value="0.0500">
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        VAT Included
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Default
+                                    </label>
+                                </div>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion EDIT MODAL -->
+        <!--#region DELETE MODAL -->
+
+        <div class="modal fade" id="Delete" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure to delete this?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Basic Modal-->
+        <!-- End Vertically centered Modal-->
+        <!-- PARTIAL VIEW MODAL -->
+
+        <div class="modal fade" id="CreateVendorModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion DELETE MODAL  -->
+        @*Testing_return*@
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.0.min.js" type="text/javascript"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.9.2/jquery-ui.min.js" type="text/javascript"></script>
+        <link href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.9.2/themes/blitzer/jquery-ui.css"
+              rel="Stylesheet" type="text/css" />
+        <script type="text/javascript">
+            //$(function () {
+            //    $("#CreateAddressModal").click(function () {
+            //        //var customerId = $(this).closest("tr").find("td").eq(0).html();
+            //        $.ajax({
+            //            type: "GET",
+            //            url: "/VendorMaintenance/_VendorCreateAddress",
+            //            //data: { "customerId": customerId },
+            //            success: function (response) {
+            //                $("#CreateAddressPartialModal").find(".modal-body").html(response);
+            //                $("#CreateAddressPartialModal").modal('show');
+            //            },
+            //            failure: function (response) {
+            //                alert(response.responseText);
+            //            },
+            //            error: function (response) {
+            //                alert(response.responseText);
+            //            }
+            //        });
+            //    });
+            //});
+
+            $(document).ready(function () {
+                $(".add-Address").click(function () {
+                    var AddressType = $("#AddressType").val();
+                    var AddressNo = $("#AddressNo").val();
+                    var Street = $("#Street").val();
+                    var Brgy = $("#Brgy").val();
+                    var City = $("#City").val();
+                    var District = $("#District").val();
+                    var Province = $("#Province").val();
+                    var ZipCode = $("#ZipCode").val();
+                    //var Address_Default = $().val();
+                    var table = document.getElementById("Address_DataTable");
+                    var table_len = (table.rows.length) - 1;
+                    var markup = "<tr><td><input type='checkbox' name='record'></td><td id='addresstype_row" + table_len + "'>"
+                        + AddressType +
+                        "</td><td>"
+                        + AddressNo + "," + Street + "," + Brgy + "," + City + "," + District + "," + Province +
+                        "</td><td>"
+                        + ZipCode +
+                        "</td><td>"
+                        + GetCheckBoxVal("Address_Default") +
+                        "</td><td>"
+                        + "<a data-bs-toggle='modal' data-bs-target='#Address_Modal' onclick='edit_row(" + table_len + ")' ><i class='bi bi-pencil-square fa-lg'></i> </a>" +
+                        //"</td><td>"
+                        //+ ZipCode +
+                        "</td></tr>";
+                    $("#tbody").append(markup);
+                    $('#Address_Modal').modal('toggle');
+                });
+            });
+
+            $(document).ready(function () {
+                $(".add-BankAcct").click(function () {
+                    var BankCode = $("#txtBankCode").val();
+                    var BankAcctType = $("#BankAcctType").val();
+                    var BankAcctNo = $("#txtBankAcctNo").val();
+                    var table = document.getElementById("Bank_DataTable");
+                    var table_len = (table.rows.length) - 1;
+                    var markup = "<tr><td><input type='checkbox' name='record'></td><td id='BankAcctType_row" + table_len + "'>"
+                        + BankCode +
+                        "</td><td>"
+                        + BankAcctType +
+                        "</td><td>"
+                        + BankAcctNo +
+                        "</td><td>"
+                        + GetCheckBoxVal("Bank_Default") +
+                        "</td><td>"
+                        + "<a data-bs-toggle='modal' data-bs-target='#Bank_Modal' onclick='edit_row(" + table_len + ")' ><i class='bi bi-pencil-square fa-lg'></i> </a>" +
+                        //"</td><td>"
+                        //+ ZipCode +
+                        "</td></tr>";
+                    $("#Bank_Tbody").append(markup);
+                    $('#Bank_Modal').modal('toggle');
+                });
+            });
+
+            //function save_row(no) {
+            //    var name_val = document.getElementById("name_text" + no).value;
+            //    var country_val = document.getElementById("country_text" + no).value;
+            //    var age_val = document.getElementById("age_text" + no).value;
+
+            //    document.getElementById("name_row" + no).innerHTML = name_val;
+            //    document.getElementById("country_row" + no).innerHTML = country_val;
+            //    document.getElementById("age_row" + no).innerHTML = age_val;
+
+            //    document.getElementById("edit_button" + no).style.display = "block";
+            //    document.getElementById("save_button" + no).style.display = "none";
+            //}
+
+
+            // Find and remove selected table rows
+            //    $(".delete-row").click(function () {
+            //        $("table tbody").find('input[name="record"]').each(function () {
+            //            if ($(this).is(":checked")) {
+            //                $(this).parents("tr").remove();
+            //            }
+            //        });
+            //    });
+            //});
+
+            function edit_row(no) {
+                //document.getElementById("edit_button" + no).style.display = "none";
+                //document.getElementById("save_button" + no).style.display = "block";
+
+
+                //var name = document.getElementById("name_row" + no);
+                //var country = document.getElementById("country_row" + no);
+                //var age = document.getElementById("age_row" + no);
+
+                //var name_data = name.innerHTML;
+                //var country_data = country.innerHTML;
+                //var age_data = age.innerHTML;
+
+                //name.innerHTML = "<input type='text' id='name_text" + no + "' value='" + name_data + "'>";
+                //country.innerHTML = "<input type='text' id='country_text" + no + "' value='" + country_data + "'>";
+                //age.innerHTML = "<input type='text' id='age_text" + no + "' value='" + age_data + "'>";
+                //var row = table.insertRow(table_len).outerHTML = "<tr id='row" + table_len + "'><td id='name_row" + table_len + "'>" + new_name + "</td><td id='country_row" + table_len + "'>" + new_country + "</td><td id='age_row" + table_len + "'>" + new_age + "</td><td><input type='button' id='edit_button" + table_len + "' value='Edit' class='edit' onclick='edit_row(" + table_len + ")'> <input type='button' id='save_button" + table_len + "' value='Save' class='save' onclick='save_row(" + table_len + ")'> <input type='button' value='Delete' class='delete' onclick='delete_row(" + table_len + ")'></td></tr>";
+
+                //document.getElementById("AddressModal_Title").innerHTML = "Edit Address";
+                var AddressType_Data = document.getElementById("addresstype_row" + no).innerHTML;
+                $("#AddressType").val(AddressType_Data);
+
+
+            }
+
+            $(document).ready(function () {
+                $("#CreateVendor").submit(function (event) {
+                    event.preventDefault();
+
+                    var AddressList = [];
+                    var tr = $("#Address_DataTable tr");
+                    for (var i = 1; i < tr.length; i++) {
+                        var tds = $(tr[i]).find("td");
+                        if (tds.length > 0) {
+                            var FullAddress = tds[2].innerHTML.split(',');
+                            var IsDefault = false;
+                            if (tds[4].innerHTML == "YES") {
+                                IsDefault = true;
+                            }
+                            //console.log(FullAddress);
+                            AddressList.push({
+                                "AddressType": tds[1].innerHTML,
+                                "FullAddress": tds[2].innerHTML,
+                                "AddressNo": FullAddress[0],
+                                "Street": FullAddress[1],
+                                "Brgy": FullAddress[2],
+                                "District": FullAddress[4],
+                                "City": FullAddress[3],
+                                "Province": FullAddress[5],
+                                "ZipCode": tds[3].innerHTML,
+                                "IsDefault": IsDefault,
+                            })
+                        }
+                    }
+                    //console.log(AddressList);
+
+                    //var array = JSON.parse("[" + string + "]");
+                    //var _TblVendor = JSON.stringify({ DisplayName: VendorName, VendorType: VendorType });
+                    //JSON.stringify(req),
+                    //var TblVendorAddress = { "TblVendorAddress": result }
+                    var _TblVendor = {};
+                    _TblVendor.DisplayName = $("#VendorName").val();
+                    _TblVendor.VendorType = $("#VendorType").val();
+                    _TblVendor.LastName = $("#LastName").val();
+                    _TblVendor.MiddleName = $("#MiddleName").val();
+                    _TblVendor.FirstName = $("#FirstName").val();
+
+                    $.ajax({
+                        url: "/VendorMaintenance/CreateVendor",
+                        type: "POST",
+                        data: { TblVendor: _TblVendor, TblVendorAddressList: AddressList },
+                        //data: '{TblVendor: ' + JSON.stringify(_TblVendor) + '}',
+                        //contentType: "application/json",
+                        //contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        success: function (response) {
+                            alert(response);
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle the error response
+                        }
+                    });
+                });
+            });
+
+            $('#VendorType').on('change', function (e) {
+
+                var DispDiv = document.getElementById("DisplayNameDiv");
+                var EmpDiv = document.getElementById("EmployeeDiv");
+
+                if ($("#VendorType").val() == "EMPLOYEE") {
+                    DispDiv.style.display = "none";
+                    EmpDiv.style.display = "block";
+                }
+                else {
+                    DispDiv.style.display = "block";
+                    EmpDiv.style.display = "none";
+                }
+            });
+
+            function GetCheckBoxVal(checkboxId) {
+                var checkbox = document.getElementById(checkboxId);
+                //alert(checkbox.checked);
+                if (checkbox.checked) {
+                    return "YES";
+                }
+                else {
+                    return "NO";
+                }
+            }
+
+            $(document).ready(function () {
+                $("#txtBankDesc").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/VendorMaintenance/BankAutoComplete',
+                            data: { "prefix": request.term },
+                            type: "POST",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return item;
+                                }))
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            },
+                            failure: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    },
+                    select: function (e, i) {
+                        //$("#hfCustomer").val(i.item.val);
+                        document.getElementById('txtBankCode').value = i.item.val;
+                    },
+                    minLength: 1
+                });
+            });
+
+
+            $('#VendorType').on('change', function (e) {
+
+
+
+            });
+
+        </script>
+
+        <!-- END OF PARTIAL VIEW MODAL -->
+
+    </section>
+</main>
+
+<script type="text/javascript">
+    //LOOK UP METHOD USING JS
+
+    //document.getElementById("VendorName").addEventListener("keydown", function (event) {
+    //    if (event.key === "F2") {
+    //        $(document).ready(function () {
+    //            //alert("F2 key was pressed");
+    //            $.ajax({
+    //                type: "GET",
+    //                url: "/VendorMaintenance/_VendorLookUp",
+    //                data: { "DisplayName": $("#VendorName").val() },
+    //                success: function (response) {
+    //                    //alert("F2 key was pressed");
+    //                    $("#VendorLookUp").find(".modal-body").html(response);
+    //                    $("#VendorLookUp").modal('show');
+    //                },
+    //                failure: function (response) {
+    //                    alert(response.responseText);
+    //                },
+    //                error: function (response) {
+    //                    alert(response.responseText);
+    //                }
+    //            });
+    //        });
+    //    }
+    //});
+
+</script>

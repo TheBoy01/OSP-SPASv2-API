@@ -1,0 +1,124 @@
+﻿@*@model IEnumerable<SPASv2.Models.PaymentRequestModel>*@
+@model SPASv2.Models.RequisitionViewModel
+@{
+    ViewData["Title"] = "List of Requisition";
+}
+
+@*<h1>View</h1>*@
+
+@*<p>
+    <a asp-action="Create">Create New</a>data-bs-toggle="modal" data-bs-target="#modalItems"
+</p>*@
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Single Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item">Single</li>
+                <li class="breadcrumb-item active">List</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Recent Sales -->
+
+   @* <div class="row">
+        <div class="col">
+            Filter By Date Requested
+        </div>
+    </div>*@
+    <div class="row">
+        <div class="col">
+            @*<input type="date" class="form-control" style="max-width:150px; display: inline;" id="dtpFrom">
+            -
+            <input type="date" class="form-control" style="max-width:150px; display: inline;" id="dtpTo">
+            <button class="btn btn-primary btn-sm"  type="button">View</button>*@
+           
+        </div>
+    </div>
+   
+
+    <div class="col-12">
+        <div class="card recent-sales overflow-auto mt-1">
+
+            <div class="card-body">
+
+                @await Html.PartialAsync("_FilterOption", Model)
+
+@*                <div class="card-title mb-2">
+                    <a class="card-title">List of Requisition</a>
+                    <a asp-action="Create" class="btn btn-primary float-end" style="margin-right:10px;"><i class="bi bi-plus-circle me-1"></i> Create Requisition</a>
+                </div>*@
+
+                <a asp-action="Create" class="btn btn-primary mb-1" style="margin-right:10px;"><i class="bi bi-plus-circle me-1"></i> Create Requisition</a>
+@*                <div class="row">
+                    <div class="col">
+                        Filter By Date Requested                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <input type="date" id="dtpFrom" />                        -
+                        <input type="date" id="dtpTo" />
+                        <button class="btn btn-primary btn-sm" style="margin-right:15px; " type="button" onclick="ViewPayout()">View</button>
+                    </div>
+                </div>*@
+
+                <div id="divRequisitionList">
+                    @{
+                        Model.ListHidenColumns.Add("BatchNo");
+                        await Html.RenderPartialAsync("_RequisitionList", Model);
+                    }
+                </div>
+
+            </div>
+
+        </div>
+    </div><!-- End Recent Sales -->
+
+    <script src="~/js/PaymentRequest-11112022.js"></script>
+    <script src="~/template/vendor/simple-datatables/simple-datatables.js"></script>
+    @*<script src="~/template/js/main.js"></script>*@
+</main>
+
+@*<form asp-action="ExportDataTabletoExcel" asp-controller="Requisition" method="post">
+    <input type="hidden" name="htmlTable" />
+    <input type="submit" id="btnSubmit" value="Export To Excel " class="btn btn-primary" />
+</form>*@
+
+
+<script>
+    var Filters = [];
+
+    $(function()
+    {
+        $("#btnSubmit").click(function () {
+            $("input[name='htmlTable']").val($("#divRequisitionList").html())
+        })
+        
+    })
+
+    function RefreshRequisitionList()
+    {
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/GetRequisitionList",
+            data: { Filters: JSON.stringify(Filters)},
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (response) {
+                $("#divRequisitionList").html(response);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+</script>
+

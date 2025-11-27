@@ -1,0 +1,295 @@
+﻿
+
+
+@{
+    ViewData["Title"] = "Authorization - Admin";
+}
+
+
+@*<script src="~/js/PaymentRequest.js"></script>*@
+@*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+
+
+<main id="main" class="main">
+    <section class="section">
+        <div class="card mb-10">
+            <div class="card-body">
+
+
+                <h2 class="card-title center">Authorization - Payment Requisition - Admin</h2>
+                <hr />
+
+
+                <form asp-action="Create" class="row g-3 needs-validation novalidate">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    @*  <div class="form-group col-md-4 ">
+                    <label asp-for="PONo" class="form-label center"></label>
+                    <input asp-for="PONo" class="form-control" />
+                    <span asp-validation-for="PONo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                    <label asp-for="RequestDatetime" class="form-label center"></label>
+                    <input asp-for="RequestDatetime" placeholder = "MM/DD/YYYY" Value = "01/01/1900" class="form-control" />
+                    <span asp-validation-for="RequestDatetime" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                    <label asp-for="SalesInvoiceDatetime" class="form-label center"></label>
+                    <input asp-for="SalesInvoiceDatetime" placeholder = "MM/DD/YYYY" Value = "01/01/1900"  class="form-control" />
+                    <span asp-validation-for="SalesInvoiceDatetime" class="text-danger"></span>
+                    </div>*@
+
+                    @* <div class="row mb-3">
+                    <label asp-for="Company" class="form-label col-sm-2"></label>
+                    <div class="col-sm-10">
+                    <input asp-for="Company" class="form-control" />
+                    </div>
+                    </div>*@
+
+
+
+                    @*<div class="row g-3">*@
+                 
+                        @*<div class="form-group col-md-4">
+                        <label asp-for="Company" class="form-label center"></label>
+                        <select asp-for="Company" class="form-control" asp-items="@(new SelectList(@Model.CompanyList,"CompanytypeCode","Companytype"))" />
+                        <span asp-validation-for="Company" class="text-danger"></span>
+                        </div>*@
+
+
+              <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div>
+                
+
+                @*RON*@
+                @*<div class="card-body">
+                  <h5 class="card-title">Authorization Vendor <span>| Today</span></h5>
+
+                  <table class="table table-border datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">Request No.</th>
+                        <th scope="col">Supplier</th>
+                        <th scope="col">SI No</th>
+                        <th scope="col">DR No</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Item</th>
+                        <th scope="col">U OF M</th>
+                        <th scope="col">QTY.</th>
+                        <th scope="col">UNIT PRICE</th>
+                        <th scope="col">AMOUNT</th>
+                        <th scope="col">VAT OR NON VAT</th>
+                        <th scope="col">TIN NUMBER</th>
+                        <th scope="col">REMARKS</th>
+                        <th scope="col">LINK FOR SI</th>
+                        <th scope="col">SPG CASKET REMARKS</th>
+                        
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row"><a href="#">REQ00001</a></th>
+                        <td>Marimel Bautista</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Casket Linings</td>
+                        <td>Sealer Satin</td>
+                        <td>sets</td>
+                        <td>60</td>
+                        <td>891</td>
+                        <td>53460</td>
+                        <td>NON VAT</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>https://drive.google.com/drive/folders/1Bb-xifzz</td>
+                        <td>-</td>
+                        <td><span type="submit" class="badge bg-success">Approved</span></td>
+                        <td><span type="submit" class="badge bg-danger">Disapproved</span></td>
+
+                      </tr>
+                      
+                      <tr>
+                        <th scope="row"><a href="#">REQ00002</a></th>
+                        <td>Kenneth Klynton Construction Supply</td>
+                        <td>010016</td>
+                        <td>-</td>
+                        <td>Hardware Materials</td>
+                        <td>Insulated staple 1/2</td>
+                        <td>box</td>
+                        <td>10</td>
+                        <td>40</td>
+                        <td>400</td>
+                        <td>VAT</td>
+                        <td>175-554-792-000</td>
+                        <td>-</td>
+                        <td>https://drive.google.com/drive/folders/1Bb-xifzz1</td>
+                        <td>PROCESSED 4/25/2022</td>
+                        <td><span type="submit" class="badge bg-success">Approved</span></td>
+                        <td><span type="submit" class="badge bg-danger">Disapproved</span></td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row"><a href="#">REQ00003</a></th>
+                        <td>Do It Marketing Co.</td>
+                        <td>001015</td>
+                        <td>4371</td>
+                        <td>Paint</td>
+                        <td>Special Wood Primer Surfacer</td>
+                        <td>ltr</td>
+                        <td>540</td>
+                        <td>325</td>
+                        <td>167665.178571429</td>
+                        <td>VAT</td>
+                        <td>222-600-726-000</td>
+                        <td>-</td>
+                        <td>https://drive.google.com/drive/folders/1Bb-xifzz</td>
+                        <td>PROCESSED 4/25/2022</td>
+                        <td><span type="submit" class="badge bg-success">Approved</span></td>
+                        <td><span type="submit" class="badge bg-danger">Disapproved</span></td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row"><a href="#">REQ00004</a></th>
+                        <td>Work Essentials Trading</td>
+                        <td>7508</td>
+                        <td>7508</td>
+                        <td>Hardware Materials</td>
+                        <td>Enforcer #1016</td>
+                        <td>box</td>
+                        <td>200</td>
+                        <td>205</td>
+                        <td>41000</td>
+                        <td>VAT</td>
+                        <td>282-714-363-000</td>
+                        <td>-</td>
+                        <td>https://drive.google.com/drive/folders/1Bb-xif</td>
+                        <td></td>
+                        <td><span type="submit" class="badge bg-success">Approved</span></td>
+                        <td><span type="submit" class="badge bg-danger">Disapproved</span></td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+
+                </div>*@
+
+                <div class="card-body">
+                <h2 class="card-title center">List of Payment Requisition </h2>
+                <table class="table table-borderless datatable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Payment Request No</th>
+                            <th scope="col">Payment Class</th>
+                            <th scope="col">Supplier</th>
+                            <th scope="col">Amount</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td scope="row"><a href="@Url.Action("ViewPR", "PaymentRequest")">SPMC-QUEZAV-220600001</a></td>
+                            <td>Payment to Suppliers</td>
+                            <td>NEED INK SALES AND SERVICES</td>
+                            <td class="money">
+                                <div class="currencySymbol">&#8369 11,220,000.00</div>
+                                
+                            </td>
+
+                             <td><span type="submit" class="btn btn-primary">Approve</span></td>
+                            <td><span type="submit" class="btn btn-secondary">Disapprove</span></td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><a href="#">SPMC-QUEZAV-220600002</a></td>
+                            <td>CONTRACTED SERVICES (JANITORIAL)</td>
+                            <td>APD EXPERTS MANPOWER AND CONSULTANCY SERVICES, INC.</td>
+                           <td class="money">
+                                <div class="currencySymbol">&#8369 42,577.00</div>
+                                
+                            </td>
+                             <td><span type="submit" class="btn btn-primary">Approve</span></td>
+                            <td><span type="submit" class="btn btn-secondary">Disapprove</span></td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><a href="#">SPMC-QUEZAV-220600003</a></td>
+                            <td>CONTRACTED SERVICES (SECURITY)</td>
+                            <td>1SIGMAFORCE SECURITY AGENCY CORP</td>
+                           <td class="money">
+                                <div class="currencySymbol">&#8369 69,718.00</div>
+                                
+                            </td>
+                             <td><span type="submit" class="btn btn-primary">Approve</span></td>
+                            <td><span type="submit" class="btn btn-secondary">Disapprove</span></td>
+                        </tr>
+                        
+                       
+                       
+               
+                    </tbody>
+                </table>
+
+            </div>
+
+                </div>
+            </div>
+
+
+                </form>
+            </div>
+        </div>
+
+        @*<div>
+        <a asp-action="Index">Back to List</a>
+        </div>*@
+
+
+
+
+    </section>
+
+</main>
+
+@*<script type="text/javascript">
+  var inputs = document.querySelectorAll('input');
+
+
+inputs.forEach((input) => {
+    input.addEventListener("blur", (event) => {
+        if (event.target.value) {
+            input.classList.add("is-valid");
+        } else {
+            input.classList.remove("is-valid");
+        }
+    });
+});
+</script>*@
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+
+
+@*<link href="~/template/vendor/bootstrap/css/StyleSheet.css" rel="stylesheet">*@
+<script src="~/js/PaymentRequest.js"></script>
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+
+@*
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
+
+
+
+

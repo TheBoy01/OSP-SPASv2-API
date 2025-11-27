@@ -1,0 +1,193 @@
+﻿@using Newtonsoft.Json;
+@model SPASv2.Models.DashBoardViewModel
+
+<canvas id="barChart" style="max-height:250px;"></canvas>        
+<script>
+    var chartdata1 = @Html.Raw(JsonConvert.SerializeObject(Model.BarChartRequestData));
+
+    const data = 
+    {
+        labels: ['Top 1', 'Top 2', 'Top 3', 'Top 4', 'Top 5', 'Top 6', 'Top 7', 'Top 8', 'Top 9', 'Top 10'],
+        datasets: [{
+            label: 'Request Amount',
+            data: chartdata1,
+            backgroundColor: [
+                //'rgba(255, 99, 132, 0.2)',
+                //'rgba(255, 159, 64, 0.2)',
+                //'rgba(255, 205, 86, 0.2)',
+                //'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                //'rgba(153, 102, 255, 0.2)',
+                //'rgba(201, 203, 207, 0.2)'
+            ],
+            borderColor: [
+                //'rgb(255, 99, 132)',
+                //'rgb(255, 159, 64)',
+                //'rgb(255, 205, 86)',
+                //'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                //'rgb(153, 102, 255)',
+                //'rgb(201, 203, 207)'
+            ],
+            borderWidth: 1
+        }
+            //,
+            //{
+            //    label: 'Credited Amount',
+            //    data: chartdata2,
+            //    backgroundColor: [
+            //        //'rgba(255, 99, 132, 0.2)',
+            //        //'rgba(255, 159, 64, 0.2)',
+            //        //'rgba(255, 205, 86, 0.2)',
+            //        //'rgba(75, 192, 192, 0.2)',
+            //        //'rgba(54, 162, 235, 0.2)',
+            //        'rgba(153, 102, 255, 0.2)',
+            //        //'rgba(201, 203, 207, 0.2)'
+            //    ],
+            //    borderColor: [
+            //        //'rgb(255, 99, 132)',
+            //        //'rgb(255, 159, 64)',
+            //        //'rgb(255, 205, 86)',
+            //        //'rgb(75, 192, 192)',
+            //        //'rgb(54, 162, 235)',
+            //        'rgb(153, 102, 255)',
+            //        //'rgb(201, 203, 207)'
+            //    ],
+            //    borderWidth: 1
+            //},
+            //{
+            //    label: 'Request Count',
+            //    data: chartdata3,
+            //    backgroundColor: [
+            //        'rgba(255, 99, 132, 0.2)',
+            //        'rgba(255, 159, 64, 0.2)',
+            //        'rgba(255, 205, 86, 0.2)',
+            //        'rgba(75, 192, 192, 0.2)',
+            //        'rgba(54, 162, 235, 0.2)',
+            //        'rgba(153, 102, 255, 0.2)',
+            //        'rgba(201, 203, 207, 0.2)'
+            //    ],
+            //    borderColor: [
+            //        'rgb(255, 99, 132)',
+            //        'rgb(255, 159, 64)',
+            //        'rgb(255, 205, 86)',
+            //        'rgb(75, 192, 192)',
+            //        'rgb(54, 162, 235)',
+            //        'rgb(153, 102, 255)',
+            //        'rgb(201, 203, 207)'
+            //    ],
+            //    borderWidth: 1
+            //}
+        ]
+    }
+
+    const config = {
+        type: 'bar',
+        data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    //const myChart = new Chart(document.getElementById('barChart'), config);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        new Chart(document.querySelector('#barChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Top 1', 'Top 2', 'Top 3', 'Top 4', 'Top 5', 'Top 6', 'Top 7', 'Top 8', 'Top 9', 'Top 10'],
+                datasets: [{
+                    label: 'Request Amount',
+                    data: chartdata1,
+                    backgroundColor: [
+                        //'rgba(255, 99, 132, 0.2)',
+                        //'rgba(255, 159, 64, 0.2)',
+                        //'rgba(255, 205, 86, 0.2)',
+                        //'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        //'rgba(153, 102, 255, 0.2)',
+                        //'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                        //'rgb(255, 99, 132)',
+                        //'rgb(255, 159, 64)',
+                        //'rgb(255, 205, 86)',
+                        //'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        //'rgb(153, 102, 255)',
+                        //'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 1
+                }
+                    //,
+                    //{
+                    //    label: 'Credited Amount',
+                    //    data: chartdata2,
+                    //    backgroundColor: [
+                    //        //'rgba(255, 99, 132, 0.2)',
+                    //        //'rgba(255, 159, 64, 0.2)',
+                    //        //'rgba(255, 205, 86, 0.2)',
+                    //        //'rgba(75, 192, 192, 0.2)',
+                    //        //'rgba(54, 162, 235, 0.2)',
+                    //        'rgba(153, 102, 255, 0.2)',
+                    //        //'rgba(201, 203, 207, 0.2)'
+                    //    ],
+                    //    borderColor: [
+                    //        //'rgb(255, 99, 132)',
+                    //        //'rgb(255, 159, 64)',
+                    //        //'rgb(255, 205, 86)',
+                    //        //'rgb(75, 192, 192)',
+                    //        //'rgb(54, 162, 235)',
+                    //        'rgb(153, 102, 255)',
+                    //        //'rgb(201, 203, 207)'
+                    //    ],
+                    //    borderWidth: 1
+                    //},
+                    //{
+                    //    label: 'Request Count',
+                    //    data: chartdata3,
+                    //    backgroundColor: [
+                    //        'rgba(255, 99, 132, 0.2)',
+                    //        'rgba(255, 159, 64, 0.2)',
+                    //        'rgba(255, 205, 86, 0.2)',
+                    //        'rgba(75, 192, 192, 0.2)',
+                    //        'rgba(54, 162, 235, 0.2)',
+                    //        'rgba(153, 102, 255, 0.2)',
+                    //        'rgba(201, 203, 207, 0.2)'
+                    //    ],
+                    //    borderColor: [
+                    //        'rgb(255, 99, 132)',
+                    //        'rgb(255, 159, 64)',
+                    //        'rgb(255, 205, 86)',
+                    //        'rgb(75, 192, 192)',
+                    //        'rgb(54, 162, 235)',
+                    //        'rgb(153, 102, 255)',
+                    //        'rgb(201, 203, 207)'
+                    //    ],
+                    //    borderWidth: 1
+                    //}
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+    //var updateChart = $('#barChart');
+    //updateChart.data.datasets[0].data = updateChart.data.datasets[0].data.push(Math.random());
+
+    //updateChart.update();
+
+    
+
+
+</script>

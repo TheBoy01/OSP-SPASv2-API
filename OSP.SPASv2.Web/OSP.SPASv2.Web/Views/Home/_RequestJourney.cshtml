@@ -1,0 +1,249 @@
+﻿@using System.Globalization;
+@model SPASv2.Models.DashBoardViewModel
+@{
+    Layout = null;
+}
+
+@if (string.IsNullOrEmpty(Model.RequestNo))
+{
+    @* <h4 class="card-title">Request No. <br /><i class="text-primary">-</i></h4>*@
+}
+else
+{
+    if (Model.isSearch && Model.RequestJourney.Count > 0)
+    {
+        <h4 class="card-title">
+            Request No. <br />
+
+            <a class="text-primary linkbutton" href="/Requisition/Details/@Model.RequestNo">
+                @Model.RequestNo.ToUpper() <i class="ri-external-link-line text-primary"></i>
+            </a>
+        </h4>
+    }
+    else
+    {
+        <h4 class="card-title">Request No. <br /><i class="text-primary">@Model.RequestNo.ToUpper()</i></h4>
+    }
+}
+
+<head>
+    <style>
+        .notlast {
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<div class="activity">
+
+    @{
+        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+        bool isCurrent = true;
+        int ctr = 1;
+        if (Model.RequestJourney.Count == 0)
+        {
+            if (!string.IsNullOrEmpty(Model.RequestNo))
+            {
+                <h6 class="text-danger"> Record not exist! <br /><br /></h6>
+            }
+
+            //<h6> Requisition Journey <br /></h6>
+            <h2 class="card-title">
+                Requisition Journey
+                @if (Model.RequestJourneyType.Trim().Length > 0)
+                {
+                    <a>-</a>
+                }
+                <span id="JourneyType" style="font-size: 18px; font-weight: 500; color: #dc3545;">@Model.RequestJourneyType</span>
+            </h2>
+
+
+
+            string[] defaultJourney =
+            {
+                "[REQUESTER] - SUBMIT REQUISITION",
+                "[VERIFIER] - REVIEW REQUISITION",
+                "[APPROVER] - AUTHORIZE REQUISITION",
+                "[ACCOUNTING] - APV PREPARATION",
+                "[ACCOUNTING] - APV POSTING",
+                "[TREASURY] - PAYMENT PREPARATION",
+                "[TREASURY] - SENDING CREDIT ADVICE",
+                "[TREASURY] - POSTING PAYMENT",
+                "[REQUESTER] - CONFIRMATION",
+            };
+
+            string[] reqPOThenPayJourney =
+            {
+                "[REQUESTER] - SUBMIT REQUISITION",
+                "[PRE-REVIEWER] - REVIEW REQUISITION",
+                "[APPROVER] - AUTHORIZE REQUISITION",
+                "[APPROVER] - AUTHORIZE REQUISITION for Po "
+            };
+
+            @switch (Model.RequestJourneyType)
+            {
+                case "Request PO Then Pay":
+                    {
+                        defaultJourney = reqPOThenPayJourney;
+                        break;
+                    }
+
+            }
+
+
+            foreach (var item in defaultJourney)
+            {
+                <div class="activity-item d-flex @(ctr == defaultJourney.Length ? "": "notlast")">
+                    <div class="activite-label">@*0 AUG <br /><a style="font-size:small;">11:23 AM</a><br />*@</div>
+                    <i class="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
+
+                    <div class="activity-content">
+                        <a>
+                            @textInfo.ToTitleCase(item.ToLower()).Replace("Apv","APV").Replace(" Po "," PO ")
+                        </a>
+                    </div>
+
+                </div>
+
+                ctr++;
+            }
+
+        }
+        else
+        {
+            //<h6> </h6>
+
+            @if (Model.isPaymentRequest || Model.PORequestJourney != null)
+            {
+                <h6 class="card-title">
+                    Purchase Order Journey
+                    <br />
+                </h6>
+
+                int i = 0;
+                foreach (var item in Model.PORequestJourney)
+                {
+
+                    if (i != 0 && i != Model.PORequestJourney.Count -2 )
+                    {
+                        i++;
+                        continue;
+                    }
+
+                    i++;
+                    <div class="activity-item d-flex @(ctr == Model.PORequestJourney.Count ? "": "notlast")">
+                        <div class="activite-label">@item.AuthorizedDate.ToString("dd MMM") <br /><a style="font-size:small;">@item.AuthorizedDate.ToString("hh:mm tt")</a><br /></div>
+                        <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                        <div class="activity-content">
+                            @textInfo.ToTitleCase(item.Remarks.ToLower()).Replace("Apv","APV")
+
+                            @if (!string.IsNullOrEmpty(item.Name))
+                            {
+                                <a>by</a> <a class="fw-bold text-dark">@textInfo.ToTitleCase(item.Name.ToLower())</a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+
+            <h6 class="card-title">
+                Requisition Journey
+                @if (Model.RequestJourneyType.Trim().Length > 0)
+                {
+                    <a>-</a>
+                    <span id="JourneyType" style="font-size: 18px; font-weight: 500; color: #dc3545;">@Model.RequestJourneyType</span>
+                }
+                <br />
+            </h6>
+
+           
+
+
+            foreach (var item in Model.RequestJourney)
+            {
+                //if (item.AuthorizeClass.ToUpper() == "REQUESTOR")
+                //{
+                //    continue;
+                //}
+
+
+                //if (string.IsNullOrEmpty(item.Name))
+                if (Convert.ToDateTime(item.AuthorizedDate).Date == new DateTime(1900, 1, 1))
+                {
+                    if (isCurrent && Convert.ToDateTime(item.AuthorizedDate).Date == new DateTime(1900, 1, 1))
+                    {
+                        isCurrent = false;
+
+                        <div class="activity-item d-flex @(ctr == Model.RequestJourney.Count ? "": "notlast")">
+                            <div class="activite-label"><br /></div>
+                            <i class="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
+                            <div class="activity-content">
+                                @textInfo.ToTitleCase(item.Remarks.ToLower()).Replace("Apv","APV")
+
+                                @if (!string.IsNullOrEmpty(item.Name) && !item.Remarks.ToLower().Contains("for payment"))
+                                {
+                                    <a>by</a> <a class="fw-bold text-dark">@textInfo.ToTitleCase(item.Name.ToLower())</a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        if (ctr == Model.RequestJourney.Count)
+                        {
+
+                        }
+
+                        <div class="activity-item d-flex @(ctr == Model.RequestJourney.Count ? "": "notlast")">
+                            <div class="activite-label">@*0 AUG <br /><a style="font-size:small;">11:23 AM</a><br />*@</div>
+                            <i class="bi bi-circle-fill activity-badge text-muted align-self-start"></i>
+                            <div class="activity-content">
+                                @textInfo.ToTitleCase(item.Remarks.ToLower()).Replace("Apv","APV")
+
+                            </div>
+                        </div>
+
+                        
+                    }
+
+
+                }
+                else
+                {
+                    <div class="activity-item d-flex @(ctr == Model.RequestJourney.Count ? "": "notlast")">
+                        <div class="activite-label">@item.AuthorizedDate.ToString("dd MMM") <br /><a style="font-size:small;">@item.AuthorizedDate.ToString("hh:mm tt")</a><br /></div>
+                        <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                        <div class="activity-content">
+                            @textInfo.ToTitleCase(item.Remarks.ToLower()).Replace("Apv","APV")
+
+                            @if (!string.IsNullOrEmpty(item.Name))
+                            {
+                                <a>by</a> <a class="fw-bold text-dark">@textInfo.ToTitleCase(item.Name.ToLower())</a>
+                            }
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- End activity item-->
+                }
+
+                if (item.Remarks.ToUpper() == "DISAPPROVED.")
+                {
+                    break;
+                }
+
+                ctr++;
+            }
+        }
+
+
+
+    }
+
+
+
+
+</div>

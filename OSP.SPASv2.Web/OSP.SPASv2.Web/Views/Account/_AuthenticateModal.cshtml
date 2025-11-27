@@ -1,0 +1,78 @@
+﻿@model SPASv2.Models.AccountViewModel
+
+@{
+    Layout = null;
+}
+<div class="modal fade" id="AuthenticateModal" tabindex="-1" role="dialog" aria-labelledby="AuthenticateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="bi bi-shield-lock-fill" style="color:white; margin-right:5px;"></i>  <h5 class="modal-title" id="AuthenticateModalLabel" style="color:white;">@Model.AuthentiCate.title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><i>@Model.AuthentiCate.text</i></p>
+                <form id="AuthenticateForm">
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="alert alert-danger mt-2" id="loginError" style="display: none;">Invalid login attempt.</div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <center>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="AuthenticateSubmit">@Model.AuthentiCate.confirmButtonText</button>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        var input = document.getElementById("password");
+        input.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById("AuthenticateSubmit").click();
+            }
+        });
+
+        $("#AuthenticateSubmit").click(function (e) {
+            e.preventDefault();
+
+            var email = $('#email').val();
+            var password = $('#password').val();
+            $.ajax({
+                url: '@Url.Action("Authenticate", "Account")',
+                type: 'POST',
+                data: {
+                    email: email,
+                    password: password
+                },
+                success: function (result) {
+                    if (result.success) {
+                        $('#AuthenticateModal').modal('hide');
+                        CallFunction('@Model.AuthentiCate.successmethod');
+                    } else {
+//                        $('#loginError').removeClass('d-none');                        
+                        $('#loginError').show().fadeOut(4000);
+                    }
+                },
+                error: function () {
+                    $('#loginError').show().fadeOut(4000);
+                }
+            });
+        });
+    });
+</script>
+
+

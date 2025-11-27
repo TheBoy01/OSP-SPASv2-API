@@ -1,0 +1,275 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "ePPs - Log in";
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/templatelogin/fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="~/templatelogin/css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/templatelogin/css/bootstrap.min.css">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="~/templatelogin/css/style.css">
+
+    <title>ePPs Login</title>
+
+    <link rel="icon" href="~/template/img/stpeter_goldenlogo.png" sizes="32x32">
+@*    <!-- Main Layout -->
+    <link href="~/template/vendor/bootstrap/css/bootstrap - Copy.css" rel="stylesheet">
+    <!-- End Main Layout -->*@
+
+    <style>
+        .footer {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            background-color: #efefef;
+            text-align: center;
+            color: #6c63ff;
+            font-size:smaller;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+
+        .site-header {
+            border-bottom: 1px solid #ccc;
+            padding: .5em 1em;
+        }
+
+            .site-header::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+        .site-identity {
+            float: left;
+        }
+
+            .site-identity h1 {
+                font-size: 1.5em;
+                margin: .7em 0 .3em 0;
+                display: inline-block;
+            }
+
+            .site-identity img {
+                max-width: 55px;
+                float: left;
+                margin: 0 10px 0 0;
+            }
+
+        .site-navigation {
+            float: right;
+        }
+
+            .site-navigation ul, li {
+                margin: 0;
+                padding: 0;
+            }
+
+            .site-navigation li {
+                display: inline-block;
+                margin: 1.4em 1em 1em 1em;
+            }
+
+        /*.btn-primary {
+            color: #fff !important;
+            background-color: #6c63ff !important;
+            border-color: #6c63ff !important;
+        }*/
+/*
+        .carousel-indicators [data-bs-target] {
+            background-color: #6c63ff !important;
+        }
+        .control input:checked ~ .control__indicator {
+            background: #0a58ca !important;
+        }
+
+        .btn-check:checked + .btn-primary, .btn-check:active + .btn-primary, .btn-primary:active, .btn-primary.active, .show > .btn-primary.dropdown-toggle {*/
+       /* color: #fff;
+        background-color: #0a58ca !important;
+        border-color: #0a53be !important;*/
+/*    }*/
+    </style>
+</head>
+<body style="font-family: 'Nunito',Calibri !important;">
+    <header class="site-header" style="">
+        <div class="site-identity">
+            <a href="#"><img src="~/template/img/stpeter_goldenlogo.png" alt="Site Name" /></a>
+            <h1>
+                <a href="/" style="font-weight: bold; color:#1d9137; font-family: 'Times New Roman', Times, serif;
+                   " >ONE ST. PETER </a>
+                @*<a href="#">ONE ST. PETER </a>*@
+                </h1>
+        </div>
+       
+    </header>
+
+
+    <div class="content" style="/*background-color: #edffed;*/ padding-bottom:6rem !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col" >
+
+                    @*<img src="~/templatelogin/images/loginbanner1.jpg" alt="Image" class="img-fluid">*@
+                    <img src="~/templatelogin/images/undraw_remotely_2j6y.SVG" alt="Image" class="img-fluid">
+
+                    <!-- Slides with captions -->
+                    @*<div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                            
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="~/template/img/login-slide-2-1.png" class="d-block w-100" alt="Image" class="img-fluid">
+                              
+                            </div>
+                            <div class="carousel-item">
+                                <img src="~/template/img/login-slide-1-1.png" class="d-block w-100" alt="Image" class="img-fluid">
+                                
+                            </div>
+                            <div class="carousel-item">
+                                <img src="~/template/img/login-slide-3-1.png" class="d-block w-100" alt="Image" class="img-fluid">
+                                <div class="carousel-caption d-none d-md-block">
+                                  
+                                </div>
+                                
+                                
+                            </div>
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+
+                    </div><!-- End Slides with captions -->
+*@
+                </div>
+                <div class="col-md-6 contents">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="mt-3 mb-4">
+                               
+                              @*  <a class="logo d-flex align-items-center" href="/" style="display:inline;">
+                                    <h3>Welcome to <b>SPASv2</b>!
+                                    <img src="/template/img/logo.png" alt="">
+                                    <span b-77u977aa90="" class="d-none d-lg-block">PASv2</span>
+                                    </h3>
+                                </a>*@
+
+                                <div class="flex-nowrap" style="display:inline-flex;">
+                                    <span style="font-weight: 500; font-size: 1.75rem; color:black">Welcome to </span>
+                                    @*<img src="/template/img/logo.png" alt="">*@
+                                    <span style="font-weight: 500; font-size: 1.75rem; color:#665ced; font-weight: 800; margin-left:10px;">ePPs </span>
+                                    <span style="font-weight: 500; font-size: 1.75rem; color:black">! </span>
+                                    </div>
+                                <p class="mb-4">St. Peter eProcurement and Payment System</p>
+                            </div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                            <form id="account" method="post">
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                <div class="form-group first field--not-empty">
+                                    <label asp-for="Input.Email" >Username</label>
+                                    <input asp-for="Input.Email" type="text" class="form-control" id="username"  required>
+                                    @{
+                                        string test = "1";
+                                    }
+                                </div>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                <div class="form-group last mb-4 field--not-empty">
+                                    <label asp-for="Input.Password">Password</label>
+                                    <input asp-for="Input.Password" type="password" class="form-control" id="password" value="" required>
+                                   
+
+                                </div>
+
+                                <div class="d-flex mb-5 align-items-center">
+                                    <label asp-for="Input.RememberMe" class="control control--checkbox mb-0">
+                                        <span class="caption">Remember me</span>
+                                        <input type="checkbox" checked="checked" asp-for="Input.RememberMe" />
+                                        <div class="control__indicator"></div>
+                                    </label>    
+
+                                   @* <label asp-for="Input.RememberMe" class="form-label">
+                                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                    </label>*@
+                                </div>
+                                @*<button id="login-submit" type="submit" class=" btn btn-lg btn-primary">Log in</button>*@
+                                <input id="login-submit" type="submit" value="Log In" class="btn btn-block btn-primary" style="background-color:#6c63ff;">
+                            </form>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">St. Peter Corporate Center, 999 EDSA, Quezon City 1105 (Across SM North EDSA Annex) | Tel. No.: (63) 2 371-SPLP (7757) </div>
+    
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    <script src="~/templatelogin/js/jquery-3.3.1.min.js"></script>
+    <script src="~/templatelogin/js/popper.min.js"></script>
+    <script src="~/templatelogin/js/bootstrap.min.js"></script>
+    <script src="~/templatelogin/js/main.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            //var $field = $(this).closest('.form-group');
+            //if (this.value) {
+            //    $field.addClass('field--not-empty');
+            //} else {
+            //    $field.removeClass('field--not-empty');
+            //}
+            //alert('test');
+
+            //$('#username').addClass('field--not-empty');
+
+
+
+        });
+    </script>
+</body>
+
+
+<!-- Vendor JS Files -->
+<script src="~/template/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="~/template/vendor/quill/quill.min.js"></script>
+<script src="~/template/vendor/tinymce/tinymce.min.js"></script>
+<script src="~/template/js/main.js"></script>
+<!-- End Vendor JS Files -->
+
+</html>

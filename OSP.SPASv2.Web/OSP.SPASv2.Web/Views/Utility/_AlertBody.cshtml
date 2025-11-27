@@ -1,0 +1,140 @@
+﻿
+@model SPASv2.Models.UtilityViewModel
+
+@{
+    Layout = null;
+}
+
+@{
+    string stricon = string.Empty;
+    string stralert = string.Empty;
+    string strbtn = string.Empty;
+    Model.Alert.icon = Model.Alert.icon.ToLower();
+}
+@switch (Model.Alert.icon)
+{
+    
+    case "question":
+        {
+            stricon = "bi bi-question-diamond";
+            stralert = "alert-primary";
+            strbtn = "btn-question";
+            break;
+        }
+    case "success":
+        {
+            stricon = "bi bi-check2-circle";
+            stralert = "alert-success";
+            strbtn = "btn-success";
+            break;
+        }
+    case "info":
+        {
+            
+            stricon = "bi bi-info-circle";
+            stralert = "alert-info";
+            strbtn = "btn-info";
+            break;
+        }
+    case "warning":
+        {
+            stricon = "bi bi-exclamation-triangle";
+            stralert = "alert-warning";
+            strbtn = "btn-warning";
+            break;
+        }
+    case "error":
+        {
+            stricon = "bi bi-shield-exclamation";
+            stralert = "alert-danger";
+            strbtn = "btn-danger";
+            break;
+        }
+    default:
+        {
+            stricon = "bi bi-info-circle";
+            stralert = "alert-info";
+            strbtn = "btn-info";
+            break;
+        }
+}
+
+<style>
+    .btn-danger {
+        font-weight: bold;
+        background-color: #e57782;
+    }
+
+    .btn-question {
+        color: #fff !important;
+        background-color: #63a3ff !important;
+        border-color: #0b5ed7 !important;
+    }
+
+        .btn-question:hover {
+            color: #fff !important;
+            background-color: #0b5ed7 !important;
+            border-color: #0a58ca !important;
+        }
+
+   
+</style>
+
+
+<div class="alert @stralert alert-dismissible fade show" role="alert" style="margin-bottom:0px !important; border-radius:10px;">
+    
+    <h2>
+        @switch (Model.Alert.icon)
+        {
+            case "success":
+                {
+                    <i class="@stricon" style="color:#85b328;"></i>
+                    break;
+                }
+            case "question1":
+                {
+                    <i class="@stricon" style="color:#5b8edb;"></i>
+                    break;
+                }
+            default:
+                {
+                    <i class="@stricon"></i>
+                    break;
+                }
+        }
+        @if (Model.Alert.title.Trim() != string.Empty)
+        {
+            @Model.Alert.title
+        }
+        else
+        {
+            @Html.Raw(Model.Alert.text)
+        }
+    </h2>
+
+    @if (Model.Alert.title.Trim() != string.Empty)
+    {
+        <p>@Html.Raw(Model.Alert.text)</p>
+    }
+    <hr>
+
+    <center>
+        <button type="button" class="btn @strbtn" onclick="ReturnOk('@Model.Alert.successmethod')" style="font-weight:bold;">@Model.Alert.confirmButtonText.ToString()</button>
+
+        @if (Model.Alert.showCancelButton)
+        {
+            if (string.IsNullOrEmpty(Model.Alert.cancelmethod))
+            {
+                <button type="button" class="btn btn-secondary" onclick="ReturnCancel()">@Model.Alert.cancelButtonText</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary" onclick="ReturnCancel('@Model.Alert.cancelmethod')">@Model.Alert.cancelButtonText</button>
+            }
+        }
+
+    </center>
+
+    <button type="button" class="btn-close" onclick="ReturnCancel()" aria-label="Close"></button>
+    
+</div>

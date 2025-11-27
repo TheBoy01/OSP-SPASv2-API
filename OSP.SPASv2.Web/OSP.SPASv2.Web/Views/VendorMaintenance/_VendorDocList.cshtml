@@ -1,0 +1,113 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+@{
+
+    switch (Model.SelectedDiv.ToUpper())
+    {
+
+        case "EDIT":
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Vendor Required Attachment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="text" id="RowID" value=@Model.ItemID hidden />
+                    <label class="form-label">Document Type</label>
+                    <select class="form-select" name="SelectedVendorDoc" value="" id="Edit_cmbVendorDoc">
+                        @foreach (var item in Model.RefVendorDocsList)
+                        {
+                            if (item.DocCode == Model.TblVendorAttached.DocCode)
+                            {
+                                <option value=@item.DocCode selected>@item.DocDesc</option>
+                            }
+                            else
+                            {
+                                <option value=@item.DocCode>@item.DocDesc</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary edit-AttachedDocs">Save</button>
+            </div>
+
+            break;
+
+
+        case "CREATE":
+
+            <div class="modal-header">
+                <h5 class="modal-title">Add Vendor Required Attachment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label for="inputName5" class="form-label">Document Type</label>
+                    @Html.DropDownListFor(model => model.RefVendorDocsList, new SelectList(Model.RefVendorDocsList,"DocCode","DocDesc"), "-- SELECT DOCUMENT TYPE --", htmlAttributes: new { @class = "form-select", @id="Add_cmbVendorDoc"})
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary add-AttachedDocs">Add</button>
+            </div>
+
+            break;
+    }
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".add-AttachedDocs").click(function () {
+
+            var VendorDocType = document.getElementById("Add_cmbVendorDoc").value;
+            var VendorDocDesc = document.getElementById("Add_cmbVendorDoc").options[document.getElementById("Add_cmbVendorDoc").selectedIndex].text;//$("#Add_cmbVendorDoc").val();
+            //alert(VendorDoc);
+            var table = document.getElementById("Tbl_AttachedDoc");
+            var table_len = (table.rows.length);
+            const Module = "Attached Documents";
+            //const tableName = table.getAttribute("id");
+
+            //var markup = "<tr><td><input type='checkbox' name='record'></td><td id='BankAcctType_row" + table_len + "'>"
+            var markup = "<tr id='AttachedDocs_TR_" + table_len + "'><td hidden>" //"<tr><td id='row_no" + table_len + "'>"
+                + VendorDocType +
+                "</td><td>"
+                + VendorDocDesc +
+                "</td><td>"
+                + "<a onclick='edit_row(AttachedDocs_TR_" + table_len + ",\"Vendor Attached Doc\")'> <i class='bi bi-pencil-square fa-lg'></i> </a>  <a onclick='delete_row(AttachedDocs_TR_" + table_len + "," + table.getAttribute("id") + ",\"" + Module + "\")'> <i class='bi bi-x-square fa-lg' style='color: red'></i> </a>" +
+                "</td>"
+            //+ ZipCode +
+            "</tr>";
+            //alert(tableName);
+            $("#AttachedDoc_Tbody").append(markup);
+            $('#Generic_Modal').modal('toggle');
+        });
+    });
+
+    $(document).ready(function () {
+        $(".edit-AttachedDocs").click(function () {
+            
+            var table = document.getElementById("Tbl_AttachedDoc");
+            var RowID = document.getElementById("RowID").value;
+            
+            //alert(table.rows[RowID].cells[0].innerHTML + ' ' + table.rows[RowID].cells[1].innerHTML);
+            //alert(document.getElementById("Edit_cmbVendorDoc").value);
+            table.rows[RowID].cells[0].innerHTML = document.getElementById("Edit_cmbVendorDoc").value;// 
+            table.rows[RowID].cells[1].innerHTML = document.getElementById("Edit_cmbVendorDoc").options[document.getElementById("Edit_cmbVendorDoc").selectedIndex].text;
+            //$("#AttachedDoc_Tbody").append(markup);
+            $('#Generic_Modal').modal('toggle');
+        });
+    });
+
+</script>

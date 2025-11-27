@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BaseOutputPath>bin\</BaseOutputPath>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="mkdir &quot;C:\OCX\SPASv2\OSP&quot;&#xD;&#xA;xcopy &quot;$(OutDir)OSP.Common.Domain.dll&quot; &quot;C:\OCX\SPASv2\OSP&quot; /Y /I" />
+  </Target>
+ 
+</Project>

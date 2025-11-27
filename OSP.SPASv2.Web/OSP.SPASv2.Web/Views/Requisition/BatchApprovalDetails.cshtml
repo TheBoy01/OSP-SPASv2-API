@@ -1,0 +1,80 @@
+﻿@model SPASv2.Models.BatchRequisitionViewModel
+
+
+@{
+    ViewData["Title"] = "Batch Approval Details";
+
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Batch Approval Details</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item">Batch Approval</li>
+                <li class="breadcrumb-item" active>@Model.BatchPRNo</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col">
+                <div class="card overflow-auto">
+                    <div class="card-body">
+
+                        <div class="card-title">
+
+                            <a>Approval No.:</a>
+
+                            <a style="color:dimgray;">
+                                @Model.BatchPRNo
+                            </a>
+
+                            <div class="">
+                                <a>Approval Date:</a>
+
+                                <a style="color:dimgray;">
+
+                                    @Convert.ToDateTime(Model.RequisitionViewModel.dashboardViewModel.RequestList.FirstOrDefault().ApprovalDate).ToString("MM/dd/yyyy h:mm tt")
+                                </a>
+                            </div>
+
+                            <div class="">
+                                <a>Payment Class:</a>
+
+                                <a style="color:dimgray;">
+                                    @Model.RequisitionViewModel.dashboardViewModel.RequestList.FirstOrDefault().PayClass
+                                </a>
+                            </div>
+
+                            <div class="">
+                                <a>Total Amount:</a>
+
+                                <a style="color:dimgray;">
+                                    &#8369 @string.Format("{0:#,0.00##}",   @Model.RequisitionViewModel.dashboardViewModel.RequestList.Sum(a => a.Amount))
+                                </a>
+                            </div>
+
+                        </div>
+                        <div id="divRequisitionList">
+                            @{
+
+                                Model.RequisitionViewModel.ListHidenColumns = new List<string>()
+                            { "BatchNo","PayClass","RequestDate","Confirmation"};
+
+                                await Html.RenderPartialAsync("/Views/Requisition/_RequisitionList.cshtml", Model.RequisitionViewModel);
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>

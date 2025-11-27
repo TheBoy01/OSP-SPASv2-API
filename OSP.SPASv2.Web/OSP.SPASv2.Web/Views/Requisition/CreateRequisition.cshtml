@@ -1,0 +1,870 @@
+﻿@using Newtonsoft.Json;
+@using OSP.Common.Domain.Msgbox;
+@model SPASv2.Models.RequisitionViewModel
+
+
+@{
+    ViewData["Title"] = ViewData["pagetitle"];
+}
+
+@*<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"
+        integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c="
+        crossorigin="anonymous"></script>*@
+
+@{
+    string strReadOnly = string.Empty;
+    bool isReadOnly = false;
+    if (Model.isCreatePayment)
+    {
+        strReadOnly = "true";
+        isReadOnly = true;
+    }
+    else
+    {
+        strReadOnly = "false";
+        isReadOnly = false;
+    }
+}
+
+<style>
+    #basic-addon1 {
+        width: 150px;
+        background-color: #dedcff;
+    }
+
+    .input-group {
+        margin-bottom: 5px;
+    }
+
+
+</style>
+
+<div class="modal fade" id="modalItems" tabindex="-1" style="display: none; margin-top:40px;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header" style="">
+                <h2 class="card-title" style="">
+                    Add Items/Services
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="frmAddItems">
+
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label>Company Type</label>
+                        @Html.DropDownListFor(model => model.Company, new SelectList(Model.CompanyList, "CompanyType", "CompanyType"), htmlAttributes: new { @class = "form-select" })
+                    </div>
+
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label>Department</label>
+                        @Html.DropDownListFor(model => model.Code, new SelectList(Model.DeptList, "DeptCode", "DeptDesc"),  htmlAttributes: new { @class = "form-select" })
+                    </div>
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label asp-for="ItemDesc" class="form-label "></label>
+                        <input asp-for="ItemDesc" class="form-control" list="dtItemList" onkeyup="SetItemDetails()" style="text-transform: uppercase;" />
+                        <datalist id="dtItemList">
+                            @foreach (var item in Model.VendorItemList)
+                            {
+                                <option value="@item.ItemDesc" data-value="@item.ItemCode"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="ItemDesc" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5" style="margin-top: 5px; ">
+                        <label asp-for="UOM" class="form-label "></label>
+                        <input asp-for="UOM" class="form-control" readonly />
+                        <span asp-validation-for="UOM" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5" style="margin-top: 5px; ">
+                        <label asp-for="ItemPrice" class="form-label "></label>
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Php</span>
+                            <input asp-for="ItemPrice" asp-format="{0:#,###.00}" class="form-control" style="text-align: right;" readonly>
+                        </div>
+                        <span asp-validation-for="ItemPrice" class="text-danger"></span>
+
+                    </div>
+                    <div class="col-2" style="margin-top: 5px; ">
+                        <label asp-for="Quantity" class="form-label "></label>
+                        <input asp-for="Quantity" type="number" class="form-control" style="text-align: center;" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12" style="margin-top: 5px; ">
+                        <label asp-for="Discount" class="form-label "></label>
+
+                        <div class="input-group mb-3 ">
+                            @Html.DropDownListFor(model => model.Discount, new SelectList(Model.Discountlist, "DiscountCode", "DiscountDesc"), "-- SELECT DISCOUNT TYPE --", htmlAttributes: new { @class = "form-select width=50px", @onchange="SetDiscountType()" })
+                            <input asp-for="Discountprice" type="number" class="form-control" style="text-align: center;" readonly />
+
+                        </div>
+                        <span asp-validation-for="Discountprice" class="text-danger"></span>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="">
+                <center>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="AddItem()">Add</button>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPOSearch" tabindex="-1" style="display: none; margin-top:20px;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="card-title" style="padding-bottom:10px;">Purchase Order Search </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <section class="section dashboard">
+                    <div class="card mb-10 overflow-auto">
+                        <div class="card-body">
+                            <div id="divRequisitionList">
+                                @{
+                                    Model.ListCheck = false;
+                                    Model.ListHidenColumns.Add("RequestNo");
+                                    await Html.RenderPartialAsync("_RequisitionList", Model);
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+            </div>
+            @*<div class="modal-footer">
+
+            </div>*@
+        </div>
+    </div>
+</div>
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Create Single Requisition</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Requisition</li>
+                <li class="breadcrumb-item">Single</li>
+                @if (Model.isCreateRequisition)
+                {
+                    <li class="breadcrumb-item active">Create</li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item active">Create Payment</li>
+                }
+            </ol>
+        </nav>
+    </div>
+
+    <p class="text-danger mb-0 text-left mb-0 mt-0" style="font-weight:300;">
+        <i class="bi bi-info-circle" aria-hidden="true"></i>Required information is marked with an asterisk (<b style="color:red; font-weight:bolder;">*</b>)
+    </p>
+
+    <form asp-action="Create" class="row g-3 needs-validation" id="frmCreate" enctype="multipart/form-data">
+
+        @Html.HiddenFor(model => Model.RequisitionItemList)
+        @Html.HiddenFor(m=>m.PRNo)
+        @Html.HiddenFor(m=>m.AuditUser)
+        @Html.HiddenFor(m=>m.Companyid)
+        @Html.HiddenFor(m => m.Companycode)
+        @Html.HiddenFor(m => m.BranchCode)
+        @Html.HiddenFor(m=>m.BankCode)
+        @Html.HiddenFor(m=>m.ItemCode)
+        @Html.HiddenFor(m=>m.SupplierCode)
+
+        <section class="section dashboard">
+            <div class="card mb-10 overflow-auto">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col" style="min-width:300px;">
+                            <h2 class="card-title" style="margin-bottom:0px; padding-bottom:0px;">Request No: <span style="font-size:large; color: #3b2ffb;"> AUTO GENERATED</span></h2>
+                        </div>
+                        <div class="col" style="min-width:300px;">
+                            <h2 class="card-title" style="margin-bottom:0px; padding-bottom:0px;">Request Date: <span style="font-size:large; color: #3b2ffb;">@DateTime.Now.ToString("MM/dd/yyyy")</span></h2>
+                        </div>
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col" style="min-width:300px;">
+                                    <h2 class="card-title" style="padding-top: 0px;">Requisition Details</h2>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">
+                                                P.O. No.
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Enter your P.O. Number here" aria-label="P.O. Number" aria-describedby="button-addon2" id="txtPONo" name="txtPONo">
+                                        <button class="btn btn-primary" type="button" id="button-addon2" @*data-bs-toggle="modal" data-bs-target="#modalPOSearch"*@ onclick="DisplayPO()"><i class="bi bi-search"></i></button>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">
+                                                P.O. Date
+                                            </span>
+                                        </div>
+                                        <input class="form-control " value="" readonly />
+                                    </div>
+
+                                    <h2 class="card-title">Requester </h2>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="Company" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @*      @if (isReadOnly)
+                                        {
+                                        @Html.DropDownListFor(model => model.Company, new SelectList(Model.CompanyList, "CompanyType", "CompanyType"), htmlAttributes: new { @class = "form-select", @disabled = true });
+                                        }
+                                        else
+                                        {
+                                        @Html.DropDownListFor(model => model.Company, new SelectList(Model.CompanyList, "CompanyType", "CompanyType"), htmlAttributes: new { @class = "form-select" });
+                                        }
+                                        *@
+                                        <input class="form-control" value="@Model.ReqEmpDetails.CompanyType" readonly />
+
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="Code" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @* @if (isReadOnly)
+                                        {
+                                        @Html.DropDownListFor(model => model.Code, new SelectList(Model.DeptList, "DeptCode", "DeptDesc"),  htmlAttributes: new { @class = "form-select" , @disabled = "true" })
+                                        }
+                                        else
+                                        {
+                                        @Html.DropDownListFor(model => model.Code, new SelectList(Model.DeptList, "DeptCode", "DeptDesc"),  htmlAttributes: new { @class = "form-select" })
+                                        }*@
+                                        <input class="form-control" value="@Model.ReqEmpDetails.DeptDesc" readonly />
+                                        <span asp-validation-for="Code" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="Address" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <input class="form-control" value="@Model.ReqEmpDetails.Address" readonly />
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col">
+                            <div class="row">
+                                <div class="col" style="min-width:300px;">
+
+                                    <h2 class="card-title" style="padding-top: 0px;">Vendor</h2>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="PaymentClass" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        @Html.DropDownListFor(model => model.PaymentClass, new SelectList(Model.Paymenttypelist, "PayClassCode", "PayDesc"), "-- SELECT PAYMENT REQUEST TYPE --", htmlAttributes: new { @id= "cboPayClass",@class = "form-select", @onchange="SetPayClassVendor()"  })
+
+                                    </div>
+                                    <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span asp-validation-for="PaymentClass" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="Supplier" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <input asp-for="Supplier" class="form-control" list="dtVendorList" />
+
+                                        <datalist id="dtVendorList">
+                                            @foreach (var item in Model.VendorList)
+                                            {
+                                                <option value="@item.VendorName" data-value="@item.VendorCode"></option>
+                                            }   
+                                        </datalist>
+                                    </div>
+
+                                    <div class="alert alert-danger d-flex align-items-center alertVal alertValHide" id="alertSupVal">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span asp-validation-for="Supplier" class="text-danger" id="spanalertSupVal"></span>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="PCVName" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <input asp-for="PCVName" class="form-control" jsname="YPqjbf" readonly />
+                                    </div>
+
+                                    <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span asp-validation-for="PCVName" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="PaymentMethod" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <input asp-for="PaymentMethod" class="form-control" readonly />
+                                    </div>
+                                    <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                                    </div>
+
+
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label asp-for="PaymentNetwork" class="form-label required"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <input asp-for="PaymentNetwork" class="form-control" readonly />
+                                    </div>
+                                    <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span asp-validation-for="PaymentNetwork" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">
+                                                    <label class="form-label"> Account No</label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <input asp-for="Destination" class="form-control" readonly />
+                                    </div>
+
+                                    <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span asp-validation-for="Destination" class="text-danger"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col" style="min-width:300px;">
+                            <h2 class="card-title">Other Details</h2>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <label asp-for="RefNo" class="form-label required"></label>
+                                        </span>
+                                    </div>
+                                </div>
+                                <input asp-for="RefNo" class="form-control" style="text-transform:uppercase" />
+                                @*   <span asp-validation-for="RefNo" class="text-danger"></span>*@
+                            </div>
+
+                            <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span asp-validation-for="RefNo" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <label asp-for="Remarks" class="form-label required"></label>
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                @*<textarea class="form-control" style="resize:none"  required @strReadOnly></textarea>*@
+                                <textarea asp-for="Remarks" class="form-control" style="resize:none; text-transform: uppercase;"></textarea>
+                            </div>
+                            <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span asp-validation-for="Remarks" class="text-danger"></span>
+                            </div>
+
+                            <h2 class="card-title">
+
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnReqAttachment">
+                                    <i class="ri-attachment-2"></i>
+                                </button>
+                                <input type="file" id="inpReqAttachment" name="inpReqAttachment" multiple onchange="ReadDocs(this)" hidden>
+                                <a href="#" class="btn btn-danger linkbutton" id="ResetDocs" onclick="ResetDocs()" style="display: none; "> <i class="bx bx-reset"></i> Reset</a>
+                                Supporting Documents
+
+                            </h2>
+                            <div id="divSupDocs">
+                                @{
+                                    Model.SupDocsListName = "sup1";
+                                    await Html.RenderPartialAsync("_RequisitionDocs.cshtml", Model);
+                                }
+                            </div>
+
+                            <div class="alert alert-danger d-flex align-items-center alertVal alertValHide">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span asp-validation-for="Files" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        <div class="col">
+
+                            <div id="divReqJourney">
+                                @{
+                                    Model.dashboardViewModel.RequestJourneyType = "Request PO Then Pay";
+                                    await Html.RenderPartialAsync("/Views/Home/_RequestJourney.cshtml", Model.dashboardViewModel);
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            <h2 class="card-title">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddItem" data-bs-toggle="modal" data-bs-target="#modalItems">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+
+                                Items/Services
+                            </h2>
+                            <div class="row my-2">
+                                <div class="col" style="min-width:300px;">
+
+                                    <div id="divItemList">
+                                        @{
+                                            Model.showAddItemButton = true;
+                                            Model.ItemListName = "t1";
+                                        }
+                                        @await Html.PartialAsync("_RequisitionItemsList", Model)
+                                    </div>
+
+                                   
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                        </div>
+                        <div class="col">
+                            <center>
+                                <input type="submit" value="Submit Requisition" class="btn btn-primary center" id="submit" onclick="ShowLoader()" style="max-width: 200px;" />
+                            </center>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </form>
+
+
+
+
+</main>
+
+<script>
+
+    var items;
+    var reqItems = [];
+    var canAddItem;
+
+    isModelValidate = @Html.Raw(JsonConvert.SerializeObject(Model.isModelValidated));
+    items = @Html.Raw(JsonConvert.SerializeObject(Model.VendorItemList));
+    reqItems = @Html.Raw(JsonConvert.SerializeObject(Model.RequisitionItemList));
+    
+
+    $(document).ready(function () {
+        DisplayValidationWithText("Requisition", "Unable to create, there was an error in your submission!");
+    });
+
+    $('#btnReqAttachment').click(function () {
+        $('#inpReqAttachment').click();
+    });
+
+    $('#btnPyReqAttachment').click(function () {
+        $('#inpPyReqAttachment').click();
+    });
+
+    function SetPayClassVendor() {
+        if (reqItems.length > 0) {
+            alert("clear");
+            reqItems = [];
+            RefreshItemList();
+        }
+
+        ClearSupplierDetails();
+
+        var inputSupplier = $('#Supplier').val();
+        var inputpayclass = $("#cboPayClass").val();
+        $.ajax({
+            type: "GET",
+            url: '/Requisition/GetVendorLists',
+            data: {
+                vendordesc: inputSupplier,
+                paymentclass: inputpayclass
+            },
+            dataType: "json",
+            success: function (result) {
+
+                var data = result.data;
+
+                var s = '';
+                for (var i = 0; i < data.length; i++) {
+                    console.log(data[i])
+                    s += '<option value="' + data[i].VendorName + '" data-value="' + data[i].VendorCode + '"></option>';
+                }
+                $("#dtVendorList").html(s);
+
+                $("#JourneyType").html(result.ClassDesc);
+            },
+
+
+            error: function (response) {
+                alert(response.responseText);
+            },
+            failure: function (response) {
+                alert("failure " + response.responseText);
+            }
+
+        });
+
+    }
+
+    function ClearSupplierDetails() {
+        document.getElementById('Supplier').value = "";
+        document.getElementById('PCVName').value = "";
+        document.getElementById('PaymentMethod').value = "";
+        document.getElementById('PaymentNetwork').value = "";
+        document.getElementById('Destination').value = "";
+
+    }
+
+    $("#Supplier").on('input', function () {
+        var inputpayclass = $("#cboPayClass").val();
+
+        var textval = $('#Supplier').val();
+        var vendorcode = $('#dtVendorList [value="' + textval + '"]').data('value');
+        $("#SupplierCode").val(vendorcode);
+
+        $.ajax({
+            type: "GET",
+            url: "/Requisition/GetVendorDetails/",
+            data: {
+                vendorcode: vendorcode,
+                payclass: inputpayclass
+            },
+            success: function (data) {
+                $('#Destination').val(data.vendordtl.AccountNo);
+                $('#PaymentMethod').val(data.vendordtl.PaymentMethod);
+                $('#PaymentNetwork').val(data.vendordtl.BankCode);
+                $('#PCVName').val(data.vendordtl.PayeeName);
+
+                var s = '';
+
+                items = data.itemList;
+                for (var i = 0; i < items.length; i++) {
+                    s += '<option value="' + items[i].ItemDesc + '" data-value="' + items[i].ItemCode + '"></option>';
+                }
+                $("#dtItemList").html(s);
+
+
+            }, error: function (response) {
+                alert(response.responseText);
+            },
+            failure: function (response) {
+                alert("failure " + response.responseText);
+            }
+        });
+
+
+    });
+
+    function ReadDocs(input) {
+
+
+        var fileData = new FormData();
+        var files = $("#inpReqAttachment")[0].files;
+        for (var i = 0; i < files.length; i++) {
+            fileData.append("files", files[i]);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/SetDocs",
+            processData: false,
+            contentType: false,
+            data: fileData,
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#divSupDocs").html(result);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+
+        if (files.length > 0) {
+            document.getElementById("ResetDocs").style.display = "inline-block";
+            document.getElementById("btnReqAttachment").style.display = "none";
+        }
+        else {
+            document.getElementById("btnReqAttachment").style.display = "inline-block";
+            document.getElementById("ResetDocs").style.display = "none";
+        }
+    }
+
+    function ResetDocs() {
+
+        ShowAlert(
+            {
+                title: "Are you sure?",
+                text: "All selected files will be removed!",
+                icon: "question",
+                showCancelButton: "true",
+                confirmButtonText: "Yes!",
+                successmethod: "ConfirmReset()"
+            });
+    }
+
+    function ConfirmReset() {
+        $('#inpReqAttachment').val("");
+        ReadDocs();
+    }
+
+    function SetItemDetails() {
+
+        var textval = $('#ItemDesc').val();
+        var itemCode = $('#dtItemList [value="' + textval + '"]').data('value');
+
+        var found = 0;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].ItemCode == itemCode) {
+                var amt = items[i].Amount.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+                $('#UOM').val(items[i].UOM);
+                $('#ItemPrice').val(amt);
+                found = 1;
+                break;
+            }
+        }
+
+        if (found == 0) {
+            $('#UOM').val("");
+            $('#ItemPrice').val("0.00");
+        }
+    }
+
+    function AddItem() {
+        var itemDesc = $('#ItemDesc').val();
+        var itemCode = $('#dtItemList [value="' + itemDesc + '"]').data('value');
+
+        var Company = $("#Company").val();
+        var DeptDesc = $("#Code option:selected").text();
+        var Code = $("#Code").val();
+        var Quantity = $("#Quantity").val();
+        var Discountprice = $("#Discountprice").val();
+        var DiscountCode = $("#Discount").val();
+
+        var InputItem = 
+        {
+            CompanyType: Company,
+            DeptDesc: DeptDesc,
+            DeptCode: Code,
+            ItemCode: itemCode,
+            Item: itemDesc,
+            Quantity: Quantity,
+            DiscountCode: DiscountCode,
+            Discount: Discountprice
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/CanAddItem",
+            data: { itemList: JSON.stringify(reqItems), item: JSON.stringify(InputItem) },
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+                $("#modalItem").modal("hide");
+            },
+            success: function (result) {
+
+                if (!result.success) {
+                    ShowAlert(
+                        {
+                            title: "Requisition",
+                            text: result.error,
+                            icon: "error",
+                            successmethod: "ShowModalItem()"
+                        });
+
+                }
+                else
+                {
+                    pushAddItem(InputItem);
+                }   
+                
+
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    function pushAddItem(InputItem) {
+        reqItems.push(InputItem);
+
+        $("#modalItems").modal("hide");
+
+        ShowAlert(
+            {
+                title: "Requisition",
+                text: "Item/service successfully added!",
+                icon: "success",
+                successmethod: "RefreshItemList()"
+            });
+    }
+
+    function ShowModalItem()
+    {
+        $("#modalItems").modal("show");
+    }
+
+    function RefreshItemList() {
+
+        document.getElementById('frmAddItems').reset();
+
+        var supval = $('#Supplier').val();
+        var vendorcode = $('#dtVendorList [value="' + supval + '"]').data('value');        
+        var payclass = $("#cboPayClass").val();
+
+        $("#RequisitionItemList").val(JSON.stringify(reqItems));
+        $("#SupplierCode").val(vendorcode);
+
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/GenerateItemList",
+            data: { item: JSON.stringify(reqItems), vendorcode: vendorcode, deduction: 0, freight: 0, isCreatePayment: false, payclass: payclass },
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#divItemList").html(result);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    function SetDiscountType() {
+        var DiscountCode = $("#Discount").val();
+
+        if (DiscountCode == '') {
+            $("#Discountprice").attr("readonly", true);
+            $("#Discountprice").val("0");
+        }
+        else {
+            $("#Discountprice").attr("readonly", false);
+        }
+    }
+
+    function DisplayPO() {
+
+        var PONo = $('#txtPONo').val();
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/SearchPO",
+            data: { PONo: PONo },
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#divRequisitionList").html(result);
+                $("#modalPOSearch").modal("show");
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+
+
+</script>

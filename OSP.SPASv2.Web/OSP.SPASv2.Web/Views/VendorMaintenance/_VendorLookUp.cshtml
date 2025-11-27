@@ -1,0 +1,90 @@
+﻿@model SPASv2.Models.VendorMaintenanceModel
+
+
+
+<div>
+    <form class="row g-3">
+        <input type="text" class="form-control" id="VendorCode" hidden>
+
+        <div class="row">
+            <div class="col-md-12">
+                <label class="form-label">Vendor Full Name</label>
+                <input type="text" class="form-control" id="LookUpVendorName">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Vendor Type</label>
+                <input type="text" class="form-control" id="inputPassword5">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">TIN</label>
+                <input type="text" class="form-control" id="inputPassword5">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Bank Account</label>
+                <input type="text" class="form-control" id="inputPassword5">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">ATC</label>
+                <input type="text" class="form-control" id="inputPassword5">
+            </div>
+        </div>
+    </form><!-- End Multi Columns Form -->
+
+</div>
+
+<script type="text/javascript">
+
+    document.getElementById("LookUpVendorName").value = $("#VendorName").val();
+
+    //$(function () {
+    //    $('#LookUpVendorName').autocomplete({
+    //        source: function (request, response) {
+    //            $.ajax({
+    //                url: '/VendorMaintenance/VendorAutoComplete',
+    //                data: { VendorName: request.term },
+    //                success: function (data) {
+    //                    response(data);
+    //                }
+    //            });
+    //        },
+    //        minLength: 1
+    //    });
+    //});
+
+    $(document).ready(function () {
+        $("#LookUpVendorName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    type: "GET",
+                    url: '/VendorMaintenance/VendorAutoComplete/',
+                    data: { "VendorName": request.term },
+                    dataType: "json",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            //console.log(item);
+                            return item;
+                        }))
+                    },
+                    error: function (xhr, textStatus, error) {
+                        alert(response.error);
+                    },
+                    failure: function (response) {
+                        alert("failure " + response.responseText);
+                    }
+                });
+            },
+            select: function (e, ui) {
+                event.preventDefault(); 
+                $('#VendorCode').val(ui.item.text); 
+            },
+            autoFocus: true,
+            minLength: 0,
+            appendTo: "#VendorLookUp", 
+            minLength: 1
+        });
+
+    });
+
+</script>

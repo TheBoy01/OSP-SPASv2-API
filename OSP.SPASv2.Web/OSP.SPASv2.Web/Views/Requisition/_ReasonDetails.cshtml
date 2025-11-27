@@ -1,0 +1,88 @@
+﻿@model SPASv2.Models.ReasonModalViewModel
+
+@*modalDenyRequest*@
+<div class="modal fade" id="@Model.ModalName" tabindex="-1" style="display: none; margin-top:20px;" aria-hidden="true">
+    <div class="modal-dialog ">
+        @*<form id="@Html.Raw(Model.ModalName)frm">*@
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="card-title" style="padding: 0px;">@Model.ModalTitle</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                @Html.Raw(Model.Instruction)
+                <div class="col-12" style="margin-top: 5px; ">
+
+                    <label>Reason</label>
+                    <select class="form-select" id="@Model.cboReasonId" name="@Model.cboReasonId" required>
+                        @foreach (var item in Model.lstReason.OrderBy(a => a.ReasonDesc).ToList())
+                        {
+                            <option value="@item.ReasonCode">@item.ReasonDesc.ToUpper()</option>
+                        }
+
+                    </select>
+                </div>
+                <div class="col-12" style="margin-top: 5px; ">
+                    <label>Remarks</label>
+                    <textarea class="form-control" id="@Model.txtReasonRemarksId" required style="text-transform:uppercase"></textarea>
+                </div>
+               
+                
+            </div>
+            <div class="modal-footer">
+                <center>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="ConfirmReason(@Model.SuccessMethod)">Confirm</button>
+                </center>
+            </div>
+        </div>
+        @*</form>*@
+    </div>
+</div>
+
+<script>
+
+    window.onload = function () {
+        //$('#modalDenyRequestfrm').on('submit', function (e) {
+
+        //    alert('on load submit');
+        
+        //    //ConfirmReason('@Html.Raw(Model.SuccessMethod)');
+        //    //e.preventDefault();
+        //});
+
+        //$('#modalDenyRequestfrm').on('submit', function (e) {
+
+        //    alert('on load submit');            
+        //    e.preventDefault();
+
+        //    ConfirmReason('ConfirmDenialRequest()');
+        //});
+
+
+    };
+
+    function ConfirmReason(method) {  
+        
+        var codeToExecute = method;
+        var tmpFunc = new Function(codeToExecute);
+        tmpFunc();
+        
+        //if ($('#@Html.Raw(Model.cboReasonId)').val() == "")
+        //{
+        //    alert($('#@Html.Raw(Model.cboReasonId)').val());
+        //}
+        //else if($('#@Html.Raw(Model.txtReasonRemarksId)').val() == "")
+        //{
+        //    alert($('#@Html.Raw(Model.txtReasonRemarksId)').val());
+        //}
+        //else{
+        //    alert('test');
+            
+        //    var codeToExecute = method;
+        //    var tmpFunc = new Function(codeToExecute);
+        //    tmpFunc();
+        //}
+    }
+</script>

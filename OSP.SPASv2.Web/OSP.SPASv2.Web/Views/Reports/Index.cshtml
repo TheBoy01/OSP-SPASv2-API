@@ -1,0 +1,445 @@
+﻿@model SPASv2.Models.ReportViewModel
+@using Microsoft.AspNetCore.Identity
+@using Newtonsoft.Json;
+@using OSP.SPASv2.Web.Areas.Identity.Data
+@using System.Globalization;
+
+@inject SignInManager<OSPSPASv2ApplicationUser> SignInManager
+@inject UserManager<OSPSPASv2ApplicationUser> UserManager
+
+
+@{
+    TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+    ViewData["Title"] = "Reports";
+}
+
+    <style>
+    .mid {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            position: relative; /* Required for absolute positioning of the button */
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 90%;
+            max-width: 1200px;
+            padding: 0px;
+            box-sizing: border-box;
+            justify-content:center;
+        }
+
+        .card-report {
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 350px;
+            margin: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .step-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .report-list {
+            text-align: left;
+            margin-bottom: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .report-list label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px 5px 0 0;
+            background-color: #f8f9fa;
+        }
+
+        .tab.active {
+            background-color: white;
+            border-bottom: none;
+        }
+
+        .tab-content {
+            display: none;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .generate-btn {
+            display: block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-sizing: border-box;
+            text-align: center;
+            width: 200px;
+            bottom: 20px;
+            /*left: 50%;
+            transform: translateX(-50%);*/
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        .generate-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @@media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .generate-btn {
+                width: 90%;
+                max-width: 350px;
+            }
+        }
+
+        .text-list
+        {
+            font-weight: 500;
+            color: #012970;
+            font-family: "Poppins", sans-serif;
+        }
+    </style>
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Selection</title>
+
+</head>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Reports</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active">Reports</li>
+            </ol>
+        </nav>
+
+    </div>
+    <div class="mid">
+    <div class="container">
+        <div class="card-report">
+            <div class="step-label btn-primary">Step 1</div>
+            <div class="card-title">Report Category</div>
+            <div class="card-description">Search and select the category you want to generate:</div>
+            <input type="text" id="searchBox1" class="search-box" placeholder="Search category..." onkeyup="filterReports('searchBox1', 'reportForm1')">
+            <form id="reportForm1" class="report-list">
+
+                @foreach (var item in Model.Params.ReportTypeList)
+                    {
+                        
+                        string labletext = textInfo.ToTitleCase(item.ReportType.ToLower());
+
+                        <label class="text-list">
+                            <input type="radio" name="reporttype" value="@item.ReportID"> @labletext
+                        </label>
+                    }
+            </form>
+        </div>
+        <div class="card-report">
+            <div class="step-label btn-primary">Step 2</div>
+            <div class="card-title">Report Name</div>
+            <div class="card-description">Search and select the report you want to generate:</div>
+            <input type="text" id="searchBox2" class="search-box" placeholder="Search reports..." onkeyup="filterReports('searchBox2', 'reportForm2')">
+            <form id="reportForm2" class="report-list">
+                    
+            </form>
+        </div>
+        <div class="card-report">
+                <div class="step-label btn-primary">Step 3</div>
+            <div class="card-title">Date Selection</div>
+            <div class="card-description">Select the date range or period you want to generate the report for:</div>
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('dateTab')">By Date</div>
+                <div class="tab" onclick="showTab('monthTab')">By Month</div>
+                <div class="tab" onclick="showTab('weekTab')">By Week</div>
+            </div>
+            <div id="dateTab" class="tab-content active">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" class="form-control">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" class="form-control">
+            </div>
+            <div id="monthTab" class="tab-content">
+                <label for="month">Month:</label>
+                <input type="month" id="month" name="month" class="form-control">
+            </div>
+            <div id="weekTab" class="tab-content">
+                    <label for="weekMonth">Month:</label>
+                    <input type="month" id="weekMonth" name="weekMonth" class="form-control">
+                <select id="week" name="week" class="form-control">
+                    <option>1st Week</option>
+                    <option>2nd Week</option>
+                    <option>3rd Week</option>
+                    <option>4th Week</option>
+                </select>
+            </div>
+        </div>
+    </div>
+        <button type="button" class="generate-btn btn-primary" onclick="generateReport()">Generate Report</button>
+    </div>
+</main>
+
+<script>
+
+    $(document).ready(function () {
+        $('input[name="reporttype"]').change((e) => {
+            const selectedCategory = $(e.target).val();
+            const reportList = $('#reportForm2');
+
+            // Clear existing reports
+            reportList.empty();
+            DisplayReportname(selectedCategory)
+
+        });
+    });
+
+
+    function DisplayReportname(ReportID) {
+        var reportsnamelist = @Html.Raw(JsonConvert.SerializeObject(Model.Params.ReportNameList));
+      
+        const filteredReports = reportsnamelist
+            .filter(report => report.ReportID === ReportID)
+            .sort((a, b) => a.seqno - b.seqno);
+
+        const reportForm = document.getElementById('reportForm2');
+        reportForm.innerHTML = ''; // Clear the previous content
+
+        filteredReports.forEach(report => {
+            const label = document.createElement('label');
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'reportname';
+            input.value = report.ReportNameID;
+            label.classList.add('text-list');
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(` ${capitalizeEachWord(report.ReportName)}`));
+            reportForm.appendChild(label);
+        });
+
+    }
+
+    function filterReports(searchBoxId, formId) {
+        const searchValue = document.getElementById(searchBoxId).value.toLowerCase();
+        const reportList = document.getElementById(formId);
+        const reports = reportList.getElementsByTagName('label');
+
+        for (let i = 0; i < reports.length; i++) {
+            const report = reports[i];
+            if (report.textContent.toLowerCase().indexOf(searchValue) > -1) {
+                report.style.display = '';
+            } else {
+                report.style.display = 'none';
+            }
+        }
+    }
+
+    function showTab(tabId) {
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    function generateReport() {
+        const report1Form = document.getElementById('reportForm1');
+        const report2Form = document.getElementById('reportForm2');
+
+        let selectedReport = null;
+        let selectedReportName = null;
+
+        const formData1 = new FormData(report1Form);
+        const formData2 = new FormData(report2Form);
+
+        selectedReport = formData1.get('reporttype') ;
+        selectedReportName = formData2.get('reportname');
+
+        let dateSelection = '';
+        let dateValid = true;
+        var ReportParam = {
+            ReportType: selectedReport,
+            ReportName: selectedReportName,
+            DateSelectionType : "",
+            RangeFrom:"",
+            RangeTo:"",
+            Month:"",
+            Week:""
+        };
+
+        if (document.getElementById('dateTab').classList.contains('active')) {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            if (startDate && endDate) {
+                dateSelection = `Start Date: ${startDate}, End Date: ${endDate}`;
+                ReportParam.DateSelectionType = 'RANGE';
+                ReportParam.RangeFrom = startDate;
+                ReportParam.RangeTo = endDate;
+            } else {
+                dateValid = false;
+            }
+        } else if (document.getElementById('monthTab').classList.contains('active')) {
+            const month = document.getElementById('month').value;
+            if (month) {
+                dateSelection = `Month: ${month}`;
+                ReportParam.DateSelectionType = 'MONTH';
+                ReportParam.Month = month;
+            } else {
+                dateValid = false;
+            }
+        } else if (document.getElementById('weekTab').classList.contains('active')) {
+            const weekMonth = document.getElementById('weekMonth').value;
+            const week = document.getElementById('week').value;
+            if (weekMonth && week) {
+                dateSelection = `Month: ${weekMonth}, Week: ${week}`;
+                ReportParam.DateSelectionType = 'WEEK';
+                ReportParam.Month = weekMonth;
+                ReportParam.Week = week;
+            } else {
+                dateValid = false;
+            }
+        }
+
+        if (selectedReport && dateValid) {
+            //alert(JSON.stringify(ReportParam));
+            PostGenerateReport(ReportParam);
+        } else if (!selectedReport) {
+            ShowAlert(
+                {
+                    title: "Report",
+                    text: 'Please select a report.',
+                    icon: "error"
+                });
+        } else if (!dateValid) {
+            ShowAlert(
+                {
+                    title: "Requisition",
+                    text: 'Please select a valid date range.',
+                    icon: "error"
+                }); 
+        }
+    }
+
+    function PostGenerateReport(Params)
+    {
+        $.ajax({
+            type: "POST",
+            url: "/Reports/GenerateReport",
+            data: { ReportParams: JSON.stringify(Params) },
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                if (!result.success) {
+                    ShowAlert(
+                        {
+                            title: "Reports",
+                            text: result.error,
+                            icon: "error",
+                        });
+
+                }
+                else {
+                    ShowAlert(
+                        {
+                            title: "Reports",
+                            text: 'Successfully generated!',
+                            icon: "success"
+                        });
+
+                }
+
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+</script>
+
+
+

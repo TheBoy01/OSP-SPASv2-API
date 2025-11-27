@@ -1,0 +1,130 @@
+﻿
+@model SPASv2.Models.RequisitionViewModel
+@{
+    Layout = null;
+}
+
+    <div>@ViewData["resp"]</div>
+    <div class="row my-2">
+        <div class="form-group">
+            <table class="table table-bordered nowrap" id="@Model.ItemListName" style="width:100%">
+                <thead>
+
+                    <tr>
+                        <th>
+                            Company Type
+                    </th>
+                    <th>
+                        Department
+                    </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().ItemDesc)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().UOM)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Price)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Qty)
+                        </th>
+
+                    @if (Model.showItemBalance)
+                    {
+                        <th>
+                            Balance
+                        </th>
+                        }
+                   
+                        
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().Discount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m=>m.tmpPaymentRequestInventory.FirstOrDefault().TotalAmt)
+                        </th>
+                        @if (Model.isCreate)
+                        {
+                            //<th>Action</th>
+                        }
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var item in (List<tmpPaymentRequestInventory>)ViewData["tmp"])
+                {
+                    break;
+                    <tr>
+                            @Html.HiddenFor(m=>item.PRNo)
+                            @Html.HiddenFor(m=>item.ItemCode)
+                            @Html.HiddenFor(m=>item.Gross)
+                            <td>
+                            @if (Model.showAddItemButton)
+                            {
+                                <a asp-action="Delete" class="btn text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Edit" style="padding:0px;"><i class="bi bi-pencil-square"></i></a>
+                                <a asp-action="Delete" class="btn text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Remove" style="padding:0px;">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            }
+                                
+
+                                @Html.DisplayFor(m=>item.ItemDesc)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(m=>item.UOM)
+                            </td>
+
+                            
+                            <td class="money">
+
+                                &#8369 @string.Format("{0:#,0.00##}", item.Price)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(m=>item.Qty)
+                            </td>
+
+                        @if (Model.showItemBalance)
+                        {
+                            <td class="text-danger">
+                                @Html.DisplayFor(m=>item.Qty)
+                            </td>
+                        }
+                            
+                            
+                            <td class="money">
+                                @if (item.Discount == 0)
+                                {
+                                    @Html.Display("-")
+                                }
+                                else
+                                {
+                                    @string.Format("{0:#,0.00##}", "&#8369 "+ item.Discount)
+                                }
+
+                                &#8369 @string.Format("{0:#,0.00##}", 0)
+                            
+                               
+                            </td>
+
+                            <td class="money">
+
+                                 &#8369 @string.Format("{0:#,0.00##}", item.TotalAmt)
+                            </td>
+
+                           
+                            
+                        </tr>
+                        }
+                </tbody>
+            </table>
+        </div>
+     
+    </div>
+<script>
+    new DataTable('#dtActiveBatchPR', {
+        responsive: true
+    });
+</script>

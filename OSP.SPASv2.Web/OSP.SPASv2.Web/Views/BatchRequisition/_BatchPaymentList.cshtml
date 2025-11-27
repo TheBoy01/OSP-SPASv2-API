@@ -1,0 +1,383 @@
+﻿@using Newtonsoft.Json;
+
+@model SPASv2.Models.BatchRequisitionViewModel
+@{
+    Layout = null;
+}
+
+<table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+    <thead>
+        <tr>
+            <th>
+                P.O. No
+            </th>
+            <th>
+                Sales Invoice
+            </th>
+            <th>
+                Vendor Name
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                HP Deduction
+            </th>
+            <th>
+                Freight Amount
+            </th>
+            <th>Attachments</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.BatchPaymentHdrList)
+        {
+            <tr>
+                <td>
+                    @item.PONo
+                </td>
+                <td>
+                    @item.SalesInvoiceNo
+                </td>
+                <td>
+                    @item.PayeeName
+                </td>
+                <td class="money">
+                    <div class="currencySymbol">
+                        &#8369 @string.Format("{0:#,0.00}",  item.Amount)
+                    </div>
+                </td>
+                <td class="money">
+                    <div class="currencySymbol">
+                        &#8369 @string.Format("{0:#,0.00}",  item.HPDeduction)
+                    </div>
+                </td>
+                <td class="money">
+                    <div class="currencySymbol">
+                        &#8369 @string.Format("{0:#,0.00}",  item.FreightAmount)
+                    </div>
+                </td>
+                <td>
+                    @foreach (var attItem in Model.RequestAttachments.Where(t => t.RequestNo == (item.PONo + item.SalesInvoiceNo)).ToList())
+                    {
+                        string[] _validExtensions = { ".jpeg", ".jpg", ".bmp", ".gif", ".png", ".tiff", ".tif", ".raw" };
+                        bool isImage = _validExtensions.Contains(System.IO.Path.GetExtension(attItem.FileName));
+
+                        <a href="@attItem.Src" target="_blank" @*onclick="DisplayAttachment('@attItem.Src', '@attItem.FileName', @isImage.ToString().ToLower())"*@>
+                            <i class="bi bi-paperclip" style="color:darkblue;"></i>
+                            @attItem.FileName
+                        </a>
+                        <br />
+                        @*<a><i class="bi bi-paperclip" style="color:darkblue;"></i>@attItem.FileName</a> <br />*@
+                    }
+                </td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+
+
+<div class="card-title mb-2">
+    <a class="card-title">Batch Request Details</a>
+</div>
+
+<table class="table table-borderless datatable table-striped " style="min-height:200px;" id="Tbl">
+    <thead>
+        <tr>
+            <th>
+                P.O. No
+            </th>
+            <th>
+                Department
+            </th>
+            <th>
+                Item Description
+            </th>
+            <th>
+                Balance
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Reference Receipt
+            </th>
+            <th>
+                DR.No
+            </th>
+            <th>
+                DR.Date
+            </th>
+            <th>
+                S.I. No
+            </th>
+            <th>
+                SI.Date
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.BatchPaymentDtlList)
+        {
+            <tr>
+                <td>
+                    @item.PONo
+                </td>
+                <td>
+                    @item.Department
+                </td>
+                <td>
+                    @item.ItemDescription
+                </td>
+                <td class="money">
+                    @item.Balance
+                </td>
+                <td class="money">
+                    @item.Quantity
+                </td>
+                <td class="money">
+                    <div class="currencySymbol">
+                        &#8369 @string.Format("{0:#,0.00}",  item.Amount)
+                    </div>
+                </td>
+                <td>
+                    @item.ReferenceReceipt
+                </td>
+                <td>
+                    @item.DeliveryNo
+                </td>
+                <td>
+                    @item.DeliveryDate.ToShortDateString()
+                </td>
+                <td>
+                    @item.SalesInvoice
+                </td>
+                <td>
+                    @item.SalesInvoiceDate.ToShortDateString()
+                </td>
+
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.isUploadTemplate)
+{
+    <a id="btnOpenFolder" hidden>@ViewData["FileDir"]</a>
+    <a id="devt" hidden>@ViewData["devtype"]</a>
+}
+
+
+<script src="~/template/js/datatableRefresh.js"></script>
+<script>
+    var filedir = document.getElementById("btnOpenFolder").innerHTML;
+
+    if (filedir != '') {
+        //navigator.clipboard.writeText(filedir);
+        ShowAlert({
+            title: 'Batch Folder Created',
+            text: "Please organize files into the folder for attachments. <br/><br/>Folder path: <b style= 'color:#6c63ff;'>" + filedir + "</b>",
+            icon: 'success',
+            showCancelButton: false,
+            successmethod: "RedirecttoFiles()"
+        });
+    }
+
+    function RedirecttoFiles() {
+        //alert(filedir);
+        //location.href = "https:"+ filedir;
+        var devtype = document.getElementById("devt").innerHTML;
+        //alert(devt);
+        //alert("http://192.168.23.185/Files/" + filedir);
+        if (devtype == "Development") {
+            //window.location.href = "http://192.168.23.185/Files/" + filedir;
+        }
+        else {
+            window.location.href = '/Files/WINRAR/' + filedir;
+        }
+    }
+
+    function OpenDirectory() {
+        $.ajax({
+            url: '/Requisition/OpenFolderPath',
+            type: 'GET',
+            dataType: 'json',
+            data: { path: filedir },
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (response) {
+            },
+            error: function () {
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+</script>
+<script>
+    var RequestFiles;
+
+    function selectFolder(e) {
+        //for (var i = 0; i < e.target.files.length; i++) {
+        //    var s = e.target.files[i].name + '\n';
+        //    s += e.target.files[i].size + ' Bytes\n';
+        //    s += e.target.files[i].type + '';
+        //    s += e.target.files[i].path;
+        //    alert(s);
+        //}
+
+
+        var fileData = new FormData();
+        RequestFiles = e.target.files;
+        for (var i = 0; i < RequestFiles.length; i++) {
+            //console.log(RequestFiles[i]);
+            fileData.append("files", RequestFiles[i]);
+        }
+
+        //var model = @Html.Raw(JsonConvert.SerializeObject(Model.RequestNoList));
+
+        fileData.append("vm", JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model))));
+        //alert(JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model))));
+        $.ajax({
+            type: "POST",
+            url: "/BatchRequisition/ReadPaymentAttachments",
+            processData: false,
+            contentType: false,
+            data: fileData,
+            dataType: 'html',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                $("#tbodyBatchSummary").html(result);
+            },
+            error: function (xhr, status, error) {
+
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/BatchRequisition/ReadPaymentAttachments",
+        //    processData: false,
+        //    contentType: false,
+        //    data: fileData,
+        //    dataType: 'html',
+        //    beforeSend: function () {
+        //        ShowLoader();
+        //    },
+        //    success: function (result) {
+        //        $("#tbodyBatchSummary").html(result);
+        //    },
+        //    error: function (xhr, status, error) {
+
+        //    },
+        //    complete: function (data) {
+        //        $("#loader").modal("hide");
+        //    },
+        //});
+    }
+
+    var BatchPRNo;
+
+    function UploadBatch() {
+        ShowAlert({
+            title: 'Batch Upload',
+            text: "Are you sure to upload batch list?",
+            icon: 'question',
+            showCancelButton: true,
+            successmethod: "InsertBatch()"
+        })
+    }
+
+    function InsertBatch() {
+        var BatchRequisitionViewModel = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+        var fileData = new FormData();
+        for (var i = 0; i < RequestFiles.length; i++) {
+            fileData.append("files", RequestFiles[i]);
+        }
+        var model = @Html.Raw(JsonConvert.SerializeObject(Model));
+        fileData.append("vm", JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model))));
+
+        $.ajax({
+            type: "POST",
+            url: "/BatchRequisition/UploadBatchPayment",
+            processData: false,
+            contentType: false,
+            data: fileData,
+            dataType: 'json',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (result) {
+                // alert(result.error);
+                //    alert("done");
+                //    console.log(result);
+                //    console.log(result.batchreq.BatchPRNo);
+                BatchPRNo = result.batchreq.BatchPRNo;
+                //alert(BatchPRNo);
+                //alert(result.success);
+                //    //ShowAlert(
+                //    //    {
+                //    //        title: 'Batch Upload',
+                //    //        text: result.response.ErrorMessage,
+                //    //        icon: result.response.Status,
+                //    //        successmethod: "GotoBatchDetails()"
+                //    //    });
+
+                //},
+                //complete: function (data) {
+                //    $("#loader").modal("hide");
+                //}
+                if (result.success == false) {
+                    ShowAlert(
+                        {
+                            title: 'Batch Upload Payment',
+                            text: result.response.ErrorMessage,
+                            icon: 'error',
+                            //successmethod: "GotoBatchDetails()"
+                        });
+                }
+                else {
+                    //BatchPRNo = result.BatchPRNo;
+                    ShowAlert(
+                        {
+                            title: 'Batch Upload Payment',
+                            text: result.response.ErrorMessage,
+                            icon: 'success',
+                            successmethod: "GotoBatchDetails()"
+                        });
+                }
+
+            },
+            error: function (xhr, status, error) {
+                ShowAlert(
+                    {
+                        title: 'Error',
+                        text: error,
+                        icon: 'error'
+                    });
+            },
+            complete: function (data) {
+                $("#loader").modal("hide");
+            }
+        });
+    }
+
+    function GotoBatchDetails() {
+        window.location.href = '/BatchRequisition/Details/' + BatchPRNo;
+    }
+</script>
